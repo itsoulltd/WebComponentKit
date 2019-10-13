@@ -1,0 +1,37 @@
+# eclipse project file
+.settings/
+.classpath
+.project
+
+# Maven
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### IntelliJ IDEA Web ###
+/out/
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+###Project Specific
+**/node_modules/

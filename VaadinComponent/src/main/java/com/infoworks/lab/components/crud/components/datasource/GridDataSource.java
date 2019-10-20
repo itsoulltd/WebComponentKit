@@ -1,13 +1,14 @@
 package com.infoworks.lab.components.crud.components.datasource;
 
-import com.it.soul.lab.sql.entity.EntityInterface;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.provider.DataProvider;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public interface GridDataSource<T extends EntityInterface> {
+public interface GridDataSource<T> {
+    Map<Object, T> getMemStorage();
     Class<T> getBeanType();
     GridDataSource setBeanType(Class<T> beanType);
     void reloadGrid();

@@ -1,4 +1,4 @@
-package com.infoworks.lab.components.crud.components.grid;
+package com.infoworks.lab.components.crud.components.datasource;
 
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.vaadin.flow.component.grid.Grid;

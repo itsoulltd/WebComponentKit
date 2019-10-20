@@ -4,7 +4,7 @@ import com.infoworks.lab.components.crud.components.editor.BeanDialog;
 import com.infoworks.lab.components.crud.components.editor.BeanEditor;
 import com.infoworks.lab.components.crud.components.editor.EmbeddedBeanEditor;
 import com.infoworks.lab.components.crud.components.editor.ModalBeanEditor;
-import com.infoworks.lab.components.crud.components.grid.GridDataSource;
+import com.infoworks.lab.components.crud.components.datasource.GridDataSource;
 import com.infoworks.lab.components.crud.components.utils.EditorDisplayType;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.vaadin.flow.component.grid.Grid;

@@ -1,10 +1,9 @@
-package com.infoworks.lab.components.crud.components.grid;
+package com.infoworks.lab.components.crud.components.datasource;
 
 import com.it.soul.lab.sql.entity.Entity;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
-import com.vaadin.flow.function.SerializablePredicate;
 
 import java.util.Arrays;
 import java.util.Map;

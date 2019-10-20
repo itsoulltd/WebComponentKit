@@ -1,4 +1,4 @@
-package com.infoworks.lab.components.crud.components.grid;
+package com.infoworks.lab.components.crud.components.datasource;
 
 import com.it.soul.lab.sql.QueryExecutor;
 import com.it.soul.lab.sql.entity.EntityInterface;

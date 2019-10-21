@@ -3,15 +3,12 @@ package com.infoworks.lab.components.crud.components.datasource;
 import com.it.soul.lab.sql.entity.Entity;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.ListDataProvider;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 public class DefaultDataSource<E extends Entity> extends AbstractGridDataSource<E> {
 
@@ -25,10 +22,15 @@ public class DefaultDataSource<E extends Entity> extends AbstractGridDataSource<
     private Grid grid;
 
     @Override
-    public GridDataSource setGrid(Grid grid) {
+    public GridDataSource setGrid(Grid<E> grid) {
         if (Objects.nonNull(grid))
             this.grid = grid;
         reloadGrid();
+        return this;
+    }
+
+    @Override
+    public GridDataSource prepareGridUI(Grid<E> grid) {
         return this;
     }
 
@@ -61,5 +63,21 @@ public class DefaultDataSource<E extends Entity> extends AbstractGridDataSource<
     public GridDataSource setBeanType(Class<E> beanType) {
         this.beanType = beanType;
         return this;
+    }
+
+    private List<String> columns;
+
+    @Override
+    public GridDataSource setDefaultColumns(String... columns) {
+        this.columns = Arrays.asList(columns);
+        if (Objects.nonNull(getGrid())){
+            getGrid().setColumns(columns);
+        }
+        return this;
+    }
+
+    @Override
+    public String[] getDefaultColumns() {
+        return this.columns.toArray(new String[0]);
     }
 }

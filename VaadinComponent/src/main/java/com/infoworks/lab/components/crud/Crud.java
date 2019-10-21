@@ -36,23 +36,30 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
         VerticalLayout parent = new VerticalLayout();
         parent.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.STRETCH);
         parent.add(searchBar);
-        prepareGridUI(configurator.getDataSource().getGrid());
         parent.add(configurator.getDataSource().getGrid());
         //
-        if (configurator.isDialog())
+        if (configurator.isDialog()) {
             configureDialogForm(parent);
-        else if(configurator.isEmbedded())
+        }
+        else if(configurator.isEmbedded()) {
             configureEmbeddedForm(parent);
+        }
         else {
             configureDialogForm(parent);
             configureEmbeddedForm(parent);
         }
+        prepareGridUI(configurator.getDataSource().getGrid());
         return parent;
     }
 
     protected void prepareGridUI(Grid grid){
-        //TODO:Configure Grid Alignment and visibility respect to FormLayout:
-        //grid.setSizeFull();
+        try {
+            EntityInterface ei = configurator.getBeanType().newInstance();
+            configurator.getDataSource().setDefaultColumns(editor.propertyKeys(ei));
+            configurator.getDataSource().prepareGridUI(grid);
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private void configureEmbeddedForm(VerticalLayout parent){

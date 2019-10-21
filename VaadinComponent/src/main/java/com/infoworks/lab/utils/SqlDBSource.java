@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DBSource<E extends Entity> extends DefaultDataSource<E> implements JsqlDataSource<E> {
+public class SqlDBSource<E extends Entity> extends DefaultDataSource<E> implements JsqlDataSource<E> {
 
     @Override
     public GridDataSource addSearchFilter(String filter) {
@@ -41,7 +41,8 @@ public class DBSource<E extends Entity> extends DefaultDataSource<E> implements 
         SQLSelectQuery selectQuery = new SQLQuery.Builder(QueryType.SELECT)
                 .columns()
                 .from(E.tableName(getBeanType()))
-                .addLimit(query.getOffset(), query.getLimit()).build();
+                .addLimit(query.getOffset(), query.getLimit())
+                .build();
         return selectQuery;
     }
 
@@ -50,6 +51,7 @@ public class DBSource<E extends Entity> extends DefaultDataSource<E> implements 
         SQLScalarQuery scalarQuery = new SQLQuery.Builder(QueryType.COUNT)
                 .columns()
                 .on(E.tableName(getBeanType()))
+                .addLimit(query.getOffset(), query.getLimit())
                 .build();
         return scalarQuery;
     }

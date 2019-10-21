@@ -27,6 +27,7 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-core</artifactId>
             <version>14.0.8</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.it.soul.lab</groupId>

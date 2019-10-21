@@ -55,7 +55,8 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
     protected void prepareGridUI(Grid grid){
         try {
             EntityInterface ei = configurator.getBeanType().newInstance();
-            configurator.getDataSource().setDefaultColumns(editor.propertyKeys(ei));
+            String[] columns = editor != null ? editor.propertyKeys(ei) : dialog.propertyKeys(ei);
+            configurator.getDataSource().setDefaultColumns(columns);
             configurator.getDataSource().prepareGridUI(grid);
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();

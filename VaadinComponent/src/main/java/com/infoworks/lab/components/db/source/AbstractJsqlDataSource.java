@@ -161,6 +161,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
     }
 
     protected final void executeQuery(SQLSelectQuery query) {
+        if (Objects.isNull(query)) return;
         try {
             List<E> items = getExecutor().executeSelect(query
                     , getBeanType()

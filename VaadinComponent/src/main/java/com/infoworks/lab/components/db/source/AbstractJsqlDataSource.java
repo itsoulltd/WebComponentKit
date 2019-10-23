@@ -28,14 +28,15 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
     @Override
     public Query<E, String> getQuery() {
         if (query == null){
-            query = new Query(0, 10, Collections.emptyList(), null, null);
+            int pageSize = (Objects.nonNull(getGrid())) ? getGrid().getPageSize() : 10;
+            query = new Query(0, pageSize, Collections.emptyList(), null, null);
         }
         return query;
     }
 
     protected final Query next(Query prev){
         if (prev.getOffset() >= getMaxOffsetQuery().getOffset()) return prev;
-        Query next = new Query(prev.getOffset() + prev.getLimit() +1
+        Query next = new Query(prev.getOffset() + prev.getLimit()
                 , prev.getLimit()
                 , prev.getSortOrders()
                 , prev.getInMemorySorting()
@@ -46,7 +47,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
 
     protected final Query previous(Query next){
         if (next.getOffset() == 0) return next;
-        Query prev = new Query(next.getOffset() - next.getLimit() -1
+        Query prev = new Query(next.getOffset() - next.getLimit()
                 , next.getLimit()
                 , next.getSortOrders()
                 , next.getInMemorySorting()
@@ -120,8 +121,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
 
     @Override
     public GridDataSource prepareGridUI(Grid<E> grid) {
-        Grid.Column cell = grid.getColumns().get(0);
-        cell.setFooter("Total: " + getMemStorage().size());
+        updateCellFooter(grid);
         int length = grid.getColumns().size();
         Grid.Column last = grid.getColumns().get(length - 1);
         HorizontalLayout buttonCell = new HorizontalLayout(new Button(" < ", previousAction)
@@ -132,6 +132,13 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         buttonCell.setAlignItems(FlexComponent.Alignment.CENTER);
         last.setFooter(buttonCell);
         return super.prepareGridUI(grid);
+    }
+
+    protected void updateCellFooter(Grid<E> grid) {
+        Grid.Column cell = grid.getColumns().get(0);
+        cell.setFooter("Total: " + ((getMaxOffsetQuery() != null)
+                ? getMaxOffsetQuery().getOffset()
+                : getMemStorage().size()));
     }
 
     private ComponentEventListener<ClickEvent<Button>> previousAction = (event) -> {
@@ -198,8 +205,11 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         }else {
             try {
                 if (item.insert(getExecutor())) {
-                    //TODO: Find out is this object visible right now or not?
-                    //super.save(item);
+                    int size = getMemStorage().size();
+                    if (size < getQuery().getLimit()) {
+                        super.save(item);
+                    }
+                    updateMaxOffsetQuery(1);
                     LOG.info("INSERTED: " + item.toString());
                 }
             } catch (SQLException e) {
@@ -219,6 +229,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
             try {
                 if (item.delete(getExecutor())) {
                     super.delete(item);
+                    updateMaxOffsetQuery(-1);
                     LOG.info("DELETD: " + id);
                 }
             } catch (SQLException e) {

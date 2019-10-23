@@ -57,4 +57,16 @@ public class JpqlDataSource <E extends Entity> extends AbstractJsqlDataSource<E>
         return maxLimitQuery;
     }
 
+    @Override
+    public Query<E, String> updateMaxOffsetQuery(int byValue) {
+        Query max = new Query(getMaxOffsetQuery().getOffset() + (byValue)
+                , getMaxOffsetQuery().getLimit()
+                , getMaxOffsetQuery().getSortOrders()
+                , getMaxOffsetQuery().getInMemorySorting()
+                , getMaxOffsetQuery().getFilter().isPresent() ? getMaxOffsetQuery().getFilter().get() : null);
+        this.maxLimitQuery = max;
+        updateCellFooter(getGrid());
+        return max;
+    }
+
 }

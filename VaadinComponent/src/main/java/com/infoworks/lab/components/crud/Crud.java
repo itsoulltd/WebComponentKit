@@ -25,7 +25,9 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
     public Crud(Configurator configurator) {
         this.configurator = configurator;
         configurator.getDataSource().setBeanType(configurator.getBeanType());
-        configurator.getDataSource().setGrid(new Grid<>(configurator.getBeanType()));
+        Grid grid = new Grid<>(configurator.getBeanType());
+        grid.setPageSize(configurator.getGridPageSize());
+        configurator.getDataSource().setGrid(grid);
         getGrid().setSelectionMode(configurator.getSelectionMode());
         this.searchBar = new SearchBar(configurator.getBeanType(), createSearchBarConfigurator());
         this.parentLayout = prepareParentLayout();

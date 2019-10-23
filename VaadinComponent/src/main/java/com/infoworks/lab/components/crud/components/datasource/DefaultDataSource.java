@@ -26,8 +26,6 @@ public class DefaultDataSource<E extends Entity> extends AbstractGridDataSource<
     public GridDataSource setGrid(Grid<E> grid) {
         if (Objects.nonNull(grid)) {
             this.grid = grid;
-            //Setting Default:
-            this.grid.setPageSize(10);
         }
         return this;
     }

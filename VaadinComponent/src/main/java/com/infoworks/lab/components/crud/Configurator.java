@@ -20,6 +20,7 @@ public class Configurator {
     private Grid.SelectionMode selectionMode = Grid.SelectionMode.SINGLE;
     private BeanEditor editor;
     private BeanDialog dialog;
+    private int pageSize = 10;
 
     public Configurator(Class<? extends EntityInterface> beanType) {
         this.beanType = beanType;
@@ -127,4 +128,12 @@ public class Configurator {
         return beanType;
     }
 
+    public int getGridPageSize() {
+        return pageSize;
+    }
+
+    public Configurator setGridPageSize(int pageSize) {
+        this.pageSize = pageSize;
+        return this;
+    }
 }

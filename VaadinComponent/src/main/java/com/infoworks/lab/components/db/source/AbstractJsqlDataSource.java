@@ -66,24 +66,6 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         return now;
     }
 
-    @Override
-    public GridDataSource addSearchFilter(String filter) {
-        if (filter.length() <= 3) {
-            if (filter.length() <= 0){
-                SQLSelectQuery query = getSearchQuery(copyWith(getQuery(), null));
-                executeQuery(query);
-                return super.addSearchFilter("");
-            }else {
-                return super.addSearchFilter(filter);
-            }
-        }
-        Query query = copyWith(getQuery(), filter);
-        SQLSelectQuery sqlquery = getSearchQuery(query);
-        executeQuery(sqlquery);
-        reloadGrid();
-        return this;
-    }
-
     protected final Predicate createSearchPredicate(Query<E, String> query){
         if (!query.getFilter().isPresent()) return null;
         try {
@@ -100,12 +82,40 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
             }
             return predicate;
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            LOG.warning(e.getMessage());
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            LOG.warning(e.getMessage());
         }
         return null;
     }
+
+    private Query maxLimitQuery;
+
+    public Query getMaxOffsetQuery() {
+        if (maxLimitQuery == null){
+            int max = getRowCount();
+            maxLimitQuery = new Query(max
+                    , getQuery().getLimit()
+                    , getQuery().getSortOrders()
+                    , getQuery().getInMemorySorting()
+                    , getQuery().getFilter().isPresent() ? getQuery().getFilter().get() : null);
+        }
+        return maxLimitQuery;
+    }
+
+    @Override
+    public Query<E, String> updateMaxOffsetQuery(int byValue) {
+        Query max = new Query(getMaxOffsetQuery().getOffset() + (byValue)
+                , getMaxOffsetQuery().getLimit()
+                , getMaxOffsetQuery().getSortOrders()
+                , getMaxOffsetQuery().getInMemorySorting()
+                , getMaxOffsetQuery().getFilter().isPresent() ? getMaxOffsetQuery().getFilter().get() : null);
+        this.maxLimitQuery = max;
+        updateCellFooter(getGrid());
+        return max;
+    }
+
+    protected abstract int getRowCount();
 
     private QueryExecutor executor;
     @Override
@@ -180,11 +190,11 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
                         .forEach(item -> super.save(item));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warning(e.getMessage());
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            LOG.warning(e.getMessage());
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            LOG.warning(e.getMessage());
         }
     }
 

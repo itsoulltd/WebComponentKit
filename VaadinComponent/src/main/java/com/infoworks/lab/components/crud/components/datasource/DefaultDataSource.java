@@ -3,6 +3,7 @@ package com.infoworks.lab.components.crud.components.datasource;
 import com.it.soul.lab.sql.entity.Entity;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +54,26 @@ public class DefaultDataSource<E extends Entity> extends AbstractGridDataSource<
     public GridDataSource setProvider(DataProvider provider) {
         this.provider = provider;
         return this;
+    }
+
+    @Override
+    public GridDataSource addSearchFilter(String filter) {
+        if (Objects.nonNull(getGrid())
+                && Objects.nonNull(getProvider())){
+            //
+            if (getProvider() instanceof ListDataProvider){
+                ListDataProvider<E> dProvider = (ListDataProvider<E>) getProvider();
+                //
+                dProvider.clearFilters();
+                dProvider.addFilter(item -> {
+                    Map data = item.marshallingToMap(false);
+                    return data.values().stream()
+                            .filter(o -> Objects.nonNull(o))
+                            .anyMatch(o -> o.toString().toLowerCase().contains(filter.toLowerCase()));
+                });
+            }
+        }
+        return null;
     }
 
     private Class<E> beanType;

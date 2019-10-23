@@ -1,5 +1,6 @@
 package com.infoworks.lab.components.db.source;
 
+import com.infoworks.lab.components.crud.components.datasource.GridDataSource;
 import com.it.soul.lab.sql.SQLExecutor;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.query.QueryType;
@@ -12,6 +13,24 @@ import com.vaadin.flow.data.provider.Query;
 import java.sql.SQLException;
 
 public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
+
+    @Override
+    public GridDataSource addSearchFilter(String filter) {
+        if (filter.length() <= 3) {
+            if (filter.length() <= 0){
+                SQLSelectQuery query = getSearchQuery(copyWith(getQuery(), null));
+                executeQuery(query);
+                return super.addSearchFilter("");
+            }else {
+                return super.addSearchFilter(filter);
+            }
+        }
+        Query query = copyWith(getQuery(), filter);
+        SQLSelectQuery sqlquery = getSearchQuery(query);
+        executeQuery(sqlquery);
+        reloadGrid();
+        return this;
+    }
 
     @Override
     public SQLSelectQuery getSearchQuery(Query<E, String> query) {
@@ -38,37 +57,16 @@ public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
         return selectQuery;
     }
 
-    private Query maxLimitQuery;
-
-    public Query getMaxOffsetQuery() {
-        if (maxLimitQuery == null){
-            if (getExecutor() instanceof SQLExecutor){
-                try {
-                    int max = ((SQLExecutor)getExecutor()).getScalarValue(getCountQuery());
-                    maxLimitQuery = new Query(max
-                            , getQuery().getLimit()
-                            , getQuery().getSortOrders()
-                            , getQuery().getInMemorySorting()
-                            , getQuery().getFilter().isPresent() ? getQuery().getFilter().get() : null);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    maxLimitQuery = getQuery();
-                }
+    protected int getRowCount(){
+        if (getExecutor() instanceof SQLExecutor){
+            try {
+                int max = ((SQLExecutor)getExecutor()).getScalarValue(getCountQuery());
+                return max;
+            } catch (SQLException e) {
+                LOG.warning(e.getMessage());
             }
         }
-        return maxLimitQuery;
-    }
-
-    @Override
-    public Query<E, String> updateMaxOffsetQuery(int byValue) {
-        Query max = new Query(getMaxOffsetQuery().getOffset() + (byValue)
-                            , getMaxOffsetQuery().getLimit()
-                            , getMaxOffsetQuery().getSortOrders()
-                            , getMaxOffsetQuery().getInMemorySorting()
-                            , getMaxOffsetQuery().getFilter().isPresent() ? getMaxOffsetQuery().getFilter().get() : null);
-        this.maxLimitQuery = max;
-        updateCellFooter(getGrid());
-        return max;
+        return getQuery().getOffset();
     }
 
     protected SQLScalarQuery getCountQuery() {

@@ -2,7 +2,6 @@ package com.infoworks.lab.components.crud.components.datasource;
 
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.ListDataProvider;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -14,26 +13,6 @@ import java.util.logging.Logger;
 public abstract class AbstractGridDataSource<E extends EntityInterface> implements GridDataSource<E> {
 
     protected Logger LOG = Logger.getLogger(this.getClass().getSimpleName());
-
-    @Override
-    public GridDataSource addSearchFilter(String filter) {
-        if (Objects.nonNull(getGrid())
-                && Objects.nonNull(getProvider())){
-            //
-            if (getProvider() instanceof ListDataProvider){
-                ListDataProvider<E> dProvider = (ListDataProvider<E>) getProvider();
-                //
-                dProvider.clearFilters();
-                dProvider.addFilter(item -> {
-                    Map data = item.marshallingToMap(false);
-                    return data.values().stream()
-                            .filter(o -> Objects.nonNull(o))
-                            .anyMatch(o -> o.toString().toLowerCase().contains(filter.toLowerCase()));
-                });
-            }
-        }
-        return null;
-    }
 
     @Override
     public void reloadGrid() {

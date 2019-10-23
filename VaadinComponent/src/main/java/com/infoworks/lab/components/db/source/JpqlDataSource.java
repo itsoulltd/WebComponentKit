@@ -2,14 +2,13 @@ package com.infoworks.lab.components.db.source;
 
 import com.it.soul.lab.jpql.query.JPQLQuery;
 import com.it.soul.lab.jpql.service.JPQLExecutor;
-import com.it.soul.lab.sql.SQLExecutor;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.query.QueryType;
 import com.it.soul.lab.sql.query.SQLSelectQuery;
 import com.it.soul.lab.sql.query.models.Predicate;
 import com.vaadin.flow.data.provider.Query;
 
-public class JpqlDataSource <E extends Entity> extends AbstractJsqlDataSource<E>{
+public class JpqlDataSource <E extends Entity> extends SqlDataSource<E>{
 
     @Override
     public SQLSelectQuery getSearchQuery(Query<E, String> query) {
@@ -36,37 +35,17 @@ public class JpqlDataSource <E extends Entity> extends AbstractJsqlDataSource<E>
         return selectQuery;
     }
 
-    private Query maxLimitQuery;
-
-    public Query getMaxOffsetQuery() {
-        if (maxLimitQuery == null){
-            if (getExecutor() instanceof SQLExecutor){
-                try {
-                    int max = ((JPQLExecutor)getExecutor()).rowCount(getBeanType());
-                    maxLimitQuery = new Query(max
-                            , getQuery().getLimit()
-                            , getQuery().getSortOrders()
-                            , getQuery().getInMemorySorting()
-                            , getQuery().getFilter().isPresent() ? getQuery().getFilter().get() : null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    maxLimitQuery = getQuery();
-                }
+    @Override
+    protected int getRowCount() {
+        if (getExecutor() instanceof JPQLExecutor){
+            try {
+                int max = ((JPQLExecutor)getExecutor()).rowCount(getBeanType());
+                return max;
+            } catch (Exception e) {
+                LOG.warning(e.getMessage());
             }
         }
-        return maxLimitQuery;
-    }
-
-    @Override
-    public Query<E, String> updateMaxOffsetQuery(int byValue) {
-        Query max = new Query(getMaxOffsetQuery().getOffset() + (byValue)
-                , getMaxOffsetQuery().getLimit()
-                , getMaxOffsetQuery().getSortOrders()
-                , getMaxOffsetQuery().getInMemorySorting()
-                , getMaxOffsetQuery().getFilter().isPresent() ? getMaxOffsetQuery().getFilter().get() : null);
-        this.maxLimitQuery = max;
-        updateCellFooter(getGrid());
-        return max;
+        return super.getRowCount();
     }
 
 }

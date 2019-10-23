@@ -154,7 +154,7 @@ public abstract class AbstractBeanEditor<T extends EntityInterface>
     }
 
     private void initButtonBar() {
-        saveButton.setAutofocus(true);
+        saveButton.setAutofocus(shouldSaveAutofocus());
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         clearButton.addClickListener(e -> clear());
         deleteButton.addClickListener(e -> deleteClicked());
@@ -163,6 +163,8 @@ public abstract class AbstractBeanEditor<T extends EntityInterface>
         buttonBar.setSpacing(true);
         add(buttonBar);
     }
+
+    protected boolean shouldSaveAutofocus(){return true;}
 
     /**
      * Gets the form layout, where additional components can be added for

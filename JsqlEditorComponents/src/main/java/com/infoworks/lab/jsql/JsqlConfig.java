@@ -22,14 +22,13 @@ public class JsqlConfig {
     public JsqlConfig() {}
 
     private synchronized void config(String key, DataSourceKey container){
+        if (key != null && configuredKeys.contains(key)) return;
         try {
             if (key == null || key.isEmpty()){
                 key = UUID.randomUUID().toString();
             }
-            if (!configuredKeys.contains(key)){
-                JDBConnectionPool.configure(key, createDataSource(container));
-                configuredKeys.add(key);
-            }
+            JDBConnectionPool.configure(key, createDataSource(container));
+            configuredKeys.add(key);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

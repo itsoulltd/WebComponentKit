@@ -3,7 +3,7 @@ package com.infoworks.lab.jsql;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DataSourceKeyContainer {
+public class DataSourceKey {
 
     public enum Keys{
         URL(null),
@@ -21,8 +21,7 @@ public class DataSourceKeyContainer {
             this.value = value;
         }
 
-        @Override
-        public String toString() {
+        public String defaultValue() {
             return value;
         }
     }

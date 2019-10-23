@@ -9,12 +9,11 @@ import com.it.soul.lab.sql.SQLExecutor;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import static com.infoworks.lab.jsql.DataSourceKeyContainer.Keys;
+import static com.infoworks.lab.jsql.DataSourceKey.Keys;
 
 public class JsqlConfig {
 
@@ -22,7 +21,7 @@ public class JsqlConfig {
 
     public JsqlConfig() {}
 
-    private synchronized void config(String key, DataSourceKeyContainer container){
+    private synchronized void config(String key, DataSourceKey container){
         try {
             if (key == null || key.isEmpty()){
                 key = UUID.randomUUID().toString();
@@ -36,21 +35,21 @@ public class JsqlConfig {
         }
     }
 
-    private DataSourceKeyContainer getDataSourceKeyContainer() {
-        DataSourceKeyContainer container = new DataSourceKeyContainer();
-        container.set(Keys.URL, "app.db.url");
-        container.set(Keys.DRIVER, "app.db.driver-class-name");
-        container.set(Keys.SCHEMA, "app.db.schema");
-        container.set(Keys.USERNAME, "app.db.username");
-        container.set(Keys.PASSWORD, "app.db.password");
-        container.set(Keys.HOST, "app.db.host");
-        container.set(Keys.PORT, "app.db.port");
-        container.set(Keys.NAME, "app.db.name");
-        container.set(Keys.QUERY, "app.db.query");
+    private DataSourceKey getDefaultKeys() {
+        DataSourceKey container = new DataSourceKey();
+        container.set(Keys.URL, Keys.URL.defaultValue());
+        container.set(Keys.DRIVER, Keys.DRIVER.defaultValue());
+        container.set(Keys.SCHEMA, Keys.SCHEMA.defaultValue());
+        container.set(Keys.USERNAME, Keys.USERNAME.defaultValue());
+        container.set(Keys.PASSWORD, Keys.PASSWORD.defaultValue());
+        container.set(Keys.HOST, Keys.HOST.defaultValue());
+        container.set(Keys.PORT, Keys.PORT.defaultValue());
+        container.set(Keys.NAME, Keys.NAME.defaultValue());
+        container.set(Keys.QUERY, Keys.USERNAME.defaultValue());
         return container;
     }
 
-    public Connection pullConnection(String key, DataSourceKeyContainer container){
+    public Connection pullConnection(String key, DataSourceKey container){
         Connection connection = null;
         try {
             config(key, container);
@@ -62,11 +61,11 @@ public class JsqlConfig {
     }
 
     public Connection pullConnection(String key){
-        DataSourceKeyContainer container = getDataSourceKeyContainer();
+        DataSourceKey container = getDefaultKeys();
         return pullConnection(key, container);
     }
 
-    public QueryExecutor create(ExecutorType type, String key, DataSourceKeyContainer container) {
+    public QueryExecutor create(ExecutorType type, String key, DataSourceKey container) {
         if (type == ExecutorType.SQL) {
             Connection connection = pullConnection(key, container);
             return new SQLExecutor(connection);
@@ -79,7 +78,7 @@ public class JsqlConfig {
 
     public QueryExecutor create(ExecutorType type, String key) {
         if (type == ExecutorType.SQL){
-            DataSourceKeyContainer container = getDataSourceKeyContainer();
+            DataSourceKey container = getDefaultKeys();
             return create(type, key, container);
         }else if (type == ExecutorType.JPQL){
             return create(type, key, null);
@@ -87,36 +86,34 @@ public class JsqlConfig {
         return null;
     }
 
-    public DataSource createDataSource(DataSourceKeyContainer container) throws SQLException{
+    public DataSource createDataSource(DataSourceKey container) throws SQLException{
 
-        Map<String, String> env = System.getenv();
+        String username = container.get(Keys.USERNAME);
+        if(username==null) username = Keys.USERNAME.defaultValue();
 
-        String username = env.get(container.get(Keys.USERNAME));
-        if(username==null) username = Keys.USERNAME.toString();
+        String password = container.get(Keys.PASSWORD);
+        if (password==null) password = Keys.PASSWORD.defaultValue();
 
-        String password = env.get(container.get(Keys.PASSWORD));
-        if (password==null) password = Keys.PASSWORD.toString();
+        String driverClassName = container.get(Keys.DRIVER);
+        if (driverClassName==null) driverClassName = Keys.DRIVER.defaultValue();
 
-        String driverClassName = env.get(container.get(Keys.DRIVER));
-        if (driverClassName==null) driverClassName = Keys.DRIVER.toString();
-
-        String url = env.get(container.get(Keys.URL));
+        String url = container.get(Keys.URL);
         if (url==null){
 
-            String schema = env.get(container.get(Keys.SCHEMA));
-            if (schema==null) schema = Keys.SCHEMA.toString();
+            String schema = container.get(Keys.SCHEMA);
+            if (schema==null) schema = Keys.SCHEMA.defaultValue();
 
-            String name = env.get(container.get(Keys.NAME));
+            String name = container.get(Keys.NAME);
             if (name==null) throw new SQLException("'app.db.name' must not be null");
 
-            String host = env.get(container.get(Keys.HOST));
-            if (host==null) host = Keys.HOST.toString();
+            String host = container.get(Keys.HOST);
+            if (host==null) host = Keys.HOST.defaultValue();
 
-            String port = env.get(container.get(Keys.PORT));
-            if (port==null) port = Keys.PORT.toString();
+            String port = container.get(Keys.PORT);
+            if (port==null) port = Keys.PORT.defaultValue();
 
-            String queryParam = env.get(container.get(Keys.QUERY));
-            if (queryParam==null) queryParam = Keys.QUERY.toString();
+            String queryParam = container.get(Keys.QUERY);
+            if (queryParam==null) queryParam = Keys.QUERY.defaultValue();
 
             url = String.format("%s%s:%s/%s%s"
                     , schema

@@ -36,16 +36,7 @@ public class JsqlConfig {
     }
 
     private DataSourceKey getDefaultKeys() {
-        DataSourceKey container = new DataSourceKey();
-        container.set(Keys.URL, Keys.URL.defaultValue());
-        container.set(Keys.DRIVER, Keys.DRIVER.defaultValue());
-        container.set(Keys.SCHEMA, Keys.SCHEMA.defaultValue());
-        container.set(Keys.USERNAME, Keys.USERNAME.defaultValue());
-        container.set(Keys.PASSWORD, Keys.PASSWORD.defaultValue());
-        container.set(Keys.HOST, Keys.HOST.defaultValue());
-        container.set(Keys.PORT, Keys.PORT.defaultValue());
-        container.set(Keys.NAME, Keys.NAME.defaultValue());
-        container.set(Keys.QUERY, Keys.USERNAME.defaultValue());
+        DataSourceKey container = createDataSourceKey(null);
         return container;
     }
 

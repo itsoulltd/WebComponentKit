@@ -28,12 +28,12 @@ public class DefaultDataSource<E extends Entity> extends AbstractGridDataSource<
             //Setting Default:
             this.grid.setPageSize(10);
         }
-        reloadGrid();
         return this;
     }
 
     @Override
     public GridDataSource prepareGridUI(Grid<E> grid) {
+        reloadGrid();
         return this;
     }
 

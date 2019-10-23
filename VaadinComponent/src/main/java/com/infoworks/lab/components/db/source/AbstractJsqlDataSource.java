@@ -121,6 +121,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
 
     @Override
     public GridDataSource prepareGridUI(Grid<E> grid) {
+        super.prepareGridUI(grid);
         updateCellFooter(grid);
         int length = grid.getColumns().size();
         Grid.Column last = grid.getColumns().get(length - 1);
@@ -131,7 +132,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         buttonCell.setSizeFull();
         buttonCell.setAlignItems(FlexComponent.Alignment.CENTER);
         last.setFooter(buttonCell);
-        return super.prepareGridUI(grid);
+        return this;
     }
 
     protected void updateCellFooter(Grid<E> grid) {

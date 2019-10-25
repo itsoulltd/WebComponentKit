@@ -1,5 +1,6 @@
 package com.infoworks.lab.jsql;
 
+import com.infoworks.lab.components.rest.RestExecutor;
 import com.it.soul.lab.connect.JDBConnectionPool;
 import com.it.soul.lab.jpql.service.JPQLExecutor;
 import com.it.soul.lab.jpql.service.ORMController;
@@ -63,6 +64,8 @@ public class JsqlConfig {
         }else if (type == ExecutorType.JPQL){
             ORMController controller = new ORMController(key);
             return new JPQLExecutor(controller.getEntityManager());
+        }else if (type == ExecutorType.REST){
+            return new RestExecutor(container);
         }
         return null;
     }
@@ -71,10 +74,9 @@ public class JsqlConfig {
         if (type == ExecutorType.SQL){
             DataSourceKey container = getDefaultKeys();
             return create(type, key, container);
-        }else if (type == ExecutorType.JPQL){
+        }else {
             return create(type, key, null);
         }
-        return null;
     }
 
     public DataSource createDataSource(DataSourceKey container) throws SQLException{

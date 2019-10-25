@@ -18,9 +18,43 @@ public class RestExecutor implements QueryExecutor {
         this.sourceKey = sourceKey;
     }
 
+    public DataSourceKey getSourceKey() {
+        return sourceKey;
+    }
+
+    @Override
+    public Integer getScalarValue(SQLQuery query) throws SQLException {
+        //TODO: Calls Come Here
+        return null;
+    }
+
+    @Override
+    public Integer executeUpdate(SQLQuery query) throws SQLException {
+        //TODO: Calls Come Here
+        return null;
+    }
+
+    @Override
+    public Integer executeDelete(SQLQuery query) throws SQLException {
+        //TODO: Calls Come Here
+        return null;
+    }
+
+    @Override
+    public Integer executeInsert(boolean b, SQLQuery query) throws SQLException, IllegalArgumentException {
+        //TODO: Calls Come Here
+        return null;
+    }
+
+    @Override
+    public List executeSelect(SQLQuery query, Class aClass, Map map) throws SQLException, IllegalArgumentException, IllegalAccessException, InstantiationException {
+        //TODO: Calls Come Here
+        return null;
+    }
+
     @Override
     public AbstractQueryBuilder createQueryBuilder(QueryType queryType) {
-        return null;
+        return new SQLQuery.Builder(queryType);
     }
 
     @Override
@@ -34,37 +68,12 @@ public class RestExecutor implements QueryExecutor {
     }
 
     @Override
-    public Integer executeUpdate(SQLQuery query) throws SQLException {
-        return null;
-    }
-
-    @Override
     public Integer[] executeUpdate(int i, List list) throws SQLException, IllegalArgumentException {
         return new Integer[0];
     }
 
     @Override
-    public Integer executeDelete(SQLQuery query) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public Integer executeInsert(boolean b, SQLQuery query) throws SQLException, IllegalArgumentException {
-        return null;
-    }
-
-    @Override
-    public Integer getScalarValue(SQLQuery query) throws SQLException {
-        return null;
-    }
-
-    @Override
     public List executeCRUDQuery(String s, Class aClass) throws SQLException, IllegalAccessException, InstantiationException {
-        return null;
-    }
-
-    @Override
-    public List executeSelect(SQLQuery query, Class aClass, Map map) throws SQLException, IllegalArgumentException, IllegalAccessException, InstantiationException {
         return null;
     }
 

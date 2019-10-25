@@ -25,8 +25,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
 
     private Query query;
 
-    @Override
-    public Query<E, String> getQuery() {
+    protected Query<E, String> getQuery() {
         if (query == null){
             int pageSize = (Objects.nonNull(getGrid())) ? getGrid().getPageSize() : 10;
             query = new Query(0, pageSize, Collections.emptyList(), null, null);
@@ -91,7 +90,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
 
     private Query maxLimitQuery;
 
-    public Query getMaxOffsetQuery() {
+    protected final Query getMaxOffsetQuery() {
         if (maxLimitQuery == null){
             int max = getRowCount();
             maxLimitQuery = new Query(max
@@ -103,8 +102,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         return maxLimitQuery;
     }
 
-    @Override
-    public Query<E, String> updateMaxOffsetQuery(int byValue) {
+    protected final Query<E, String> updateMaxOffsetQuery(int byValue) {
         Query max = new Query(getMaxOffsetQuery().getOffset() + (byValue)
                 , getMaxOffsetQuery().getLimit()
                 , getMaxOffsetQuery().getSortOrders()
@@ -114,8 +112,6 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         updateCellFooter(getGrid());
         return max;
     }
-
-    protected abstract int getRowCount();
 
     private QueryExecutor executor;
     @Override

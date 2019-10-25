@@ -15,9 +15,7 @@ public interface JsqlDataSource<T extends EntityInterface> extends GridDataSourc
     JsqlDataSource setExecutor(QueryExecutor executor);
     SQLSelectQuery getSelectQuery(Query<T, String> query);
     SQLSelectQuery getSearchQuery(Query<T, String> query);
-    Query<T, String> getMaxOffsetQuery();
-    Query<T, String> updateMaxOffsetQuery(int byValue);
-    Query<T, String> getQuery();
+    int getRowCount();
 
     static <GDS extends GridDataSource> GDS createDataSource(Class<GDS> type, ExecutorType executorType, DataSourceKey container)
             throws RuntimeException {

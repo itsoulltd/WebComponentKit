@@ -36,7 +36,7 @@ public class JpqlDataSource <E extends Entity> extends SqlDataSource<E>{
     }
 
     @Override
-    protected int getRowCount() {
+    public int getRowCount() {
         if (getExecutor() instanceof JPQLExecutor){
             try {
                 int max = ((JPQLExecutor)getExecutor()).rowCount(getBeanType());

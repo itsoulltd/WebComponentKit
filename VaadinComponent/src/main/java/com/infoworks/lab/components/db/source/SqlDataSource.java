@@ -57,24 +57,20 @@ public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
         return selectQuery;
     }
 
-    protected int getRowCount(){
+    public int getRowCount(){
         if (getExecutor() instanceof SQLExecutor){
             try {
-                int max = ((SQLExecutor)getExecutor()).getScalarValue(getCountQuery());
+                SQLScalarQuery scalarQuery = new SQLQuery.Builder(QueryType.COUNT)
+                        .columns()
+                        .on(E.tableName(getBeanType()))
+                        .build();
+                int max = ((SQLExecutor)getExecutor()).getScalarValue(scalarQuery);
                 return max;
             } catch (SQLException e) {
                 LOG.warning(e.getMessage());
             }
         }
         return getQuery().getOffset();
-    }
-
-    protected SQLScalarQuery getCountQuery() {
-        SQLScalarQuery scalarQuery = new SQLQuery.Builder(QueryType.COUNT)
-                .columns()
-                .on(E.tableName(getBeanType()))
-                .build();
-        return scalarQuery;
     }
 
 }

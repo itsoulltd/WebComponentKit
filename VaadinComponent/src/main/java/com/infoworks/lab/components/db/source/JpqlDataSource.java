@@ -1,7 +1,6 @@
 package com.infoworks.lab.components.db.source;
 
 import com.it.soul.lab.jpql.query.JPQLQuery;
-import com.it.soul.lab.jpql.service.JPQLExecutor;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.query.QueryType;
 import com.it.soul.lab.sql.query.SQLSelectQuery;
@@ -33,19 +32,6 @@ public class JpqlDataSource <E extends Entity> extends SqlDataSource<E>{
                     .addLimit(query.getLimit(), query.getOffset())
                     .build();
         return selectQuery;
-    }
-
-    @Override
-    public int getRowCount() {
-        if (getExecutor() instanceof JPQLExecutor){
-            try {
-                int max = ((JPQLExecutor)getExecutor()).rowCount(getBeanType());
-                return max;
-            } catch (Exception e) {
-                LOG.warning(e.getMessage());
-            }
-        }
-        return super.getRowCount();
     }
 
 }

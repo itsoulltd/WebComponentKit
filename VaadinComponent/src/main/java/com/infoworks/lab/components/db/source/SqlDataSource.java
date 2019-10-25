@@ -1,7 +1,6 @@
 package com.infoworks.lab.components.db.source;
 
 import com.infoworks.lab.components.crud.components.datasource.GridDataSource;
-import com.it.soul.lab.sql.SQLExecutor;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.query.QueryType;
 import com.it.soul.lab.sql.query.SQLQuery;
@@ -58,19 +57,21 @@ public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
     }
 
     public int getRowCount(){
-        if (getExecutor() instanceof SQLExecutor){
-            try {
-                SQLScalarQuery scalarQuery = new SQLQuery.Builder(QueryType.COUNT)
-                        .columns()
-                        .on(E.tableName(getBeanType()))
-                        .build();
-                int max = ((SQLExecutor)getExecutor()).getScalarValue(scalarQuery);
-                return max;
-            } catch (SQLException e) {
-                LOG.warning(e.getMessage());
-            }
+        try {
+            int max = getExecutor().getScalarValue(getCountQuery());
+            return max;
+        } catch (SQLException e) {
+            LOG.warning(e.getMessage());
         }
         return getQuery().getOffset();
+    }
+
+    protected SQLScalarQuery getCountQuery() {
+        SQLScalarQuery scalarQuery = new SQLQuery.Builder(QueryType.COUNT)
+                .columns()
+                .on(E.tableName(getBeanType()))
+                .build();
+        return scalarQuery;
     }
 
 }

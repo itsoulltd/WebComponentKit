@@ -1,8 +1,12 @@
 package com.infoworks.lab.rest.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.it.soul.lab.sql.entity.Entity;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response extends Entity {
 
     public static Response CreateErrorResponse(Throwable exp){

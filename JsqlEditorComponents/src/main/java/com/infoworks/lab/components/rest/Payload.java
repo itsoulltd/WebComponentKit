@@ -1,17 +1,21 @@
 package com.infoworks.lab.components.rest;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.it.soul.lab.sql.entity.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class EntityPayload extends Entity {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Payload extends Entity {
 
     private Map<String, Object> payload = new HashMap<>();
 
-    public EntityPayload() {/**/}
+    public Payload() {/**/}
 
-    public EntityPayload(Map<String, Object> payload) {
+    public Payload(Map<String, Object> payload) {
         this.payload = payload;
     }
 

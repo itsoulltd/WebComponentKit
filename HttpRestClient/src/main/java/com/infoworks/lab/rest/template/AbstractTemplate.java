@@ -1,6 +1,8 @@
 package com.infoworks.lab.rest.template;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoworks.lab.rest.models.QueueItem;
 import com.infoworks.lab.rest.models.Response;
@@ -31,11 +33,12 @@ public abstract class AbstractTemplate {
     }
 
     private ObjectMapper jsonSerializer;
-    protected ObjectMapper getJsonSerializer() {
+    protected final ObjectMapper getJsonSerializer() {
         if (jsonSerializer == null) {
             jsonSerializer = new ObjectMapper();
-            //jsonSerializer.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            //jsonSerializer.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+            jsonSerializer.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            jsonSerializer.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+            jsonSerializer.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         }
         return jsonSerializer;
     }

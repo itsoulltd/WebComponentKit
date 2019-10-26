@@ -109,7 +109,7 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
         //Calls Come Here
         URI uri = parseURI(getSourceKey());
         try (HttpTemplate<ItemCount, Entity> template = Interactor.create(HttpTemplate.class, uri, ItemCount.class)){
-            EntityPayload payload = new EntityPayload(query.getRow().keyObjectMap());
+            Payload payload = new Payload(query.getRow().keyObjectMap());
             ItemCount inserted = template.post(payload);
             return inserted.getCount().intValue();
         } catch (Exception e) {
@@ -122,7 +122,7 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
         //Calls Come Here
         URI uri = parseURI(getSourceKey());
         try (HttpTemplate<ItemCount, Entity> template = Interactor.create(HttpTemplate.class, uri, ItemCount.class)){
-            EntityPayload payload = new EntityPayload(query.getRow().keyObjectMap());
+            Payload payload = new Payload(query.getRow().keyObjectMap());
             ItemCount inserted = template.put(payload);
             return inserted.getCount().intValue();
         } catch (Exception e) {

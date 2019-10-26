@@ -15,6 +15,7 @@ import com.it.soul.lab.sql.query.models.Row;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,6 +74,14 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
                         QueryParam param = new QueryParam(property.getKey(), property.getValue().toString());
                         return Stream.of(param);
                     }).collect(Collectors.toList());
+            if (query instanceof SQLSelectQuery){
+                SQLSelectQuery sel = (SQLSelectQuery) query;
+                //How To Get Limit & Offset:
+                List<QueryParam> limits = new ArrayList<>(queries);
+                limits.add(new QueryParam("limit", sel.getLimit().toString()));
+                limits.add(new QueryParam("offset", sel.getOffset().toString()));
+                queries = limits;
+            }
             return queries.toArray(new QueryParam[0]);
         }
         return new QueryParam[]{};

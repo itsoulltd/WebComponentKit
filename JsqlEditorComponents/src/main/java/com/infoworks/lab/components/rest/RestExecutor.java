@@ -106,11 +106,11 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
 
     @Override
     public Integer executeInsert(boolean b, SQLInsertQuery query) throws SQLException, IllegalArgumentException {
-        //TODO: Calls Come Here
+        //Calls Come Here
         URI uri = parseURI(getSourceKey());
         try (HttpTemplate<ItemCount, Entity> template = Interactor.create(HttpTemplate.class, uri, ItemCount.class)){
-            //FIXME: Create the inserting consume: !$!@#@
-            ItemCount inserted = template.post(null);
+            EntityPayload payload = new EntityPayload(query.getRow().keyObjectMap());
+            ItemCount inserted = template.post(payload);
             return inserted.getCount().intValue();
         } catch (Exception e) {
             throw new SQLException(e.getMessage());
@@ -119,11 +119,11 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
 
     @Override
     public Integer executeUpdate(SQLUpdateQuery query) throws SQLException {
-        //TODO: Calls Come Here
+        //Calls Come Here
         URI uri = parseURI(getSourceKey());
         try (HttpTemplate<ItemCount, Entity> template = Interactor.create(HttpTemplate.class, uri, ItemCount.class)){
-            //FIXME: Create the updating consume: !$!@#@
-            ItemCount inserted = template.put(null);
+            EntityPayload payload = new EntityPayload(query.getRow().keyObjectMap());
+            ItemCount inserted = template.put(payload);
             return inserted.getCount().intValue();
         } catch (Exception e) {
             throw new SQLException(e.getMessage());
@@ -201,4 +201,5 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
     public void close() throws Exception {
 
     }
+
 }

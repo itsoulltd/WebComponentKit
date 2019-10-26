@@ -84,7 +84,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
                     target = getTarget().queryParam(param.getKey(), param.getValue());
                 });
             }
-            Response response = null;
+            Response response;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume).get();
             }else{
@@ -103,7 +103,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         Class<P> type = getInferredProduce();
         try {
             target = initializeTarget(paths);
-            Response response = null;
+            Response response;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
                         .post(consume, MediaType.APPLICATION_JSON_TYPE);
@@ -123,7 +123,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         Class<P> type = getInferredProduce();
         try {
             target = initializeTarget(paths);
-            Response response = null;
+            Response response;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
                         .put(consume, MediaType.APPLICATION_JSON_TYPE);
@@ -146,7 +146,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
                     target = getTarget().queryParam(param.getKey(), param.getValue());
                 });
             }
-            Response response = null;
+            Response response;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
                         .delete(consume, MediaType.APPLICATION_JSON_TYPE);
@@ -264,9 +264,9 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
                 setTarget(initializeTarget((String[]) params));
             }else if (params instanceof QueryParam[]){
                 setTarget(initializeTarget());
-                Arrays.stream((QueryParam[])params).forEach(param -> {
-                    setTarget(getTarget().queryParam(param.getKey(), param.getValue()));
-                });
+                Arrays.stream((QueryParam[])params).forEach(param ->
+                    setTarget(getTarget().queryParam(param.getKey(), param.getValue()))
+                );
             }
         }else {
             setTarget(initializeTarget());

@@ -24,4 +24,16 @@ public interface HttpInteractor<P extends Response, C extends Entity> extends Co
     void delete(C consume, List<QueryParam> query, Consumer<P> consumer);
 
     <T extends Object> URI getUri(T... params);
+
+    static String authorizationKey() {return "Authorization";}
+    static String authorizationValue(String token){return HttpInteractor.prefix() + HttpInteractor.parseToken(token);}
+    static String prefix(){return "Bearer ";}
+    static String parseToken(String token){
+        final String prefix = HttpInteractor.prefix();
+        if (token.trim().startsWith(prefix)){
+            String pToken = token.trim();
+            return pToken.substring(prefix.length());
+        }
+        return token;
+    }
 }

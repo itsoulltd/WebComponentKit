@@ -5,15 +5,11 @@ import com.it.soul.lab.sql.entity.Entity;
 
 public class Response extends Entity {
 
-    public static <P extends Response> P CreateErrorResponse(Throwable exp, Class<P> type){
+    public static Response CreateErrorResponse(Throwable exp){
         Response newInstance = null;
-        try {
-            newInstance = type.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            newInstance = new Response();
-        }
+        newInstance = new Response();
         newInstance.update(exp);
-        return (P) newInstance;
+        return newInstance;
     }
 
     public void update(Throwable exp){

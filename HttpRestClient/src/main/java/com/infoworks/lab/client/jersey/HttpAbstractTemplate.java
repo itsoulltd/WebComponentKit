@@ -2,6 +2,7 @@ package com.infoworks.lab.client.jersey;
 
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.rest.template.AbstractTemplate;
+import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Template;
 import org.glassfish.jersey.client.ClientConfig;
@@ -11,12 +12,14 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -36,10 +39,10 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
 
         public InvocationBuilder(MediaType mediaType, com.it.soul.lab.sql.entity.Entity consume){
             this(mediaType);
-            /*if (consume != null){
-                if (consume.getAccessToken() != null) this.builder.header(HttpHeaders.AUTHORIZATION, AuthInteractor.authorizationValue(consume.getAccessToken()));
-                if (consume.getTenantID() != null) this.builder.header(APIContext.APPID.name(), consume.getTenantID());
-            }*/
+            Map.Entry<String, Object> entry = getSecureEntry(consume);
+            if (entry != null)
+                this.builder.header(HttpHeaders.AUTHORIZATION
+                        , HttpInteractor.authorizationValue(entry.getValue().toString()));
         }
 
         @Override

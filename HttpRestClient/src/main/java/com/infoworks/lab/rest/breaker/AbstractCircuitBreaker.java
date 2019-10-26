@@ -2,7 +2,7 @@ package com.infoworks.lab.rest.breaker;
 
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.rest.template.Invocation;
-import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.net.HttpURLConnection;
 import java.util.Date;
@@ -56,10 +56,10 @@ public abstract class AbstractCircuitBreaker<T extends AutoCloseable> implements
     private Invocation _invocation;
     private Invocation.Method _method = Invocation.Method.GET;
 
-    protected abstract Invocation createInvocation(Invocation invocation, Invocation.Method method, Entity data);
+    protected abstract Invocation createInvocation(Invocation invocation, Invocation.Method method, EntityInterface data);
 
     @Override
-    public T call(Invocation invocation, Invocation.Method method, Entity data) {
+    public T call(Invocation invocation, Invocation.Method method, EntityInterface data) {
 
         if (invocation == null && _invocation == null) return null;
 
@@ -93,7 +93,7 @@ public abstract class AbstractCircuitBreaker<T extends AutoCloseable> implements
     }
 
     @Override
-    public Status online(Invocation invocation, Invocation.Method method, Entity data) {
+    public Status online(Invocation invocation, Invocation.Method method, EntityInterface data) {
 
         if (invocation == null && _invocation == null) return Status.OPEN;
 
@@ -126,7 +126,7 @@ public abstract class AbstractCircuitBreaker<T extends AutoCloseable> implements
         return HttpURLConnection.HTTP_NOT_FOUND;
     }
 
-    protected final T circuitTrips(Invocation invocation, Invocation.Method method, Entity data) {
+    protected final T circuitTrips(Invocation invocation, Invocation.Method method, EntityInterface data) {
         //
         T response = null;
         do{
@@ -150,7 +150,7 @@ public abstract class AbstractCircuitBreaker<T extends AutoCloseable> implements
     }
 
     protected abstract boolean isAcceptedResponse(T response);
-    protected abstract T circuitTest(Invocation invocation, Invocation.Method method, Entity data) throws HttpInvocationException;
+    protected abstract T circuitTest(Invocation invocation, Invocation.Method method, EntityInterface data) throws HttpInvocationException;
 
     protected final void updateStatus(){
         reLock.lock();
@@ -215,7 +215,7 @@ public abstract class AbstractCircuitBreaker<T extends AutoCloseable> implements
     }
 
     private Future _futureOfObserving = null;
-    protected final void startObserving(Invocation invocation, Invocation.Method method, Entity data){
+    protected final void startObserving(Invocation invocation, Invocation.Method method, EntityInterface data){
         if (_futureOfObserving != null && _futureOfObserving.isDone() == false)
             return;
         _futureOfObserving = _executor.submit(() -> {
@@ -236,7 +236,7 @@ public abstract class AbstractCircuitBreaker<T extends AutoCloseable> implements
     }
 
     private Future _futureOfMonitoring = null;
-    protected final void startMonitoring(Invocation invocation, Invocation.Method method, Entity data) {
+    protected final void startMonitoring(Invocation invocation, Invocation.Method method, EntityInterface data) {
         if (_futureOfMonitoring != null && _futureOfMonitoring.isDone() == false)
             return;
         _futureOfMonitoring = _executor.submit(() -> {

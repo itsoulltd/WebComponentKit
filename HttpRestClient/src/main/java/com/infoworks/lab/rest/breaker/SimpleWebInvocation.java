@@ -3,7 +3,7 @@ package com.infoworks.lab.rest.breaker;
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.rest.models.MediaType;
 import com.infoworks.lab.rest.template.Invocation;
-import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,12 +31,12 @@ public class SimpleWebInvocation implements Invocation<HttpResponse, MediaType> 
     }
 
     @Override
-    public <T extends Entity> HttpResponse post(T data, MediaType mediaType) throws HttpInvocationException {
+    public <T extends EntityInterface> HttpResponse post(T data, MediaType mediaType) throws HttpInvocationException {
         return performConnection(_uri, Method.POST, _timeout, mediaType, data);
     }
 
     @Override
-    public <T extends Entity> HttpResponse put(T data, MediaType mediaType) throws HttpInvocationException {
+    public <T extends EntityInterface> HttpResponse put(T data, MediaType mediaType) throws HttpInvocationException {
         return performConnection(_uri, Method.PUT, _timeout, mediaType, data);
     }
 
@@ -62,7 +62,7 @@ public class SimpleWebInvocation implements Invocation<HttpResponse, MediaType> 
         }
     }
 
-    private HttpResponse performConnection(URI uri, Method method, Integer timeout, MediaType type, Entity consume) throws HttpInvocationException{
+    private HttpResponse performConnection(URI uri, Method method, Integer timeout, MediaType type, EntityInterface consume) throws HttpInvocationException{
         if (_uri == null) throw  new HttpInvocationException("URL Must Not Be Null");
         try {
             URL url = uri.toURL();

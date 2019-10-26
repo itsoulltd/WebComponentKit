@@ -7,6 +7,7 @@ import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Route;
 import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -18,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C extends Entity> extends HttpAbstractTemplate implements HttpInteractor<P,C> {
+public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C extends EntityInterface> extends HttpAbstractTemplate implements HttpInteractor<P,C> {
 
     private String _domain;
     private Class<P> inferredProduce;
@@ -55,7 +56,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         return inferredProduce;
     }
 
-    private Class<? extends Entity> getInferredConsume(){
+    private Class<? extends EntityInterface> getInferredConsume(){
         if (inferredConsume == null) inferredConsume = (Class<C>) Entity.class;
         return inferredConsume;
     }
@@ -258,7 +259,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         });
     }
 
-    protected <T extends Object> Response execute(Entity consume, Invocation.Method method, T...params) throws MalformedURLException, HttpInvocationException {
+    protected <T extends Object> Response execute(EntityInterface consume, Invocation.Method method, T...params) throws MalformedURLException, HttpInvocationException {
         if (params != null){
             if (params instanceof String[]){
                 setTarget(initializeTarget((String[]) params));
@@ -274,7 +275,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         return execute(consume, method);
     }
 
-    private Response execute(Entity consume, Invocation.Method method) throws HttpInvocationException {
+    private Response execute(EntityInterface consume, Invocation.Method method) throws HttpInvocationException {
         //CircuitBreaker CODE:
         Response response = null;
         try {
@@ -292,7 +293,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
     }
 
     @SuppressWarnings("Duplicates")
-    protected Response callForwarding(Invocation invocation, Invocation.Method method, Entity data) throws HttpInvocationException {
+    protected Response callForwarding(Invocation invocation, Invocation.Method method, EntityInterface data) throws HttpInvocationException {
         Response response = null;
         switch (method){
             case GET:

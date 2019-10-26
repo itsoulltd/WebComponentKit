@@ -3,7 +3,7 @@ package com.infoworks.lab.rest.breaker;
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.rest.models.MediaType;
 import com.infoworks.lab.rest.template.Invocation;
-import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.net.HttpURLConnection;
 
@@ -37,7 +37,7 @@ public class SimpleCircuitBreaker extends AbstractCircuitBreaker<HttpResponse> {
         return true;
     }
 
-    protected HttpResponse circuitTest(Invocation invocation, Invocation.Method method, Entity data) throws HttpInvocationException {
+    protected HttpResponse circuitTest(Invocation invocation, Invocation.Method method, EntityInterface data) throws HttpInvocationException {
         HttpResponse response = new HttpResponse(HttpURLConnection.HTTP_NOT_FOUND);
         switch (method){
             case GET:
@@ -57,7 +57,7 @@ public class SimpleCircuitBreaker extends AbstractCircuitBreaker<HttpResponse> {
     }
 
     @Override
-    protected Invocation createInvocation(Invocation invocation, Invocation.Method method, Entity data) {
+    protected Invocation createInvocation(Invocation invocation, Invocation.Method method, EntityInterface data) {
         return invocation;
     }
 }

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoworks.lab.rest.models.QueueItem;
 import com.infoworks.lab.rest.models.Response;
-import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,7 @@ public abstract class AbstractTemplate {
         return jsonSerializer;
     }
 
-    protected <T extends Entity> List inflateJson(String json, Class<T> type) throws IOException {
+    protected <T extends EntityInterface> List inflateJson(String json, Class<T> type) throws IOException {
         if (json != null && !json.isEmpty()){
             if (json.startsWith("{")){
                 return Arrays.asList(parse(json, type));
@@ -110,7 +110,7 @@ public abstract class AbstractTemplate {
         }
     }
 
-    public void addToQueue(QueueItem<? extends Entity> queueItem){
+    public void addToQueue(QueueItem<? extends EntityInterface> queueItem){
         //Add to Queue
         _consumerQueue.add(queueItem);
     }

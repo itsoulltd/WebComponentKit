@@ -5,7 +5,7 @@ import com.infoworks.lab.rest.breaker.AbstractCircuitBreaker;
 import com.infoworks.lab.rest.template.Interactor;
 import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Template;
-import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,7 +24,7 @@ public class HttpCircuitBreaker extends AbstractCircuitBreaker<Response> {
     }
 
     @Override @SuppressWarnings("Duplicates")
-    protected Response circuitTest(Invocation invocation, Invocation.Method method, Entity data) throws HttpInvocationException {
+    protected Response circuitTest(Invocation invocation, Invocation.Method method, EntityInterface data) throws HttpInvocationException {
         Response response = null;
         switch (method){
             case GET:
@@ -67,7 +67,7 @@ public class HttpCircuitBreaker extends AbstractCircuitBreaker<Response> {
     private Template _template;
 
     @Override
-    protected Invocation createInvocation(Invocation invocation, Invocation.Method method, Entity data){
+    protected Invocation createInvocation(Invocation invocation, Invocation.Method method, EntityInterface data){
         reLock.lock();
         try {
             try {

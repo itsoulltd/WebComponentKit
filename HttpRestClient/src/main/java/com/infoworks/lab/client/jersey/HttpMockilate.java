@@ -4,7 +4,7 @@ import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.mock.Mockitor;
 import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
-import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -14,7 +14,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class HttpMockilate<P extends Response, C extends Entity> extends HttpTemplate<P, C> {
+public class HttpMockilate<P extends Response, C extends EntityInterface> extends HttpTemplate<P, C> {
 
     private Map<String, Mockitor> mockitorMap = new ConcurrentHashMap<>();
 

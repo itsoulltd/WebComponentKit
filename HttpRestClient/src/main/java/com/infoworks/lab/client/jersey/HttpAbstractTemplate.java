@@ -5,6 +5,7 @@ import com.infoworks.lab.rest.template.AbstractTemplate;
 import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Template;
+import com.it.soul.lab.sql.entity.EntityInterface;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 
@@ -37,7 +38,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
             this.builder = HttpAbstractTemplate.this.getTarget().request(mediaType);
         }
 
-        public InvocationBuilder(MediaType mediaType, com.it.soul.lab.sql.entity.Entity consume){
+        public InvocationBuilder(MediaType mediaType, EntityInterface consume){
             this(mediaType);
             Map.Entry<String, Object> entry = getSecureEntry(consume);
             if (entry != null)
@@ -55,7 +56,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
         }
 
         @Override
-        public <T extends com.it.soul.lab.sql.entity.Entity> Response post(T data, MediaType mediaType) throws HttpInvocationException{
+        public <T extends EntityInterface> Response post(T data, MediaType mediaType) throws HttpInvocationException{
             try {
                 if (data == null) return this.builder.post(null);
                 else return this.builder.post(Entity.entity(data, mediaType));
@@ -65,7 +66,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
         }
 
         @Override
-        public <T extends com.it.soul.lab.sql.entity.Entity> Response put(T data, MediaType mediaType) throws HttpInvocationException{
+        public <T extends EntityInterface> Response put(T data, MediaType mediaType) throws HttpInvocationException{
             try {
                 if(data == null) return this.builder.put(null);
                 else return this.builder.put(Entity.entity(data, mediaType));
@@ -153,18 +154,18 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
         return getRequest(MediaType.APPLICATION_JSON_TYPE);
     }
 
-    public Invocation<Response, MediaType> getAuthorizedRequest(com.it.soul.lab.sql.entity.Entity consume, MediaType type){
+    public Invocation<Response, MediaType> getAuthorizedRequest(EntityInterface consume, MediaType type){
         if (getTarget() != null){
             return new InvocationBuilder(type, consume);
         }
         return null;
     }
 
-    public Invocation<Response, MediaType> getAuthorizedJsonRequest(com.it.soul.lab.sql.entity.Entity consume){
+    public Invocation<Response, MediaType> getAuthorizedJsonRequest(EntityInterface consume){
         return getAuthorizedRequest(consume, MediaType.APPLICATION_JSON_TYPE);
     }
 
-    public  <T extends com.it.soul.lab.sql.entity.Entity> T inflate(Response response, Class<T> type) throws IOException, HttpInvocationException {
+    public  <T extends EntityInterface> T inflate(Response response, Class<T> type) throws IOException, HttpInvocationException {
         generateThrowable(response);
         String responseAsString = response.readEntity(String.class);
         List items = inflateJson(responseAsString, type);

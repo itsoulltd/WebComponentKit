@@ -3,10 +3,10 @@ package com.infoworks.lab.rest.template;
 
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.rest.models.Response;
-import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 @FunctionalInterface
-public interface Interactor<P extends Response, C extends Entity> {
+public interface Interactor<P extends Response, C extends EntityInterface> {
 
     P apply(C consume) throws HttpInvocationException;
 

@@ -3,13 +3,13 @@ package com.infoworks.lab.rest.template;
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
-import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.net.URI;
 import java.util.List;
 import java.util.function.Consumer;
 
-public interface HttpInteractor<P extends Response, C extends Entity> extends ConfigurableInteractor<P,C> {
+public interface HttpInteractor<P extends Response, C extends EntityInterface> extends ConfigurableInteractor<P,C> {
 
     P get(C consume, QueryParam... params) throws HttpInvocationException;
     void get(C consume, List<QueryParam> query, Consumer<P> consumer);

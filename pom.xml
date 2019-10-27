@@ -12,6 +12,7 @@
         <module>VaadinComponent</module>
         <module>JsqlEditorComponents</module>
         <module>HttpRestClient</module>
+        <module>SpringMicroserviceStarter</module>
     </modules>
 
 

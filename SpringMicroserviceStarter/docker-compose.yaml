@@ -1,0 +1,42 @@
+version: '3.5'
+
+networks:
+   web-app-net:
+       name: my-web-app-net
+       #driver: overlay
+       driver: bridge
+
+volumes:
+   mysql-db-storage:
+
+services:
+   mysql-db:
+      image: mysql:8.0.13
+      environment:
+          MYSQL_DATABASE: testDB
+          MYSQL_ROOT_PASSWORD: root@123
+      ports:
+          - 3317:3306
+      networks:
+          - web-app-net
+      volumes:
+          - mysql-db-storage:/var/lib/mysql
+
+   webapp:
+      image: spring-microservice-starter:1.0
+      build:
+         context: .
+         #dockerfile: Dockerfile
+         dockerfile: Dockerfile-embedded
+      environment:
+         app.db.name: testDB
+         app.db.host: mysql-db
+         app.db.port: 3306
+         app.db.password: root@123
+      ports:
+         - 8081:8080
+      depends_on:
+         - mysql-db
+      restart: on-failure
+      networks:
+         - web-app-net

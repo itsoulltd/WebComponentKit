@@ -7,7 +7,6 @@ import com.infoworks.lab.rest.models.ItemCount;
 import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.ResponseList;
 import com.infoworks.lab.rest.template.Interactor;
-import com.it.soul.lab.sql.QueryExecutor;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.query.*;
 import com.it.soul.lab.sql.query.builder.AbstractQueryBuilder;
@@ -21,11 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RestExecutor implements QueryExecutor<SQLSelectQuery
-        , SQLInsertQuery
-        , SQLUpdateQuery
-        , SQLDeleteQuery
-        , SQLScalarQuery> {
+public class RestExecutor extends AbstractRestExecutor {
 
     private DataSourceKey sourceKey;
 
@@ -37,7 +32,7 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
         return sourceKey;
     }
 
-    private URI parseURI(DataSourceKey sourceKey){
+    protected String parseUriString(DataSourceKey sourceKey){
         //
         String schema = getSourceKey().get(Keys.SCHEMA);
         if (schema.startsWith(Keys.SCHEMA.defaultValue())){
@@ -51,12 +46,16 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
             pathName = pathName.substring(1);
         }
         //
-        URI uri = URI.create(String.format("%s%s:%s/%s"
+        return String.format("%s%s:%s/%s"
                 , schema
                 , getSourceKey().get(Keys.HOST)
                 , getSourceKey().get(Keys.PORT)
                 , pathName
-        ));
+        );
+    }
+
+    protected URI parseURI(DataSourceKey sourceKey){
+        URI uri = URI.create(parseUriString(sourceKey));
         return uri;
     }
 
@@ -90,7 +89,7 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
     @Override
     public Integer getScalarValue(SQLScalarQuery query) throws SQLException {
         //Calls Come Here
-        URI uri = parseURI(getSourceKey());
+        URI uri = URI.create(parseUriString(getSourceKey()) + "/rowCount");
         try (HttpTemplate<ItemCount, Entity> template = Interactor.create(HttpTemplate.class, uri, ItemCount.class)){
             ItemCount count = template.get(null, getQueryParams(query));
             return count.getCount().intValue();
@@ -152,63 +151,8 @@ public class RestExecutor implements QueryExecutor<SQLSelectQuery
     }
 
     @Override
-    public Object createBlob(String s) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public Boolean executeDDLQuery(String s) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public Integer[] executeUpdate(int i, List list) throws SQLException, IllegalArgumentException {
-        return new Integer[0];
-    }
-
-    @Override
-    public List executeCRUDQuery(String s, Class aClass) throws SQLException, IllegalAccessException, InstantiationException {
-        return null;
-    }
-
-    @Override
-    public List executeSelect(String s, Class aClass, Map map) throws SQLException, IllegalArgumentException, IllegalAccessException, InstantiationException {
-        return null;
-    }
-
-    @Override
-    public Integer[] executeInsert(boolean b, int i, SQLInsertQuery i1, List list) throws SQLException, IllegalArgumentException {
-        return new Integer[0];
-    }
-
-    @Override
-    public Integer executeDelete(int i, SQLDeleteQuery query, List list) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public Integer[] executeUpdate(int i, SQLUpdateQuery query, List list) throws SQLException, IllegalArgumentException {
-        return new Integer[0];
-    }
-
-    @Override
-    public void begin() throws SQLException {
-
-    }
-
-    @Override
-    public void end() throws SQLException {
-
-    }
-
-    @Override
-    public void abort() throws SQLException {
-
-    }
-
-    @Override
     public void close() throws Exception {
-
+        //
     }
 
 }

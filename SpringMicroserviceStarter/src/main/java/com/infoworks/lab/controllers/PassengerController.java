@@ -38,21 +38,25 @@ public class PassengerController {
     @GetMapping
     public List<Passenger> query(@RequestParam("limit") Integer limit
             , @RequestParam("offset") Integer offset){
+        //TODO: Test with RestExecutor
         return new ArrayList<>();
     }
 
     @PostMapping
     public ItemCount insert(@RequestBody Payload payload){
+        //TODO: Test with RestExecutor
         return new ItemCount();
     }
 
     @PutMapping
     public ItemCount update(@RequestBody Payload payload){
+        //TODO: Test with RestExecutor
         return new ItemCount();
     }
 
     @DeleteMapping
     public Boolean delete(@RequestBody Payload payload){
+        //TODO: Test with RestExecutor
         return false;
     }
 

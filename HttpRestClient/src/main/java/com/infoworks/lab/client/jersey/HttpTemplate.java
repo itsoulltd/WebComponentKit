@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -62,9 +63,30 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
     }
 
     @Override
-    protected String domain() throws MalformedURLException {
-        if (_domain == null || _domain.trim().isEmpty()) throw  new MalformedURLException("Domain Can't be empty.");
+    protected synchronized String domain() throws MalformedURLException {
+        _domain = String.format("%s%s:%s%s", schema(), host(), port(), validatePaths(api()));
+        validateURL(_domain);
         return _domain;
+    }
+
+    protected String schema(){
+        return "http://";
+    }
+
+    protected String host(){
+        return "localhost";
+    }
+
+    protected Integer port(){
+        return 8080;
+    }
+
+    protected String api(){
+        return "";
+    }
+
+    protected URL validateURL(String urlStr) throws MalformedURLException{
+        return new URL(urlStr);
     }
 
     protected String routePath() {

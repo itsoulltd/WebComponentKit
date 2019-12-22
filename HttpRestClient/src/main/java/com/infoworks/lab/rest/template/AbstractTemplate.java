@@ -6,15 +6,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoworks.lab.rest.models.QueueItem;
 import com.infoworks.lab.rest.models.Response;
+import com.infoworks.lab.rest.models.ResponseList;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -47,6 +45,23 @@ public abstract class AbstractTemplate {
         if (json != null && !json.isEmpty()){
             if (json.startsWith("{")){
                 return Arrays.asList(parse(json, type));
+            }else if(json.startsWith("[")){
+                List result = new ArrayList();
+                List items = parse(json, ArrayList.class);
+                Iterator itr = items.iterator();
+                while (itr.hasNext()){
+                    Object dts = itr.next();
+                    if (dts instanceof Map){
+                        try {
+                            T instance = getJsonSerializer().convertValue(dts, type);
+                            result.add(instance);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                ResponseList collection = new ResponseList<>(result);
+                return Arrays.asList(collection);
             }
         }
         return null;

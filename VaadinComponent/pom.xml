@@ -26,7 +26,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-core</artifactId>
-            <version>14.0.8</version>
+            <version>${vaadin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

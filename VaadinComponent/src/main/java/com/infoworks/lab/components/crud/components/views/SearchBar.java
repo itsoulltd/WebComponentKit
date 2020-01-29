@@ -3,7 +3,6 @@ package com.infoworks.lab.components.crud.components.views;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -36,13 +35,16 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> {
         searchField.setPrefixComponent(new Icon("lumo", "search"));
         searchField.addValueChangeListener(changeListener);
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
-        searchField.addFocusShortcut(Key.KEY_F, KeyModifier.CONTROL);
+        //NOT SUPPORTED IN VAADIN-10
+        //searchField.addFocusShortcut(Key.KEY_F, KeyModifier.CONTROL);
         layout.add(searchField);
 
         newButton = new Button("Add New", new Icon("lumo", "plus"));
-        newButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        //NOT SUPPORTED IN VAADIN-10
+        //newButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         newButton.addClickListener(clickEvent);
-        newButton.addClickShortcut(Key.of("+"));
+        //NOT SUPPORTED IN VAADIN-10
+        //newButton.addClickShortcut(Key.of("+"));
 
         if (!configurator.isHideAddNewButton())
             layout.add(newButton);

@@ -18,7 +18,6 @@ package com.infoworks.lab.components.crud.components.views;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
@@ -56,10 +55,12 @@ public class ConfirmationDialog<T extends EntityInterface> extends Dialog {
         setCloseOnOutsideClick(false);
 
         confirmButton.addClickListener(e -> close());
-        confirmButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        //NOT SUPPORTED IN VAADIN-10
+        //confirmButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         confirmButton.setAutofocus(true);
         cancelButton.addClickListener(e -> close());
-        cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        //NOT SUPPORTED IN VAADIN-10
+        //cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         HorizontalLayout buttonBar = new HorizontalLayout(confirmButton,
                 cancelButton);
@@ -105,8 +106,9 @@ public class ConfirmationDialog<T extends EntityInterface> extends Dialog {
         extraMessageLabel.setText(additionalMessage);
         confirmButton.setText(actionName);
 
-        shortcutRegistrationForConfirm = confirmButton
-                .addClickShortcut(Key.ENTER);
+        //NOT SUPPORTED IN VAADIN-10
+        /*shortcutRegistrationForConfirm = confirmButton
+                .addClickShortcut(Key.ENTER);*/
 
         Runnable cancelAction = cancelHandler == null ? NO_OP : cancelHandler;
 
@@ -125,10 +127,11 @@ public class ConfirmationDialog<T extends EntityInterface> extends Dialog {
                 cancelAction.run();
             }
         });
-        confirmButton.removeThemeVariants(ButtonVariant.LUMO_ERROR);
+        //NOT SUPPORTED IN VAADIN-10
+        /*confirmButton.removeThemeVariants(ButtonVariant.LUMO_ERROR);
         if (isDisruptive) {
             confirmButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        }
+        }*/
         open();
     }
 

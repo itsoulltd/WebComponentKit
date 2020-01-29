@@ -24,7 +24,6 @@ import com.it.soul.lab.sql.query.models.DataType;
 import com.it.soul.lab.sql.query.models.Property;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -33,7 +32,6 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
 import com.vaadin.flow.data.converter.*;
@@ -155,10 +153,12 @@ public abstract class AbstractBeanEditor<T extends EntityInterface>
 
     private void initButtonBar() {
         saveButton.setAutofocus(shouldSaveAutofocus());
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        //NOT SUPPORTED IN VAADIN-10
+        //saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         clearButton.addClickListener(e -> clear());
         deleteButton.addClickListener(e -> deleteClicked());
-        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        //NOT SUPPORTED IN VAADIN-10
+        //deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         buttonBar.setClassName("buttons");
         buttonBar.setSpacing(true);
         add(buttonBar);
@@ -297,10 +297,12 @@ public abstract class AbstractBeanEditor<T extends EntityInterface>
 
     protected void enableShortcuts() {
         disableShortcuts();
-        saveShortcutRegistration = saveButton.addClickShortcut(Key.ENTER);
+        //NOT SUPPORTED IN VAADIN-10
+        //saveShortcutRegistration = saveButton.addClickShortcut(Key.ENTER);
         if (deleteButton.isEnabled()) {
-            deleteShortcutRegistration =
-                    deleteButton.addClickShortcut(Key.DELETE);
+            //NOT SUPPORTED IN VAADIN-10
+            /*deleteShortcutRegistration =
+                    deleteButton.addClickShortcut(Key.DELETE);*/
         }
     }
 
@@ -382,17 +384,19 @@ public abstract class AbstractBeanEditor<T extends EntityInterface>
                 box.setValue((Boolean) prop.getValue());
             else box.setIndeterminate(true);
             hasValue = box;
-        }else if (prop.getType() == DataType.SQLDATE){
+        }else if (prop.getType() == DataType.SQLDATE
+                || prop.getType() == DataType.SQLTIMESTAMP){
             DatePicker datePicker = new DatePicker();
             datePicker.setValue(LocalDate.now());
-            datePicker.setClearButtonVisible(true);
+            //NOT SUPPORTED IN VAADIN-10
+            //datePicker.setClearButtonVisible(true);
             hasValue = datePicker;
-        }else if(prop.getType() == DataType.SQLTIMESTAMP) {
+        }/*else if(prop.getType() == DataType.SQLTIMESTAMP) {
             TimePicker timePicker = new TimePicker();
             timePicker.setValue(LocalTime.now());
             timePicker.setClearButtonVisible(true);
             hasValue = timePicker;
-        }else {
+        }*/else {
             TextField field = new TextField();
             field.setLabel(prop.getKey());
             hasValue = field;

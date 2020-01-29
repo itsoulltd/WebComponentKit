@@ -37,8 +37,15 @@
         </dependency>
         <dependency>
             <groupId>com.infoworks.lab</groupId>
+            <artifactId>http-rest-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.infoworks.lab</groupId>
             <artifactId>jsql-editor-components</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

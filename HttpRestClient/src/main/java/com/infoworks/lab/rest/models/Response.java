@@ -1,13 +1,9 @@
 package com.infoworks.lab.rest.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.infoworks.lab.exceptions.HttpInvocationException;
-import com.it.soul.lab.sql.entity.Entity;
+import com.infoworks.lab.rest.models.events.Event;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Response extends Entity {
+public class Response<E extends Event> extends Message<E> {
 
     public static Response CreateErrorResponse(Throwable exp){
         Response newInstance = null;
@@ -16,13 +12,14 @@ public class Response extends Entity {
         return newInstance;
     }
 
-    public void update(Throwable exp){
+    public Response update(Throwable exp){
         if (exp instanceof HttpInvocationException){
             status = ((HttpInvocationException) exp).getStatus();
         }else {
             status = 500;
         }
         error = exp.getMessage();
+        return this;
     }
 
     private Integer status = 200;
@@ -34,15 +31,18 @@ public class Response extends Entity {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public Response setStatus(Integer status) {
         this.status = status;
+        return this;
     }
 
     public String getError() {
         return error;
     }
 
-    public void setError(String error) {
+    public Response setError(String error) {
         this.error = error;
+        return this;
     }
+
 }

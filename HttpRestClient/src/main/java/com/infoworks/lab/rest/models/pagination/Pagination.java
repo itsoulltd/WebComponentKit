@@ -3,10 +3,7 @@ package com.infoworks.lab.rest.models.pagination;
 import java.util.Arrays;
 import java.util.List;
 
-public interface Queryable<P extends Queryable> {
-
-    boolean isQueryable();
-    void updatePayload();
+public interface Pagination<P extends Pagination> {
 
     P next();
     P jumpTo(Integer page);
@@ -19,8 +16,8 @@ public interface Queryable<P extends Queryable> {
     List<SortDescriptor> getDescriptors();
     void setDescriptors(List<SortDescriptor> descriptors);
 
-    static <T extends Queryable> T createQuery(Class<T> type, int size, SortOrder order, String...keys) {
-        Queryable query = null;
+    static <T extends Pagination> T createQuery(Class<T> type, int size, SortOrder order, String...keys) {
+        Pagination query = null;
         try {
             query = type.newInstance();
             query.setPage(0);

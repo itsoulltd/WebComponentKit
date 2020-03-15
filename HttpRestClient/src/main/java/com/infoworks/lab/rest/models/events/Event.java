@@ -1,22 +1,14 @@
 package com.infoworks.lab.rest.models.events;
 
-import com.infoworks.lab.rest.models.Response;
 import com.it.soul.lab.sql.entity.Entity;
 
-public class Event extends Entity {
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Map;
 
-    public static <P extends Response> P CreateErrorResponse(Throwable exp, Class<P> type){
-        Entity newInstance = null;
-        try {
-            newInstance = type.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            newInstance = new Response();
-        }
-        if (newInstance instanceof Event){
-            ((Event)newInstance).setEventType(EventType.ERROR);
-        }
-        return (P) newInstance;
-    }
+public class Event extends Entity implements Externalizable {
 
     private String uuid;
     private String timestamp;
@@ -49,4 +41,14 @@ public class Event extends Entity {
         return this;
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(marshallingToMap(true));
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        Map<String, Object> data = (Map<String, Object>) in.readObject();
+        unmarshallingFromMap(data, true);
+    }
 }

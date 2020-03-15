@@ -1,8 +1,11 @@
 package com.infoworks.lab.rest.models.pagination;
 
+import com.it.soul.lab.sql.entity.Entity;
+
 import java.util.List;
 
-public class SortDescriptor {
+public class SortDescriptor extends Entity {
+
     private SortOrder order;
     private List<String> keys;
 

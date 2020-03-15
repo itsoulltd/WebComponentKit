@@ -76,21 +76,6 @@ public class Message<E extends Event> extends Entity implements Externalizable {
         return this;
     }
 
-    protected boolean isValidJson(String json){
-        if (json != null && !json.isEmpty()) {
-            return json.trim().startsWith("{") || json.trim().startsWith("[");
-        }
-        return false;
-    }
-
-    protected ObjectMapper getJsonSerializer(){
-        ObjectMapper jsonSerializer = new ObjectMapper();
-        jsonSerializer.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        jsonSerializer.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-        jsonSerializer.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return jsonSerializer;
-    }
-
     protected  <P extends Object> P unmarshalMessagePayload(Class<P> type, String payload) throws IOException {
         if (isValidJson(payload)){
             final ObjectMapper mapper = getJsonSerializer();
@@ -132,6 +117,23 @@ public class Message<E extends Event> extends Entity implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         Map<String, Object> data = (Map<String, Object>) in.readObject();
         unmarshallingFromMap(data, true);
+    }
+
+    @JsonIgnore
+    public static boolean isValidJson(String json){
+        if (json != null && !json.isEmpty()) {
+            return json.trim().startsWith("{") || json.trim().startsWith("[");
+        }
+        return false;
+    }
+
+    @JsonIgnore
+    public static ObjectMapper getJsonSerializer(){
+        ObjectMapper jsonSerializer = new ObjectMapper();
+        jsonSerializer.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        jsonSerializer.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+        jsonSerializer.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return jsonSerializer;
     }
 
 }

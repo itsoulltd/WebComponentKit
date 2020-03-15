@@ -7,7 +7,7 @@ import com.infoworks.lab.rest.models.pagination.SortDescriptor;
 import java.util.Arrays;
 import java.util.List;
 
-public class PagingQuery<Q extends Pagination> extends Event implements Pagination<Q> {
+public class PagingQuery extends Event implements Pagination<PagingQuery> {
 
     private Integer page = 0;
     private Integer size = 0;
@@ -33,22 +33,23 @@ public class PagingQuery<Q extends Pagination> extends Event implements Paginati
         this.size = size;
     }
 
+    @Override
     public List<SortDescriptor> getDescriptors() {
         return descriptors;
     }
 
-    public void setDescriptors(List<SortDescriptor> descriptors) {
+    public void setDescriptors(List descriptors) {
         this.descriptors = descriptors;
     }
 
     @Override
-    public Q next() {
-        Q query = jumpTo(++page);
+    public PagingQuery next() {
+        PagingQuery query = jumpTo(++page);
         return query;
     }
 
     @Override
-    public Q jumpTo(Integer page) {
+    public PagingQuery jumpTo(Integer page) {
         if (page < 0) return null;
         PagingQuery query = null;
         try {
@@ -59,13 +60,13 @@ public class PagingQuery<Q extends Pagination> extends Event implements Paginati
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
-        return (Q) query;
+        return query;
     }
 
     @Override
-    public Q previous() {
+    public PagingQuery previous() {
         if (page == 0) return null;
-        Q query = jumpTo(--page);
+        PagingQuery query = jumpTo(--page);
         return query;
     }
 

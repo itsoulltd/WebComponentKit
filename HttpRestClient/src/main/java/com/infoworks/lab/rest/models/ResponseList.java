@@ -1,5 +1,7 @@
 package com.infoworks.lab.rest.models;
 
+import com.infoworks.lab.rest.models.pagination.SortOrder;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;

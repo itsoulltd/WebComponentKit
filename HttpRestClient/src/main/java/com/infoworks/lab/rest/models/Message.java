@@ -25,12 +25,6 @@ public class Message<E extends Event> extends Entity implements Externalizable {
     }
 
     public Message(Class<E> classType) {
-        //TODO:Test
-        /*TypeVariable[] types = getClass().getTypeParameters();
-        for (TypeVariable type : types) {
-            System.out.println("Parameterized Type:" + type);
-        }*/
-        //
         this.classType = classType;
     }
 

@@ -1,7 +1,6 @@
 package com.infoworks.lab.rest.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.it.soul.lab.sql.query.models.*;
 
 import java.io.IOException;
@@ -167,9 +166,7 @@ public class SearchQuery extends PagingQuery implements WhereClause {
                 break;
             case JSON:
                 try {
-                    ObjectMapper mapper = Message.getJsonSerializer();
-                    if(mapper != null && classType != null)
-                        result = mapper.readValue(value, classType);
+                    result = Message.unmarshal(classType, value);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

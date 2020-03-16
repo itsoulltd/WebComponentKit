@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoworks.lab.rest.models.events.Event;
@@ -128,12 +129,43 @@ public class Message<E extends Event> extends Entity implements Externalizable {
     }
 
     @JsonIgnore
-    public static ObjectMapper getJsonSerializer(){
+    protected static ObjectMapper getJsonSerializer(){
         ObjectMapper jsonSerializer = new ObjectMapper();
         jsonSerializer.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         jsonSerializer.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
         jsonSerializer.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         return jsonSerializer;
+    }
+
+    public static  <P extends Object> P unmarshal(Class<P> type, String payload) throws IOException {
+        return internalUnmarshal(type, payload);
+    }
+
+    public static  <P extends Object> P unmarshal(TypeReference<P> type, String payload) throws IOException {
+        return internalUnmarshal(type, payload);
+    }
+
+    private static  <P extends Object> P internalUnmarshal(Object type, String payload) throws IOException {
+        if (isValidJson(payload)){
+            final ObjectMapper mapper = getJsonSerializer();
+            if (type instanceof TypeReference){
+                P obj = mapper.readValue(payload, (TypeReference<P>) type);
+                return obj;
+            }else{
+                P obj = mapper.readValue(payload, (Class<P>) type);
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    public static   <P extends Object> String marshal(P object) throws IOException {
+        if (object != null){
+            final ObjectMapper mapper = getJsonSerializer();
+            String value = mapper.writeValueAsString(object);
+            return value;
+        }
+        return null;
     }
 
 }

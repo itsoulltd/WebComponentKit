@@ -1,5 +1,6 @@
 package com.infoworks.lab.rest.models.events;
 
+import com.infoworks.lab.rest.models.Message;
 import com.it.soul.lab.sql.entity.Entity;
 
 import java.io.Externalizable;
@@ -65,5 +66,15 @@ public class Event extends Entity implements Externalizable {
     @Override
     public int hashCode() {
         return Objects.hash(uuid, timestamp);
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return Message.marshal(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return super.toString();
     }
 }

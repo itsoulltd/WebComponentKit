@@ -9,7 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -47,6 +49,7 @@ public class SearchQueryTest {
 
         consume.setEvent(Pagination.createQuery(SearchQuery.class, 10, SortOrder.DESC, "name","age","salary"));
         SearchQuery query = consume.getEvent();
+        query.setUuid(UUID.randomUUID().toString());
         query.add("emission-interval").isEqualTo(3000);
         query.add("center").isEqualTo("dasdad");
         query.add("radius").isEqualTo(500.0);
@@ -57,10 +60,12 @@ public class SearchQueryTest {
         //Recreate Query from string
         Message<SearchQuery> nConsume = new Message(SearchQuery.class);
         nConsume.setPayload(json);
+
         SearchQuery rQuery = nConsume.getEvent();
+        Assert.assertTrue(Objects.equals(query, rQuery));
+
         System.out.println("marshal Result after recreate:"+ rQuery.toString());
 
-        Assert.assertTrue("Working", json.isEmpty() == false);
     }
 
     @Test

@@ -50,13 +50,13 @@ public class PagingQueryTest {
         consume.setEvent(page);
         PagingQuery query = consume.getEvent();
 
-        System.out.println("marshal Result 1:"+ consume.getPayload());
+        System.out.println("marshal Result 1:"+ query.toString());
 
         consume.setEvent(query.next());
-        System.out.println("marshal Result 2:"+ consume.getPayload());
+        System.out.println("marshal Result 2:"+ query.toString());
 
         consume.setEvent(query.next());
-        System.out.println("marshal Result 3:"+ consume.getPayload());
+        System.out.println("marshal Result 3:"+ query.toString());
 
     }
 
@@ -69,19 +69,19 @@ public class PagingQueryTest {
 
         query = query.jumpTo(3);
         consume.setEvent(query);
-        System.out.println("marshal Result 1:"+ consume.getPayload());
+        System.out.println("marshal Result 1:"+ query.toString());
 
         query = query.previous();
         consume.setEvent(query);
-        System.out.println("marshal Result 2:"+ consume.getPayload());
+        System.out.println("marshal Result 2:"+ query.toString());
 
         query = query.previous();
         consume.setEvent(query);
-        System.out.println("marshal Result 3:"+ consume.getPayload());
+        System.out.println("marshal Result 3:"+ query.toString());
 
         query = query.previous();
         consume.setEvent(query);
-        System.out.println("marshal Result 4:"+ consume.getPayload());
+        System.out.println("marshal Result 4:"+ query.toString());
 
     }
 

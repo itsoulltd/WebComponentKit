@@ -2,7 +2,7 @@ package com.infoworks.lab.controllers;
 
 import com.infoworks.lab.components.rest.Payload;
 import com.infoworks.lab.domain.entities.Passenger;
-import com.infoworks.lab.domain.repositories.PassengerService;
+import com.infoworks.lab.domain.repositories.PassengerRepository;
 import com.infoworks.lab.jsql.JsqlConfig;
 import com.infoworks.lab.rest.models.ItemCount;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +26,12 @@ public class PassengerController {
     private Environment env;
 
     @Autowired
-    private PassengerService passengerService;
+    private PassengerRepository repository;
 
     @GetMapping("/rowCount")
     public ItemCount getRowCount(){
         ItemCount count = new ItemCount();
-        count.setCount(passengerService.count());
+        count.setCount(repository.count());
         return count;
     }
 

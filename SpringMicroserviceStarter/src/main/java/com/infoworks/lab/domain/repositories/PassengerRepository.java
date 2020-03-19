@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PassengerService extends JpaRepository<Passenger, Integer> {
+public interface PassengerRepository extends JpaRepository<Passenger, Integer> {
     List<Passenger> findByName(String name);
 }

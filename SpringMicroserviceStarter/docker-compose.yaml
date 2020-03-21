@@ -33,6 +33,7 @@ services:
          app.db.host: mysql-db
          app.db.port: 3306
          app.db.password: root@123
+         management.endpoints.web.exposure.include: health,metrics,httptrace,prometheus
       ports:
          - 8081:8080
       depends_on:

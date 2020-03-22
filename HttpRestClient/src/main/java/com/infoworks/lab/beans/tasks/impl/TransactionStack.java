@@ -18,7 +18,7 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
     private Consumer callback;
 
     public TransactionStack() {
-        manager = TaskManager.createManager(this);
+        manager = TaskManager.create(this);
         beanStack = new Stack<>();
         passedStack = new Stack<>();
     }
@@ -57,7 +57,7 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
     }
 
     @Override
-    public void beforeStart(Task task, TaskManager.State state) {
+    public void before(Task task, TaskManager.State state) {
         synchronized (this){
             if (state == TaskManager.State.Forward){
                 Task popped = beanStack.pop();
@@ -70,7 +70,7 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
     }
 
     @Override
-    public void beforeEnd(Task task, TaskManager.State state) {
+    public void after(Task task, TaskManager.State state) {
         synchronized (this){
             if (state == TaskManager.State.Forward){
                 //TODO:

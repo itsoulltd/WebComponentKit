@@ -10,7 +10,7 @@ public interface TaskManager {
         Backward
     }
 
-    static TaskManager createManager(TaskLifecycleListener listener){
+    static TaskManager create(TaskLifecycleListener listener){
         return new SimpleTaskManager(listener);
     }
     void start(Task task, Message message);

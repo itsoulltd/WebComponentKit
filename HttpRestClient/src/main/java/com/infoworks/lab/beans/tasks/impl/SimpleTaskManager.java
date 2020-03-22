@@ -34,20 +34,31 @@ public class SimpleTaskManager implements TaskManager {
                 getListener().beforeStart(task, State.Forward);
             //Call Execute:
             Message result = null;
+            boolean mustAbort = false;
             try {
                 result = task.execute(message);
-            }catch (RuntimeException e) {}
+            }catch (RuntimeException e) {
+                mustAbort = true;
+                result = new Message();
+                result.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
+            }
             //
             if (task.next() == null){
                 if (getListener() != null)
                     getListener().finished(result);
             }else{
-                if (getListener() != null)
-                    getListener().beforeEnd(task, State.Forward);
-                //
-                Message converted = task.converter() != null
-                        ? task.converter().apply(result) : result;
-                start(task.next(), converted);
+                if (mustAbort){
+                    if (getListener() != null)
+                        getListener().beforeEnd(task, State.Backward);
+                    stop(task.next(), result);
+                }else {
+                    if (getListener() != null)
+                        getListener().beforeEnd(task, State.Forward);
+                    //
+                    Message converted = task.converter() != null
+                            ? task.converter().apply(result) : result;
+                    start(task.next(), converted);
+                }
             }
         });
     }

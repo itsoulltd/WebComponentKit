@@ -1,13 +1,10 @@
 package com.infoworks.lab.beans.tasks.impl;
 
-import com.infoworks.lab.beans.tasks.definition.Task;
-import com.infoworks.lab.beans.tasks.definition.TaskLifecycleListener;
-import com.infoworks.lab.beans.tasks.definition.TaskManager;
-import com.infoworks.lab.beans.tasks.definition.TaskStack;
+import com.infoworks.lab.beans.tasks.definition.*;
 import com.infoworks.lab.rest.models.Message;
 
 import java.util.Stack;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class TransactionStack implements TaskLifecycleListener, TaskStack {
 
@@ -15,7 +12,8 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
     private final Stack<Task> beanStack;
     private final Stack<Task> passedStack;
     private State state = State.None;
-    private Consumer callback;
+    private BiConsumer<Message, State> callback;
+    private TaskCompletionListener listener;
 
     public TransactionStack() {
         manager = TaskManager.create(this);
@@ -45,10 +43,19 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
         return this;
     }
 
-    public synchronized void commit(boolean reverse, Consumer<Message> onComplete){
+    public synchronized void commit(boolean reverse, BiConsumer<Message, State> onComplete){
+        this.callback = onComplete;
+        commit(reverse);
+    }
+
+    public synchronized void commit(boolean reverse, TaskCompletionListener onComplete) {
+        this.listener = onComplete;
+        commit(reverse);
+    }
+
+    protected void commit(boolean reverse) {
         if (state == State.Running) return;
         if (beanStack.isEmpty()) return;
-        callback = onComplete;
         if (reverse) {
             //TODO: reverse the beanStack order:
         }
@@ -86,7 +93,9 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
             state = State.Failed;
         }
         if (callback != null){
-            callback.accept(reason);
+            callback.accept(reason, state);
+        }else if (listener != null){
+            listener.failed(reason);
         }
     }
 
@@ -98,7 +107,9 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
             passedStack.clear();
         }
         if (callback != null){
-            callback.accept(results);
+            callback.accept(results, state);
+        }else if (listener != null){
+            listener.finished(results);
         }
     }
 

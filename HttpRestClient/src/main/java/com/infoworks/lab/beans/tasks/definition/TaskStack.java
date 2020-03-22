@@ -3,7 +3,7 @@ package com.infoworks.lab.beans.tasks.definition;
 import com.infoworks.lab.beans.tasks.impl.TransactionStack;
 import com.infoworks.lab.rest.models.Message;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public interface TaskStack {
 
@@ -31,6 +31,7 @@ public interface TaskStack {
     }
 
     TaskStack push(Task task);
-    void commit(boolean reverse, Consumer<Message> onComplete);
+    void commit(boolean reverse, BiConsumer<Message, State> onComplete);
+    void commit(boolean reverse, TaskCompletionListener onComplete);
     void cancel();
 }

@@ -4,6 +4,7 @@ import com.infoworks.lab.beans.tasks.definition.Task;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.Response;
+import com.infoworks.lab.rest.models.events.Event;
 import org.junit.Test;
 
 import java.util.Random;
@@ -18,14 +19,20 @@ public class TaskStackTest {
     public void stackTest(){
 
         CountDownLatch latch = new CountDownLatch(1);
-
-        stack.push(new ASimpleTask("Hi there! I am Cris"));
+        //
         stack.push(new ASimpleTask("Hello bro! I am Towhid"));
+        stack.push(new ASimpleTask("Hi there! I am Cris", (message) -> {
+            MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
+            event.setMessage("Converted Message");
+            event.setStatus(201);
+            message.setEvent(event);
+            return message;
+        }));
         stack.commit(false, (result) -> {
             System.out.println(result.toString());
             latch.countDown();
         });
-
+        //
         try {
             latch.await();
         } catch (InterruptedException e) {}
@@ -35,12 +42,19 @@ public class TaskStackTest {
 
         private Task nextTask;
         private Message message;
+        private Function<Message, Message> converter;
 
         public ASimpleTask() {}
 
         public ASimpleTask(String message) {
             this.message = new Message();
             this.message.setPayload(message);
+        }
+
+        public ASimpleTask(String message, Function<Message, Message> converter) {
+            this.message = new Message();
+            this.message.setPayload(message);
+            this.converter = converter;
         }
 
         @Override
@@ -61,8 +75,15 @@ public class TaskStackTest {
             try {
                 Thread.sleep(rand * 1000);
                 Response response = new Response();
-                response.setStatus(201);
-                response.setPayload("{\"message\":\"i am fine!\"}");
+                response.setStatus(200);
+                if (message == null || message.getPayload() == null){
+                    MSGEvent msg = new MSGEvent();
+                    msg.setStatus(200 + rand);
+                    msg.setMessage("Working!");
+                    response.setEvent(msg);
+                }else{
+                    response.setEvent(message.getEvent(MSGEvent.class));
+                }
                 System.out.println("My Jobs...Done");
                 return response;
             } catch (InterruptedException e) {
@@ -95,8 +116,29 @@ public class TaskStackTest {
         }
 
         @Override
-        public Function<Message, Message> converter() {
-            return null;
+        public Function<Message, Message> getConverter() {
+            return converter;
+        }
+    }
+
+    public static class MSGEvent extends Event {
+        private String message;
+        private int status;
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
         }
     }
 

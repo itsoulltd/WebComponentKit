@@ -7,9 +7,11 @@ import com.infoworks.lab.rest.models.Message;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 public class SimpleTaskManager implements TaskManager {
 
+    private Logger LOG = Logger.getLogger(this.getClass().getSimpleName());
     private ExecutorService service;
     private TaskLifecycleListener listener;
 
@@ -38,6 +40,7 @@ public class SimpleTaskManager implements TaskManager {
 
     @Override
     public void start(Task task, Message message) {
+        LOG.info("Task Start >>>>>>>>>>>>" + Thread.currentThread().getName());
         getService().submit(() -> {
             if (getListener() != null)
                 getListener().before(task, State.Forward);
@@ -67,10 +70,12 @@ public class SimpleTaskManager implements TaskManager {
                 }
             }
         });
+        LOG.info("Task End >>>>>>>>>>>>" + Thread.currentThread().getName());
     }
 
     @Override
     public void stop(Task task, Message reason) {
+        LOG.info("Task Start >>>>>>>>>>>>" + Thread.currentThread().getName());
         getService().submit(() -> {
             if (getListener() != null)
                 getListener().before(task, State.Backward);
@@ -90,5 +95,6 @@ public class SimpleTaskManager implements TaskManager {
                 stop(task.next(), result);
             }
         });
+        LOG.info("Task End >>>>>>>>>>>>" + Thread.currentThread().getName());
     }
 }

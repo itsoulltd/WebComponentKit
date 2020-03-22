@@ -7,20 +7,20 @@ import com.infoworks.lab.rest.models.Response;
 import java.util.Random;
 import java.util.function.Function;
 
-public class ASimpleTask  implements Task {
+public class SimpleTask implements Task {
 
     private Task nextTask;
     private Message message;
     private Function<Message, Message> converter;
 
-    public ASimpleTask() {}
+    public SimpleTask() {}
 
-    public ASimpleTask(String message) {
+    public SimpleTask(String message) {
         this.message = new Message();
         this.message.setPayload(message);
     }
 
-    public ASimpleTask(String message, Function<Message, Message> converter) {
+    public SimpleTask(String message, Function<Message, Message> converter) {
         this.message = new Message();
         this.message.setPayload(message);
         this.converter = converter;
@@ -36,14 +36,16 @@ public class ASimpleTask  implements Task {
         nextTask = task;
     }
 
+    private static Random RANDOM = new Random();
+
     @Override
     public Message execute(Message message) throws RuntimeException {
-        System.out.println("I am Starting...");
+        //System.out.println("I am Starting..." + Thread.currentThread().getName());
         System.out.println("Doing jobs..." + getMessage().getPayload());
-        int rand = new Random().nextInt(6) + 1;
+        Response response = new Response();
+        int rand = RANDOM.nextInt(6) + 1;
         try {
             Thread.sleep(rand * 1000);
-            Response response = new Response();
             response.setStatus(200);
             if (message == null || message.getPayload() == null){
                 MSGEvent msg = new MSGEvent();
@@ -53,30 +55,32 @@ public class ASimpleTask  implements Task {
             }else{
                 response.setEvent(message.getEvent(MSGEvent.class));
             }
-            System.out.println("My Jobs...Done");
-            return response;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return null;
+        //System.out.println("My Jobs...Done");
+        return response;
     }
 
     @Override
     public Message abort(Message message) throws RuntimeException {
-        System.out.println("I am Aborting...");
+        //System.out.println("I am Aborting..." + Thread.currentThread().getName());
         System.out.println("Doing revert ...:" + getMessage().getPayload());
-        int rand = new Random().nextInt(6) + 1;
+        Response response = new Response();
+        int rand = RANDOM.nextInt(3) + 1;
         try {
             Thread.sleep(rand * 1000);
-            Response response = new Response();
-            response.setStatus(500);
-            response.setError("Not Sure why! May be Covid-19");
-            System.out.println("My revert process...Done");
-            return response;
+            response.setStatus(500 + rand);
+            if (message == null || message.getPayload() == null){
+                response.setError("Not Sure why! May be Covid-19");
+            }else {
+                response.setEvent(message.getEvent(MSGEvent.class));
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return null;
+        //System.out.println("My revert process...Done");
+        return response;
     }
 
     @Override

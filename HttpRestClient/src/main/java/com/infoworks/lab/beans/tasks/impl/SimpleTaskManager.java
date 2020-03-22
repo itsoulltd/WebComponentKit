@@ -57,7 +57,7 @@ public class SimpleTaskManager implements TaskManager {
                 getListener().after(task, State.Forward);
             //
             if (mustAbort){
-                stop(task.next(), result);//ABORT-SEQUENCE:
+                stop(task, result);//ABORT-SEQUENCE:
             }else {
                 if (task.next() == null){
                     if (getListener() != null)

@@ -82,7 +82,12 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
             if (state == TaskManager.State.Forward){
                 //TODO:
             }else if (state == TaskManager.State.Backward){
-                //TODO:
+                if (passedStack.isEmpty()) {
+                    task.linkedTo(null);
+                    return;
+                }
+                Task passedTop = passedStack.peek();
+                task.linkedTo(passedTop);
             }
         }
     }

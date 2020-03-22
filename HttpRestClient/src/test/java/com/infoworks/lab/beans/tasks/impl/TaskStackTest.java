@@ -26,20 +26,20 @@ public class TaskStackTest {
 
         CountDownLatch latch = new CountDownLatch(1);
         //
-        stack.push(new ASimpleTask("Wow bro! I am Adams"));
-        stack.push(new ASimpleTask("Hello bro! I am Haise", (message) -> {
+        stack.push(new SimpleTask("Wow bro! I am Adams"));
+        stack.push(new SimpleTask("Hello bro! I am Haise", (message) -> {
             MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
             System.out.println(event.toString());
             return message;
         }));
-        stack.push(new ASimpleTask("Hi there! I am Cris", (message) -> {
+        stack.push(new SimpleTask("Hi there! I am Cris", (message) -> {
             MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
             event.setMessage("Converted Message");
             event.setStatus(201);
             message.setEvent(event);
             return message;
         }));
-        stack.push(new ASimpleTask("Let's bro! I am James"));
+        stack.push(new SimpleTask("Let's bro! I am James"));
         //
         stack.commit(false, (result, state) -> {
             System.out.println("State: " + state.name());
@@ -57,22 +57,13 @@ public class TaskStackTest {
 
         CountDownLatch latch = new CountDownLatch(1);
         //
-        stack.push(new ASimpleTask("Wow bro! I am Adams"));
-        stack.push(new ASimpleTask("Hello bro! I am Haise", (message) -> {
-            MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
-            System.out.println(event.toString());
-            return message;
-        }));
-        stack.push(new ASimpleTask("Hi there! I am Cris", (message) -> {
-            MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
-            event.setMessage("Converted Message");
-            event.setStatus(201);
-            message.setEvent(event);
-            return message;
-        }));
-        stack.push(new ASimpleTask("Let's bro! I am James"));
+        stack.push(new SimpleTask("Wow bro! I am Adams"));
+        stack.push(new AbortTask("Hello bro! I am Haise"));
+        stack.push(new SimpleTask("Hi there! I am Cris"));
+        stack.push(new SimpleTask("Let's bro! I am James"));
         //
         stack.commit(false, (result, state) -> {
+            System.out.println("State: " + state.name());
             System.out.println(result.toString());
             latch.countDown();
         });

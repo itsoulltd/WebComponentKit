@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public class SimpleTaskManager implements TaskManager {
 
-    private ExecutorService service = Executors.newSingleThreadExecutor();
+    private ExecutorService service;
     private TaskLifecycleListener listener;
 
     public SimpleTaskManager() {}
@@ -27,11 +27,20 @@ public class SimpleTaskManager implements TaskManager {
         this.listener = listener;
     }
 
+    public ExecutorService getService() {
+        if (service == null){
+             synchronized (this){
+                 service = Executors.newSingleThreadExecutor();
+             }
+        }
+        return service;
+    }
+
     @Override
     public void start(Task task, Message message) {
-        service.submit(() -> {
+        getService().submit(() -> {
             if (getListener() != null)
-                getListener().beforeStart(task, State.Forward);
+                getListener().before(task, State.Forward);
             //Call Execute:
             Message result = null;
             boolean mustAbort = false;
@@ -42,22 +51,20 @@ public class SimpleTaskManager implements TaskManager {
                 result = new Message();
                 result.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
             }
+            //End Execute:
+            if (getListener() != null)
+                getListener().after(task, State.Forward);
             //
-            if (task.next() == null){
-                if (getListener() != null)
-                    getListener().finished(result);
-            }else{
-                if (mustAbort){
+            if (mustAbort){
+                stop(task.next(), result);//ABORT-SEQUENCE:
+            }else {
+                if (task.next() == null){
                     if (getListener() != null)
-                        getListener().beforeEnd(task, State.Backward);
-                    stop(task.next(), result);
-                }else {
-                    if (getListener() != null)
-                        getListener().beforeEnd(task, State.Forward);
-                    //
+                        getListener().finished(result);//TERMINATION:
+                }else{
                     Message converted = task.converter() != null
                             ? task.converter().apply(result) : result;
-                    start(task.next(), converted);
+                    start(task.next(), converted);//START-NEXT:
                 }
             }
         });
@@ -65,21 +72,22 @@ public class SimpleTaskManager implements TaskManager {
 
     @Override
     public void stop(Task task, Message reason) {
-        service.submit(() -> {
+        getService().submit(() -> {
             if (getListener() != null)
-                getListener().beforeStart(task, State.Backward);
+                getListener().before(task, State.Backward);
             //Call Abort:
             Message result = null;
             try {
                 result = task.abort(reason);
             }catch (RuntimeException e) {}
+            //End Abort:
+            if (getListener() != null)
+                getListener().after(task, State.Backward);
             //
             if (task.next() == null){
                 if (getListener() != null)
                     getListener().failed(result);
             }else{
-                if (getListener() != null)
-                    getListener().beforeEnd(task, State.Backward);
                 stop(task.next(), result);
             }
         });

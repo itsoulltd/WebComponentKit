@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 public class TaskStackTest {
 
-    TaskStack stack = new TransactionStack();
+    TaskStack stack = TaskStack.create();
 
     @Test
     public void stackTest(){

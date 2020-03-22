@@ -11,14 +11,6 @@ import java.util.function.Consumer;
 
 public class TransactionStack implements TaskLifecycleListener, TaskStack {
 
-    public enum State{
-        None,
-        Running,
-        Finished,
-        Failed,
-        Canceled
-    }
-
     private final TaskManager manager;
     private final Stack<Task> beanStack;
     private final Stack<Task> passedStack;

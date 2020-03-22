@@ -62,8 +62,8 @@ public class SimpleTaskManager implements TaskManager {
                     if (getListener() != null)
                         getListener().finished(result);//TERMINATION:
                 }else{
-                    Message converted = task.converter() != null
-                            ? task.converter().apply(result) : result;
+                    Message converted = task.getConverter() != null
+                            ? task.getConverter().apply(result) : result;
                     start(task.next(), converted);//START-NEXT:
                 }
             }

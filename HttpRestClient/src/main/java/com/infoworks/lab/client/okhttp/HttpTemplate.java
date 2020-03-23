@@ -1,4 +1,4 @@
-package com.infoworks.lab.client.jersey;
+package com.infoworks.lab.client.okhttp;
 
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.rest.breaker.CircuitBreaker;
@@ -9,29 +9,40 @@ import com.infoworks.lab.rest.template.Route;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.function.Consumer;
 
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C extends EntityInterface> extends HttpAbstractTemplate implements HttpInteractor<P,C> {
 
+    private Request.Builder target;
+    @Override
+    public Request.Builder getTarget() {
+        return target;
+    }
+
+    @Override
+    public void setTarget(Request.Builder target) {
+        this.target = target;
+    }
+
     private String _domain;
+
     private Class<P> inferredProduce;
     private Class<C> inferredConsume;
 
-    public HttpTemplate(){
-        /*Must needed to create dynamic instance from type*/
-        super();
-    }
+    public HttpTemplate(){}
 
-    public HttpTemplate(Object...config){
+    public HttpTemplate(Object... config){
         try {
             configure(config);
         } catch (InstantiationException e) {
@@ -40,16 +51,16 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
     }
 
     @Override @SuppressWarnings("Duplicates")
-    public void configure(Object... config) throws InstantiationException{
+    public void configure(Object... config) throws InstantiationException {
         if (config == null) throw new InstantiationException();
-        Arrays.stream(config).forEach(o -> {
+        for(Object o : config){
             if (o instanceof URI){
                 _domain = ((URI)o).toString();
             }else if (o instanceof Class<?>){
                 if (inferredProduce == null) inferredProduce = (Class<P>) o;
                 else if (inferredConsume == null) inferredConsume = (Class<C>) o;
             }
-        });
+        }
     }
 
     private Class<P> getInferredProduce(){
@@ -97,17 +108,29 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         return routeTo;
     }
 
-    public P get(C consume, QueryParam...params) throws HttpInvocationException {
+    protected String convertQueryParam(QueryParam...params){
+        if (params == null) return "";
+        StringBuffer buffer = new StringBuffer("?");
+        for (QueryParam query : params){
+            try {
+                buffer.append(query.getKey()
+                        + "="
+                        + URLEncoder.encode(query.getValue(), "UTF-8")
+                        + "&");
+            } catch (UnsupportedEncodingException e) {}
+        }
+        String value = buffer.toString();
+        value = value.substring(0, value.length()-1);
+        return value;
+    }
+
+    public P get(C consume , QueryParam...params) throws HttpInvocationException {
         P produce = null;
         Class<P> type = getInferredProduce();
         try {
-            target = initializeTarget();
-            if (params != null){
-                Arrays.stream(params).forEach(param -> {
-                    target = getTarget().queryParam(param.getKey(), param.getValue());
-                });
-            }
-            Response response;
+            String queryParam = convertQueryParam(params);
+            target = initializeTarget(queryParam);
+            Response response = null;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume).get();
             }else{
@@ -121,17 +144,17 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         return produce;
     }
 
-    public P post(C consume, String...paths) throws HttpInvocationException {
+    public P post(C consume , String...paths) throws HttpInvocationException {
         P produce = null;
         Class<P> type = getInferredProduce();
         try {
             target = initializeTarget(paths);
-            Response response;
+            Response response = null;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
-                        .post(consume, MediaType.APPLICATION_JSON_TYPE);
+                        .post(consume, MediaType.parse("application/json;charset=utf-8"));
             }else{
-                response = getJsonRequest().post(consume, MediaType.APPLICATION_JSON_TYPE);
+                response = getJsonRequest().post(consume, MediaType.parse("application/json;charset=utf-8"));
             }
             produce = inflate(response, type);
 
@@ -141,17 +164,17 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         return produce;
     }
 
-    public P put(C consume , String...paths) throws HttpInvocationException {
+    public P put(C consume , String...paths) throws HttpInvocationException{
         P produce = null;
         Class<P> type = getInferredProduce();
         try {
             target = initializeTarget(paths);
-            Response response;
+            Response response = null;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
-                        .put(consume, MediaType.APPLICATION_JSON_TYPE);
+                        .put(consume, MediaType.parse("application/json;charset=utf-8"));
             }else{
-                response = getJsonRequest().put(consume, MediaType.APPLICATION_JSON_TYPE);
+                response = getJsonRequest().put(consume, MediaType.parse("application/json;charset=utf-8"));
             }
             produce = inflate(response, type);
 
@@ -163,37 +186,22 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
 
     public boolean delete(C consume, QueryParam...params) throws HttpInvocationException {
         try {
-            target = initializeTarget();
-            if (params != null){
-                Arrays.stream(params).forEach(param -> {
-                    target = getTarget().queryParam(param.getKey(), param.getValue());
-                });
-            }
-            Response response;
+            String queryParam = convertQueryParam(params);
+            target = initializeTarget(queryParam);
+            Response response = null;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
-                        .delete(consume, MediaType.APPLICATION_JSON_TYPE);
+                        .delete(consume, MediaType.parse("application/json;charset=utf-8"));
             }else{
-                response = getJsonRequest().delete(consume, MediaType.APPLICATION_JSON_TYPE);
+                response = getJsonRequest().delete(consume, MediaType.parse("application/json;charset=utf-8"));
             }
-            if (response.getStatusInfo() == Response.Status.INTERNAL_SERVER_ERROR) throw new HttpInvocationException("Internal Server Error!");
-            return response.getStatusInfo() == Response.Status.OK;
+            if (response.code() == 500) throw new HttpInvocationException("Internal Server Error!");
+            return response.code() == 200;
 
         }catch (IOException e) {
             e.printStackTrace();
         }
         return false;
-    }
-
-    private WebTarget target;
-    @Override
-    public WebTarget getTarget() {
-        return target;
-    }
-
-    @Override
-    public void setTarget(WebTarget target) {
-        this.target = target;
     }
 
     @SuppressWarnings("Duplicates")
@@ -203,7 +211,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
 
         //Add to Queue
         addConsumer(consumer);
-        submit(() ->{
+        submit(() -> {
             P produce = null;
             try {
                 QueryParam[] items = (query == null)
@@ -224,7 +232,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
 
         //Add to Queue
         addConsumer(consumer);
-        submit(() ->{
+        submit(() -> {
             Boolean produce = null;
             try {
                 QueryParam[] items = (query == null)
@@ -240,7 +248,15 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
 
     @Override
     public <T> URI getUri(T... params) {
-        return getTarget().getUri();
+        try {
+            if (params instanceof String[]){
+                return URI.create(resourcePath((String[]) params));
+            }else if (params instanceof QueryParam[]){
+                String queryParam = convertQueryParam((QueryParam[])params);
+                return URI.create(resourcePath(queryParam));
+            }
+        } catch (MalformedURLException e) {}
+        return null;
     }
 
     @SuppressWarnings("Duplicates")
@@ -290,52 +306,53 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             if (params instanceof String[]){
                 setTarget(initializeTarget((String[]) params));
             }else if (params instanceof QueryParam[]){
-                setTarget(initializeTarget());
-                Arrays.stream((QueryParam[])params).forEach(param ->
-                    setTarget(getTarget().queryParam(param.getKey(), param.getValue()))
-                );
+                String queryParam = convertQueryParam((QueryParam[]) params);
+                setTarget(initializeTarget(queryParam));
             }
         }else {
             setTarget(initializeTarget());
         }
-        return execute(consume, method);
+        //CircuitBreaker CODE:
+        Response response;
+        CircuitBreaker breaker = getCircuitBreaker(params);
+        Invocation invocation = isSecure(consume) ? getAuthorizedJsonRequest(consume) : getJsonRequest();
+        if (breaker != null) response = (Response) breaker.call(invocation, method, consume);
+        else response = callForwarding(invocation, method, consume);
+        //
+        return response;
     }
 
-    private Response execute(EntityInterface consume, Invocation.Method method) throws HttpInvocationException {
-        //CircuitBreaker CODE:
-        Response response = null;
+    protected <T extends Object> CircuitBreaker getCircuitBreaker(T...params){
+        //URI uri = getUri(params);//URI.create(resourcePath(params));
+        //CircuitBreaker breaker = GeoTrackerDroidKit.shared().getCircuitBreaker(uri, null);
+        CircuitBreaker breaker = null;
         try {
-            CircuitBreaker breaker = CircuitBreaker.create(HttpCircuitBreaker.class);
-            Invocation invocation = isSecure(consume) ? getAuthorizedJsonRequest(consume) : getJsonRequest();
-            if (breaker != null) response = (Response) breaker.call(invocation, method, consume);
-            else response = callForwarding(invocation, method, consume);
+            breaker = CircuitBreaker.create(HttpCircuitBreaker.class);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
-        //
-        return response;
+        return breaker;
     }
 
     @SuppressWarnings("Duplicates")
-    protected Response callForwarding(Invocation invocation, Invocation.Method method, EntityInterface data) throws HttpInvocationException {
+    protected Response callForwarding(Invocation invocation, Invocation.Method method, EntityInterface consume) throws HttpInvocationException {
         Response response = null;
         switch (method){
             case GET:
                 response = (Response) invocation.get();
                 break;
             case POST:
-                response = (Response) invocation.post(data, MediaType.APPLICATION_JSON_TYPE);
+                response = (Response) invocation.post(consume, MediaType.parse("application/json;charset=utf-8"));
                 break;
             case DELETE:
-                response = (Response) invocation.delete(data, MediaType.APPLICATION_JSON_TYPE);
+                response = (Response) invocation.delete(consume, MediaType.parse("application/json;charset=utf-8"));
                 break;
             case PUT:
-                response = (Response) invocation.put(data, MediaType.APPLICATION_JSON_TYPE);
+                response = (Response) invocation.put(consume, MediaType.parse("application/json;charset=utf-8"));
                 break;
         }
         return response;
     }
-
 }

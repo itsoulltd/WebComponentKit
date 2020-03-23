@@ -1,4 +1,4 @@
-package com.infoworks.lab.client.jersey;
+package com.infoworks.lab.client.okhttp;
 
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.rest.breaker.AbstractCircuitBreaker;
@@ -7,13 +7,14 @@ import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Template;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import okhttp3.MediaType;
+import okhttp3.Response;
 
 public class HttpCircuitBreaker extends AbstractCircuitBreaker<Response> {
 
@@ -23,36 +24,16 @@ public class HttpCircuitBreaker extends AbstractCircuitBreaker<Response> {
         super(500, 5, 2500);
     }
 
-    @Override @SuppressWarnings("Duplicates")
-    protected Response circuitTest(Invocation invocation, Invocation.Method method, EntityInterface data) throws HttpInvocationException {
-        Response response = null;
-        switch (method){
-            case GET:
-                response = (Response) invocation.get();
-                break;
-            case POST:
-                response = (Response) invocation.post(data, MediaType.APPLICATION_JSON_TYPE);
-                break;
-            case DELETE:
-                response = (Response) invocation.delete(data, MediaType.APPLICATION_JSON_TYPE);
-                break;
-            case PUT:
-                response = (Response) invocation.put(data, MediaType.APPLICATION_JSON_TYPE);
-                break;
-        }
-        return response;
-    }
-
     @Override
     protected Integer parseCode(Response response) {
-        if (response == null) return super.parseCode(response);
-        return response.getStatus();
+        if (response != null) response.code();
+        return super.parseCode(response);
     }
 
-    @Override @SuppressWarnings("Duplicates")
+    @Override  @SuppressWarnings("Duplicates")
     protected boolean isAcceptedResponse(Response response) {
         if (response == null) return false;
-        switch (response.getStatus()){
+        switch (response.code()){
             case HttpURLConnection.HTTP_INTERNAL_ERROR:
             case HttpURLConnection.HTTP_NOT_IMPLEMENTED:
             case HttpURLConnection.HTTP_BAD_GATEWAY:
@@ -64,10 +45,30 @@ public class HttpCircuitBreaker extends AbstractCircuitBreaker<Response> {
         return true;
     }
 
+    @Override @SuppressWarnings("Duplicates")
+    protected Response circuitTest(Invocation invocation, Invocation.Method method, EntityInterface consume) throws HttpInvocationException {
+        Response response = null;
+        switch (method){
+            case GET:
+                response = (Response) invocation.get();
+                break;
+            case POST:
+                response = (Response) invocation.post(consume, MediaType.parse("application/json;charset=utf-8"));
+                break;
+            case DELETE:
+                response = (Response) invocation.delete(consume, MediaType.parse("application/json;charset=utf-8"));
+                break;
+            case PUT:
+                response = (Response) invocation.put(consume, MediaType.parse("application/json;charset=utf-8"));
+                break;
+        }
+        return response;
+    }
+
     private Template _template;
 
-    @Override  @SuppressWarnings("Duplicates")
-    protected Invocation createInvocation(Invocation invocation, Invocation.Method method, EntityInterface data){
+    @Override @SuppressWarnings("Duplicates")
+    protected Invocation createInvocation(Invocation invocation, Invocation.Method method, EntityInterface consume) {
         reLock.lock();
         try {
             try {
@@ -76,7 +77,7 @@ public class HttpCircuitBreaker extends AbstractCircuitBreaker<Response> {
                     _template = Interactor.create(HttpTemplate.class, uri);
                     _template.setTarget(_template.initializeTarget());
                 }
-                return _template.isSecure(data) ? _template.getAuthorizedJsonRequest(data) : _template.getJsonRequest();
+                return _template.isSecure(consume) ? _template.getAuthorizedJsonRequest(consume) : _template.getJsonRequest();
             } catch (IllegalAccessException | InstantiationException
                     | MalformedURLException | IllegalStateException e) {
                 logger.log(Level.WARNING, e.getMessage());
@@ -87,7 +88,7 @@ public class HttpCircuitBreaker extends AbstractCircuitBreaker<Response> {
         }
     }
 
-    @Override  @SuppressWarnings("Duplicates")
+    @Override @SuppressWarnings("Duplicates")
     public void close() {
         if (_template != null) {
             reLock.lock();

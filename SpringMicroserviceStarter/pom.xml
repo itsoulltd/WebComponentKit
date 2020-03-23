@@ -29,6 +29,12 @@
             <version>8.5.35</version>
             <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.18</version>
+        </dependency>
         <!-- Spring Framework Dependency -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -96,18 +102,6 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <!-- -->
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-            <version>8.5.35</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.18</version>
-        </dependency>
     </dependencies>
 
     <build>

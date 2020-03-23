@@ -16,7 +16,7 @@ services:
       image: mysql:8.0.13
       environment:
           MYSQL_DATABASE: testDB
-          MYSQL_ROOT_PASSWORD: root@123
+          MYSQL_ROOT_PASSWORD: root
       ports:
           - 3317:3306
       networks:
@@ -60,7 +60,7 @@ services:
          app.db.name: testDB
          app.db.host: mysql-db
          app.db.port: 3306
-         app.db.password: root@123
+         app.db.password: root
          app.redis.host: redis
          app.redis.port: 6379
          app.activemq.host: activemq

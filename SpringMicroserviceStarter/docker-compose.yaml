@@ -14,7 +14,7 @@ services:
       image: mysql:8.0.13
       environment:
           MYSQL_DATABASE: testDB
-          MYSQL_ROOT_PASSWORD: root@123
+          MYSQL_ROOT_PASSWORD: root
       ports:
           - 3317:3306
       networks:
@@ -32,7 +32,7 @@ services:
          app.db.name: testDB
          app.db.host: mysql-db
          app.db.port: 3306
-         app.db.password: root@123
+         app.db.password: root
          management.endpoints.web.exposure.include: health,metrics,httptrace,prometheus
       ports:
          - 8081:8080

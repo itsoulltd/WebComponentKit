@@ -10,10 +10,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
-
-import static org.junit.Assert.*;
 
 public class SearchQueryTest {
     Message<SearchQuery> consume;
@@ -82,25 +79,25 @@ public class SearchQueryTest {
 
         SearchQuery query = mapper.readValue(json, SearchQuery.class);
 
-        Optional emission = query.get("emission-interval");
-        Assert.assertTrue(emission.isPresent());
+        Object emission = query.get("emission-interval");
+        Assert.assertTrue(emission != null);
 
-        Optional center = query.get("center");
-        Assert.assertTrue(center.isPresent());
+        Object center = query.get("center");
+        Assert.assertTrue(center != null);
 
-        Optional<Double> radius = query.get("radius", null);
-        Assert.assertTrue(radius.isPresent());
-        Assert.assertTrue(radius.get().equals(500.0));
+        Double radius = query.get("radius", null);
+        Assert.assertTrue(radius != null);
+        Assert.assertTrue(radius.equals(500.0));
 
-        Optional nullVal = query.get("rdous");
-        Assert.assertTrue(nullVal.isPresent() == false);
+        Object nullVal = query.get("rdous");
+        Assert.assertTrue(nullVal == null);
 
         //Add another one after search:
         queryX.add("adous").isEqualTo(500.0);
         query = mapper.readValue(queryX.toString(), SearchQuery.class);
 
-        Optional wdousVal = query.get("adous");
-        Assert.assertTrue(wdousVal.isPresent());
+        Object wdousVal = query.get("adous");
+        Assert.assertTrue(wdousVal != null);
 
     }
 
@@ -114,9 +111,9 @@ public class SearchQueryTest {
 
         //Now Parsing On ServerSide:
         SearchQuery reverseQ = mapper.readValue(json, SearchQuery.class);
-        Optional<Object> timeTicking = reverseQ.get("TimeTicking");
-        Assert.assertTrue(timeTicking.isPresent() == true);
-        System.out.println("TimeTicking Value is '" + ((Boolean)timeTicking.get()) + "'");
+        Object timeTicking = reverseQ.get("TimeTicking");
+        Assert.assertTrue(timeTicking != null);
+        System.out.println("TimeTicking Value is '" + (timeTicking) + "'");
     }
 
     @Test
@@ -137,9 +134,12 @@ public class SearchQueryTest {
         String json = queryX.toString();
 
         SearchQuery query = mapper.readValue(json, SearchQuery.class);
-        Optional<Person> person = query.get("person", Person.class);
-        Assert.assertTrue(person.isPresent());
-        Assert.assertEquals(person.get().getName(), p.getName());
+        Person person = query.get("person", Person.class);
+        Assert.assertTrue(person != null);
+        Assert.assertEquals(person.getName(), p.getName());
+
+        Person person1 = query.get("person", null);
+        Assert.assertTrue(person1 == null);
     }
 
     private static class Person extends Message{

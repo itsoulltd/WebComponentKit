@@ -31,20 +31,22 @@ public class SearchQuery extends PagingQuery implements WhereClause {
             QueryProperty qp = new QueryProperty(key);
             getProperties().add(qp);
         }else{
-            QueryProperty previous = getCurrent().get();
+            QueryProperty previous = getCurrent();
+            if (previous != null){
+                previous.setLogic(logic);
+                previous.setNextKey(key);
+            }
             QueryProperty qp = new QueryProperty(key);
-            previous.setLogic(logic);
-            previous.setNextKey(key);
             getProperties().add(qp);
         }
         updateSortedList(getCurrent());
     }
 
     @JsonIgnore
-    protected Optional<QueryProperty> getCurrent(){
-        if (getProperties().size() == 0) return Optional.ofNullable(null);
+    protected QueryProperty getCurrent(){
+        if (getProperties().size() == 0) return null;
         QueryProperty current = getProperties().get(getProperties().size()-1);
-        return Optional.ofNullable(current);
+        return current;
     }
 
     @JsonIgnore
@@ -86,53 +88,52 @@ public class SearchQuery extends PagingQuery implements WhereClause {
         }
     }
 
-    private void updateSortedList(Optional<QueryProperty> query){
+    private void updateSortedList(QueryProperty query){
+        if (query == null) return;
         //First find the expected index to insert:
         //Then insert new Item into that index:
-        if (query.isPresent()){
-            //This guarantees that the return value will be >= 0 if and only if the key is found.
-            //And this must be the index of the search key, if it is contained in the list;
-            //Otherwise, -(returnIndex) = (-(insertionPoint) - 1). The insertion point is defined as the point at which the key would be inserted into the list:
-            //So, insertionPoint = returnIndex - 1;
-            //New Implementation:
-            QueryProperty goingToInserted = query.get();
-            List<QueryProperty> sorted = getSortedList();
-            int index = (sorted.isEmpty()) ? 0 : Collections.binarySearch(sorted, goingToInserted, (o1, o2) -> {
-                int res = o1.getKey().compareToIgnoreCase(o2.getKey());
-                return res;
-            });
-            if (index < 0) {
-                int insertIndex = ((index * -1) - 1);
-                if (insertIndex >= 0 && insertIndex < sorted.size()) {
-                    index = insertIndex;
-                }else{
-                    index = sorted.size();
-                }
+        //This guarantees that the return value will be >= 0 if and only if the key is found.
+        //And this must be the index of the search key, if it is contained in the list;
+        //Otherwise, -(returnIndex) = (-(insertionPoint) - 1). The insertion point is defined as the point at which the key would be inserted into the list:
+        //So, insertionPoint = returnIndex - 1;
+        //New Implementation:
+        QueryProperty goingToInserted = query;
+        List<QueryProperty> sorted = getSortedList();
+        int index = (sorted.isEmpty()) ? 0 : Collections.binarySearch(sorted, goingToInserted, (o1, o2) -> {
+            int res = o1.getKey().compareToIgnoreCase(o2.getKey());
+            return res;
+        });
+        if (index < 0) {
+            int insertIndex = ((index * -1) - 1);
+            if (insertIndex >= 0 && insertIndex < sorted.size()) {
+                index = insertIndex;
+            }else{
+                index = sorted.size();
             }
-            //So just insert at this index, because we support duplicate insert.
-            if (index < sorted.size()) {
-                sorted.add(index, goingToInserted);
-            } else {
-                sorted.add(goingToInserted);
-            }
+        }
+        //So just insert at this index, because we support duplicate insert.
+        if (index < sorted.size()) {
+            sorted.add(index, goingToInserted);
+        } else {
+            sorted.add(goingToInserted);
         }
     }
 
     @JsonIgnore
-    public Optional<Object> get(String key){
+    public Object get(String key){
         return get(key, null);
     }
 
     @JsonIgnore
-    public <T extends Object> Optional<T> get(String key, Class<T> classType){
+    public <T extends Object> T get(String key, Class<T> classType){
         //Search into properties
         int index = Collections.binarySearch(getSortedList()
                 , new QueryProperty(key), (o1, o2) -> o1.getKey().compareToIgnoreCase(o2.getKey()));
         //
-        if (index < 0) return Optional.ofNullable(null);
+        if (index < 0) return null;
         QueryProperty props = getSortedList().get(index);
         String value = props.getValue();
-        if (value == null) return Optional.ofNullable(null);
+        if (value == null) return null;
         //
         DataType type = props.getType();
         Object result = value;
@@ -174,12 +175,12 @@ public class SearchQuery extends PagingQuery implements WhereClause {
             default:
                 result = value;
         }
-        return Optional.ofNullable((T) result);
+        return (T) result;
     }
 
     protected void updateCurrentProperty(Object o, Operator opt) {
-        if (getCurrent().isPresent() == false) return;
-        QueryProperty current = getCurrent().get();
+        if (getCurrent() == null) return;
+        QueryProperty current = getCurrent();
         if (o != null) {
             if (o instanceof Object[]){
                 current.setType(DataType.getDataType(o));

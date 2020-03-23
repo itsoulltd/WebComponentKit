@@ -140,7 +140,7 @@ public class Message<E extends Event> extends Entity implements Externalizable {
     }
 
     private static  <P extends Object> P internalUnmarshal(Object type, String payload) throws IOException {
-        if (isValidJson(payload)){
+        if (isValidJson(payload) && type != null){
             final ObjectMapper mapper = getJsonSerializer();
             if (type instanceof TypeReference){
                 P obj = mapper.readValue(payload, (TypeReference<P>) type);

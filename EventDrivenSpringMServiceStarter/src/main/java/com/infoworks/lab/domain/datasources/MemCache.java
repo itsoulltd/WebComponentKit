@@ -65,8 +65,8 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
         RMap rData = client.getMap(key);
         if (rData.size() > 0){
             rData.clear();
+            if(itemCount > 0) itemCount--;
         }
-        if(itemCount > 0) itemCount--;
         return value;
     }
 
@@ -76,6 +76,8 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
         RMap rData = client.getMap(key);
         if (rData.size() > 0){
             rData.clear();
+        }else{
+            itemCount++;
         }
         data.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
@@ -83,7 +85,6 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
         //Saving: Type
         String classFullName = entity.getClass().getName();
         rData.put(CLASS_NAME_KEY, classFullName);
-        itemCount++;
     }
 
     @Override

@@ -52,7 +52,7 @@ public class PassengerController {
         //TODO: Test with RestExecutor
         Passenger passenger = new Passenger();
         passenger.unmarshallingFromMap(payload.getPayload(), true);
-        dataSource.replace(passenger.getName(), passenger);
+        dataSource.put(passenger.getName(), passenger);
         ItemCount count = new ItemCount();
         count.setCount(Integer.valueOf(dataSource.size()).longValue());
         return count;
@@ -63,8 +63,7 @@ public class PassengerController {
         //TODO: Test with RestExecutor
         Passenger passenger = new Passenger();
         passenger.unmarshallingFromMap(payload.getPayload(), true);
-        dataSource.remove(passenger.getName());
-        return true;
+        return dataSource.remove(passenger.getName()) != null;
     }
 
 }

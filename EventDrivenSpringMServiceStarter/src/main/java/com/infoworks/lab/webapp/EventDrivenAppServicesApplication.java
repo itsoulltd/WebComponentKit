@@ -10,15 +10,15 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {"com.infoworks.lab.controllers"
         , "com.infoworks.lab.webapp.config"
         , "com.infoworks.lab.domain"})
-public class AppServicesApplication extends SpringBootServletInitializer {
+public class EventDrivenAppServicesApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        SpringApplication.run(AppServicesApplication.class, args);
+        SpringApplication.run(EventDrivenAppServicesApplication.class, args);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(AppServicesApplication.class);
+        return application.sources(EventDrivenAppServicesApplication.class);
     }
 
 }

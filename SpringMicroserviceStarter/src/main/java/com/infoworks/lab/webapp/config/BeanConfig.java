@@ -1,7 +1,9 @@
 package com.infoworks.lab.webapp.config;
 
+import com.infoworks.lab.domain.entities.Passenger;
 import com.infoworks.lab.jsql.ExecutorType;
 import com.infoworks.lab.jsql.JsqlConfig;
+import com.it.soul.lab.data.simple.SimpleDataSource;
 import com.it.soul.lab.sql.SQLExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -38,6 +40,11 @@ public class BeanConfig {
     @Bean("AppDBNameKey")
     String appDBNameKey(){
         return env.getProperty("app.db.name");
+    }
+
+    @Bean("passengerDatasource")
+    public SimpleDataSource<String, Passenger> getPassengerDatasource(){
+        return new SimpleDataSource<>();
     }
 
 }

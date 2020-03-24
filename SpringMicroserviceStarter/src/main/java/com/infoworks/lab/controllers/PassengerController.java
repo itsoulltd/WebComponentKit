@@ -5,33 +5,27 @@ import com.infoworks.lab.domain.entities.Passenger;
 import com.infoworks.lab.domain.repositories.PassengerRepository;
 import com.infoworks.lab.jsql.JsqlConfig;
 import com.infoworks.lab.rest.models.ItemCount;
+import com.it.soul.lab.data.simple.SimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("/passenger")
 public class PassengerController {
-    @Autowired
-    private JsqlConfig jsqlConfig;
-
-    @Autowired @Qualifier("AppDBNameKey")
-    private String dbKey;
 
     @Autowired
-    private Environment env;
-
-    @Autowired
-    private PassengerRepository repository;
+    private SimpleDataSource<String, Passenger> dataSource;
 
     @GetMapping("/rowCount")
     public ItemCount getRowCount(){
         ItemCount count = new ItemCount();
-        count.setCount(repository.count());
+        count.setCount(Integer.valueOf(dataSource.size()).longValue());
         return count;
     }
 
@@ -39,25 +33,39 @@ public class PassengerController {
     public List<Passenger> query(@RequestParam("limit") Integer limit
             , @RequestParam("offset") Integer offset){
         //TODO: Test with RestExecutor
-        return new ArrayList<>();
+        List<Passenger> passengers = Arrays.asList(dataSource.readSynch(offset, limit));
+        return passengers;
     }
 
-    @PostMapping
+    @PostMapping @SuppressWarnings("Duplicates")
     public ItemCount insert(@RequestBody Payload payload){
         //TODO: Test with RestExecutor
-        return new ItemCount();
+        Passenger passenger = new Passenger();
+        passenger.unmarshallingFromMap(payload.getPayload(), true);
+        dataSource.put(passenger.getName(), passenger);
+        ItemCount count = new ItemCount();
+        count.setCount(Integer.valueOf(dataSource.size()).longValue());
+        return count;
     }
 
-    @PutMapping
+    @PutMapping @SuppressWarnings("Duplicates")
     public ItemCount update(@RequestBody Payload payload){
         //TODO: Test with RestExecutor
-        return new ItemCount();
+        Passenger passenger = new Passenger();
+        passenger.unmarshallingFromMap(payload.getPayload(), true);
+        dataSource.replace(passenger.getName(), passenger);
+        ItemCount count = new ItemCount();
+        count.setCount(Integer.valueOf(dataSource.size()).longValue());
+        return count;
     }
 
     @DeleteMapping
     public Boolean delete(@RequestBody Payload payload){
         //TODO: Test with RestExecutor
-        return false;
+        Passenger passenger = new Passenger();
+        passenger.unmarshallingFromMap(payload.getPayload(), true);
+        dataSource.remove(passenger.getName());
+        return true;
     }
 
 }

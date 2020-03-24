@@ -16,6 +16,7 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
     private Logger LOG = Logger.getLogger(this.getClass().getSimpleName());
     private RedissonClient client;
     private static final String CLASS_NAME_KEY = "classname";
+    private int itemCount;
 
     public MemCache(RedissonClient client) {
         this.client = client;
@@ -65,6 +66,7 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
         if (rData.size() > 0){
             rData.clear();
         }
+        if(itemCount > 0) itemCount--;
         return value;
     }
 
@@ -81,10 +83,16 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
         //Saving: Type
         String classFullName = entity.getClass().getName();
         rData.put(CLASS_NAME_KEY, classFullName);
+        itemCount++;
     }
 
     @Override
     public boolean containsKey(String key) {
         return client.getMap(key).size() > 0;
+    }
+
+    @Override
+    public int size() {
+        return itemCount;
     }
 }

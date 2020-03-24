@@ -62,7 +62,7 @@ public class BeanConfig {
 
     @Bean("passengerCache")
     MemCache<Passenger> getPassengerCache(){
-        return new MemCache<>(getRedisClient());
+        return new MemCache<>(getRedisClient(), Passenger.class);
     }
 
 }

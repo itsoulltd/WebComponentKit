@@ -8,6 +8,7 @@ import org.redisson.api.RedissonClient;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,10 +17,16 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
     private Logger LOG = Logger.getLogger(this.getClass().getSimpleName());
     private RedissonClient client;
     private static final String CLASS_NAME_KEY = "classname";
-    private int itemCount;
+    private String entityClassFullName;
 
     public MemCache(RedissonClient client) {
         this.client = client;
+    }
+
+    public MemCache(RedissonClient client, Class<? extends EntityInterface> aClass) {
+        this(client);
+        if(aClass != null)
+            setEntityClassFullName(aClass.getName());
     }
 
     public Entity read(String key){
@@ -65,7 +72,7 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
         RMap rData = client.getMap(key);
         if (rData.size() > 0){
             rData.clear();
-            if(itemCount > 0) itemCount--;
+            decrement();
         }
         return value;
     }
@@ -77,7 +84,7 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
         if (rData.size() > 0){
             rData.clear();
         }else{
-            itemCount++;
+            increment();
         }
         data.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
@@ -94,6 +101,54 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
 
     @Override
     public int size() {
-        return itemCount;
+        return getCounter().getCount();
     }
+
+    private ItemCounter counter;
+
+    public ItemCounter getCounter() {
+        if (counter == null){
+            synchronized (this){
+                if (getEntityClassFullName() != null && !getEntityClassFullName().isEmpty()) {
+                    RMap<String, Integer> countMap = client.getMap("item_count_map");
+                    int initial = 0;
+                    if (countMap != null && countMap.size() > 0){
+                        initial = countMap.get(getEntityClassFullName());
+                    }
+                    counter = new ItemCounter(getEntityClassFullName(), initial);
+                }else {
+                    counter = new ItemCounter(0);
+                }
+            }
+        }
+        return counter;
+    }
+
+    public String getEntityClassFullName() {
+        return entityClassFullName;
+    }
+
+    protected void setEntityClassFullName(String entityClassFullName) {
+        if (this.entityClassFullName == null || this.entityClassFullName.isEmpty())
+            this.entityClassFullName = entityClassFullName;
+    }
+
+    protected void increment(){
+        int value = getCounter().increment();
+        updateMemCounter(value);
+    }
+
+    protected void decrement(){
+        int value = getCounter().decrement();
+        updateMemCounter(value);
+    }
+
+    private void updateMemCounter(int value) {
+        if (getEntityClassFullName() != null && !getEntityClassFullName().isEmpty()) {
+            RMap<String, Integer> countMap = client.getMap("item_count_map");
+            if(countMap != null)
+                countMap.put(getEntityClassFullName(), value);
+        }
+    }
+
 }

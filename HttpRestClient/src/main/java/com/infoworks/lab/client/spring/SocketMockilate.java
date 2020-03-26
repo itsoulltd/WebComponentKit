@@ -30,6 +30,7 @@ public class SocketMockilate extends SocketTemplate {
 
     @Override
     public void disconnect() {
+        super.disconnect();
         if (session == null){return;}
         funcMapper.clear();
         session.shutdown();

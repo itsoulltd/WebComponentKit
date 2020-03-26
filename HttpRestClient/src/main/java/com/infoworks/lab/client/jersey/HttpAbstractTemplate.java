@@ -137,6 +137,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
 
     @Override
     public void close() {
+        super.close();
         if (webClient != null) webClient.close();
     }
 

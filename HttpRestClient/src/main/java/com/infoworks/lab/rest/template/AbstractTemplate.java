@@ -115,7 +115,26 @@ public abstract class AbstractTemplate {
     /**
      * Tasks are guaranteed to execute sequentially.
      */
-    private ExecutorService _exeService = Executors.newSingleThreadExecutor();
+    private ExecutorService _exeService;
+    protected ExecutorService getExeService(){
+        if (_exeService == null){
+            synchronized (this){
+                _exeService = Executors.newSingleThreadExecutor();
+            }
+        }
+        return _exeService;
+    }
+
+    protected void close(){
+        if (_exeService == null) return;
+        try {
+            if (!_exeService.isShutdown())
+                _exeService.shutdown();
+        } catch (Exception e) {}
+        finally {
+            _exeService = null;
+        }
+    }
 
     public void notify(Object produce){
         QueueItem observer = _consumerQueue.poll();
@@ -136,10 +155,11 @@ public abstract class AbstractTemplate {
     }
 
     public void submit(Runnable task){
-        _exeService.submit(task);
+        getExeService().submit(task);
     }
 
     public void execute(Runnable task){
-        _exeService.execute(task);
+        getExeService().execute(task);
     }
+
 }

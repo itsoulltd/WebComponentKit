@@ -4,6 +4,7 @@ import com.infoworks.lab.beans.tasks.definition.*;
 import com.infoworks.lab.rest.models.Message;
 
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 public class TransactionStack implements TaskLifecycleListener, TaskStack {
@@ -28,6 +29,7 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
     public synchronized void cancel(){
         if (state == State.Running){
             state = State.Canceled;
+            manager.terminateRunningTasks(0l, TimeUnit.SECONDS);
             if (passedStack.isEmpty()) return;
             manager.stop(passedStack.peek(), null);
         }
@@ -97,6 +99,11 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
         synchronized (this){
             state = State.Failed;
         }
+        //
+        try {
+            manager.close();
+        } catch (Exception e) {}
+        //
         if (callback != null){
             callback.accept(reason, state);
         }else if (listener != null){
@@ -111,6 +118,11 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
             beanStack.clear();
             passedStack.clear();
         }
+        //
+        try {
+            manager.close();
+        } catch (Exception e) {}
+        //
         if (callback != null){
             callback.accept(results, state);
         }else if (listener != null){

@@ -7,6 +7,7 @@ import com.infoworks.lab.rest.models.Message;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class SimpleTaskManager implements TaskManager {
 
@@ -94,5 +95,28 @@ public class SimpleTaskManager implements TaskManager {
             }
         });
         //
+    }
+
+    @Override
+    public void terminateRunningTasks(long timeout, TimeUnit unit) {
+        if (service == null) return;
+        try {
+            if (!service.isShutdown()){
+                if (timeout <= 0l)
+                    service.shutdownNow();
+                else {
+                    service.shutdown();
+                    service.awaitTermination(timeout, unit);
+                }
+            }
+        } catch (Exception e) {}
+        finally {
+            service = null;
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        terminateRunningTasks(0l, TimeUnit.SECONDS);
     }
 }

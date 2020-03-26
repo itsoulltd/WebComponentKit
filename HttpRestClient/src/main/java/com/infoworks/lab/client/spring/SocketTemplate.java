@@ -122,6 +122,7 @@ public class SocketTemplate extends AbstractTemplate implements SocketInteractor
     }
 
     public void disconnect(){
+        super.close();
         if (session == null){return;}
         if (session.isConnected()){session.disconnect();}
         funcMapper.clear();

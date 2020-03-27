@@ -10,6 +10,7 @@ public interface Task {
     Message execute(Message message) throws RuntimeException;
     Message abort(Message message) throws RuntimeException;
     default Message getMessage() {return null;}
+    default void setMessage(Message message) {}
 
     default Function<Message, Message> getConverter() {return null;}
     default MessageConverter getMessageConverter() {return null;}

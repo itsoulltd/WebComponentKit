@@ -1,13 +1,16 @@
 package com.infoworks.lab.webapp.config.jms;
 
+import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -19,7 +22,35 @@ import javax.jms.Session;
 
 @Configuration
 @EnableJms
+@PropertySource("classpath:application.properties")
 public class JmsConfig {
+
+    @Value("${spring.activemq.broker-url}")
+    private String BROKER_URL;
+
+    @Value("${spring.activemq.user}")
+    private String BROKER_USERNAME;
+
+    @Value("${spring.activemq.password}")
+    private String BROKER_PASSWORD;
+
+    /**
+     * If You Want To Use The DefaultConnectionFactory provided
+     * by Spring then comment-out bean configuration -connectionFactory()
+     * @return
+     */
+    @Bean
+    public ActiveMQConnectionFactory connectionFactory(){
+        // create a Connection Factory
+        if (BROKER_URL == null || BROKER_URL.isEmpty())
+            BROKER_URL = ActiveMQConnection.DEFAULT_BROKER_URL;
+        //
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
+        connectionFactory.setBrokerURL(BROKER_URL);
+        connectionFactory.setPassword(BROKER_USERNAME);
+        connectionFactory.setUserName(BROKER_PASSWORD);
+        return connectionFactory;
+    }
 
     @Bean @Autowired
     public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory){

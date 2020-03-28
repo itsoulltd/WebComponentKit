@@ -16,7 +16,7 @@ public class MessageListener {
 
     private static int retryCount = 0;
 
-    @JmsListener(destination = "test-queue")
+    @JmsListener(destination = "testQueue")
     public void listener(Message message) throws JMSException {
         // retrieve the message content
         TextMessage textMessage = (TextMessage) message;

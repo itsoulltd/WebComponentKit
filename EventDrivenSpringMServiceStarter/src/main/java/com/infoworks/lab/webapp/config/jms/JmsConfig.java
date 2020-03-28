@@ -68,11 +68,6 @@ public class JmsConfig {
         return template;
     }
 
-    @Bean
-    public Queue queue(){
-        return new ActiveMQQueue("test-queue");
-    }
-
     @Bean @Autowired
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
             ConnectionFactory connectionFactory,
@@ -81,7 +76,7 @@ public class JmsConfig {
         //
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        factory.setConcurrency("2-3");
+        factory.setConcurrency("1-3");
         factory.setErrorHandler(errorHandler);
         /**
          * The DMLC in spring has transactions enabled in your config, while in your Java example,

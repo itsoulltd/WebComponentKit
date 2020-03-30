@@ -15,12 +15,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
-public class QueueManager implements TaskManager {
+public class TaskQueueManager implements TaskManager {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     private QueuedTaskLifecycleListener listener;
 
-    public QueueManager(@Autowired QueuedTaskLifecycleListener listener) {
+    public TaskQueueManager(@Autowired QueuedTaskLifecycleListener listener) {
         this.listener = listener;
     }
 

@@ -76,7 +76,7 @@ public class JmsConfig {
         //
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        factory.setConcurrency("1-3");
+        factory.setConcurrency("1-1");
         factory.setErrorHandler(errorHandler);
         /**
          * The DMLC in spring has transactions enabled in your config, while in your Java example,

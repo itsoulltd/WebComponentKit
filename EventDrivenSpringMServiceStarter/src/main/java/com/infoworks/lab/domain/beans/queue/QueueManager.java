@@ -24,7 +24,7 @@ public class QueueManager implements TaskManager {
         this.listener = listener;
     }
 
-    @JmsListener(destination = "exeQueue")
+    @JmsListener(destination = "exeQueue", concurrency = "1-5")
     public void startlistener(javax.jms.Message message) throws JMSException {
         // retrieve the message content
         TextMessage textMessage = (TextMessage) message;
@@ -76,7 +76,7 @@ public class QueueManager implements TaskManager {
         }
     }
 
-    @JmsListener(destination = "abortQueue")
+    @JmsListener(destination = "abortQueue", concurrency = "1-3")
     public void abortListener(javax.jms.Message message) throws JMSException {
         // retrieve the message content
         TextMessage textMessage = (TextMessage) message;

@@ -30,6 +30,10 @@ public interface TaskStack {
         return create(TransactionStack.class);
     }
 
+    static TaskStack create(boolean synch){
+        return new TransactionStack(synch);
+    }
+
     TaskStack push(Task task);
     void commit(boolean reverse, BiConsumer<Message, State> onComplete);
     void commit(boolean reverse, TaskCompletionListener onComplete);

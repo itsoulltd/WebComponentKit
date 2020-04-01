@@ -17,7 +17,13 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
     private TaskCompletionListener listener;
 
     public TransactionStack() {
-        manager = TaskManager.create(this);
+        this(false);
+    }
+
+    public TransactionStack(boolean synch) {
+        this.manager = (synch)
+                ? TaskManager.createSynch(this)
+                : TaskManager.createAsynch(this);
         beanStack = new Stack<>();
         passedStack = new Stack<>();
     }

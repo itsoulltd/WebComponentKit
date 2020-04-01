@@ -24,6 +24,7 @@ public class Response<E extends Event> extends Message<E> {
 
     private Integer status = 200;
     private String error;
+    private String message;
 
     public Response() {}
 
@@ -45,4 +46,12 @@ public class Response<E extends Event> extends Message<E> {
         return this;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public Response setMessage(String message) {
+        this.message = message;
+        return this;
+    }
 }

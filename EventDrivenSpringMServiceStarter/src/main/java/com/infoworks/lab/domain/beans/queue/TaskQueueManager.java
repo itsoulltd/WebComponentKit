@@ -49,7 +49,7 @@ public class TaskQueueManager implements TaskManager {
         }
     }
 
-    @Override
+    @Override @SuppressWarnings("Duplicates")
     public void start(Task task, Message message) {
         if (task != null){
             if (getListener() != null)

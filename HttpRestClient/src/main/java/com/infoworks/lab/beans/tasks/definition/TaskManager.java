@@ -1,6 +1,6 @@
 package com.infoworks.lab.beans.tasks.definition;
 
-import com.infoworks.lab.beans.tasks.impl.SimpleTaskManager;
+import com.infoworks.lab.beans.tasks.impl.AsynchTaskManager;
 import com.infoworks.lab.rest.models.Message;
 
 import java.util.concurrent.TimeUnit;
@@ -13,8 +13,9 @@ public interface TaskManager extends AutoCloseable{
     }
 
     static TaskManager create(TaskLifecycleListener listener){
-        return new SimpleTaskManager(listener);
+        return new AsynchTaskManager(listener);
     }
+
     void start(Task task, Message message);
     void stop(Task task, Message reason);
     void terminateRunningTasks(long timeout, TimeUnit unit);

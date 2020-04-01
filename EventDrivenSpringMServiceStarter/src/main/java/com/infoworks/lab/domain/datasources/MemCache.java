@@ -113,7 +113,12 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
                     RMap<String, Integer> countMap = client.getMap("item_count_map");
                     int initial = 0;
                     if (countMap != null && countMap.size() > 0){
-                        initial = countMap.get(getEntityClassFullName());
+                        try {
+                            Object obj = countMap.get(getEntityClassFullName());
+                            if(obj != null) initial = Integer.valueOf(obj.toString());
+                        } catch (Exception e) {
+                            LOG.log(Level.WARNING, e.getMessage(), e);
+                        }
                     }
                     counter = new ItemCounter(getEntityClassFullName(), initial);
                 }else {

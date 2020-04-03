@@ -13,7 +13,7 @@ public class TaskStackTest {
 
     @Before
     public void before(){
-        stack = TaskStack.create(false);
+        stack = TaskStack.createSynch(false);
     }
 
     @After

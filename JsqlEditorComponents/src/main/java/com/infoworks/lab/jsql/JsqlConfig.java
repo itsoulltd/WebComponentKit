@@ -117,17 +117,29 @@ public class JsqlConfig {
         }
         System.out.println("DATA-SOURCE URL: " + url);
         //
+        DataSource ds = createDataSource(url, driverClassName, username, password);
+        configureDataSource(ds);
+        return ds;
+    }
+
+    protected DataSource createDataSource(String url, String driverClassName, String username, String password){
         org.apache.tomcat.jdbc.pool.DataSource ds = new org.apache.tomcat.jdbc.pool.DataSource();
         ds.setDriverClassName(driverClassName);
         ds.setUrl(url);
         ds.setUsername(username);
         ds.setPassword(password);
-        ds.setInitialSize(5);
-        ds.setMaxActive(10);
-        ds.setMaxIdle(5);
-        ds.setMinIdle(2);
-        //ds.setValidationQuery("select now()");
         return ds;
+    }
+
+    protected void configureDataSource(DataSource ds){
+        if (ds instanceof org.apache.tomcat.jdbc.pool.DataSource){
+            org.apache.tomcat.jdbc.pool.DataSource poolDS = (org.apache.tomcat.jdbc.pool.DataSource) ds;
+            poolDS.setInitialSize(5);
+            poolDS.setMaxActive(10);
+            poolDS.setMaxIdle(5);
+            poolDS.setMinIdle(2);
+            //poolDS.setValidationQuery("select now()");
+        }
     }
 
     public static DataSourceKey createDataSourceKey(String suffix) {

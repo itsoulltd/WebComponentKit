@@ -1,5 +1,6 @@
 package com.infoworks.lab.domain.beans.queue;
 
+import com.infoworks.lab.beans.tasks.definition.QueuedTaskLifecycleListener;
 import com.infoworks.lab.beans.tasks.definition.Task;
 import com.infoworks.lab.beans.tasks.definition.TaskManager;
 import com.infoworks.lab.rest.models.Message;

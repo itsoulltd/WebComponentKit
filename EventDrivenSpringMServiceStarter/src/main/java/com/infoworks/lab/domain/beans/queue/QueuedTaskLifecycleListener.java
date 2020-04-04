@@ -7,7 +7,7 @@ import com.infoworks.lab.rest.models.Message;
 
 public interface QueuedTaskLifecycleListener extends TaskLifecycleListener {
 
-    void failed(Task task, Message error);
+    void abort(Task task);
 
     @Override
     default void before(Task task, TaskManager.State state) {}

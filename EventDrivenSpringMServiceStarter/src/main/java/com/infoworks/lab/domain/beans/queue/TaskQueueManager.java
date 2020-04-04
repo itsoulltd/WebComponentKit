@@ -67,7 +67,7 @@ public class TaskQueueManager implements TaskManager {
             //End Execute:
             if (getListener() != null) {
                 if (mustAbort) {
-                    getListener().failed(task, msg);
+                    getListener().abort(task);
                 } else {
                     getListener().after(task, State.Forward);
                     getListener().finished(msg);

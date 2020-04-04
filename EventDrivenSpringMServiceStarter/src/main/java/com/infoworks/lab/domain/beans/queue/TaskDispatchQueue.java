@@ -45,7 +45,7 @@ public class TaskDispatchQueue implements TaskQueue, QueuedTaskLifecycleListener
     }
 
     @Override
-    public void failed(Task task, Message error) {
+    public void abort(Task task) {
         //Defined:JmsMessage Protocol
         JmsMessage jmsMessage = new JmsMessage()
                 .setTaskClassName(task.getClass().getName())

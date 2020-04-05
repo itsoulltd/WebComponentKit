@@ -110,11 +110,13 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
             manager.close();
         } catch (Exception e) {}
         //
-        if (callback != null){
-            callback.accept(reason, state);
-        }else if (listener != null){
-            listener.failed(reason);
-        }
+        try {
+            if (callback != null){
+                callback.accept(reason, state);
+            }else if (listener != null){
+                listener.failed(reason);
+            }
+        } catch (Exception e) {}
     }
 
     @Override
@@ -129,11 +131,13 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
             manager.close();
         } catch (Exception e) {}
         //
-        if (callback != null){
-            callback.accept(results, state);
-        }else if (listener != null){
-            listener.finished(results);
-        }
+        try {
+            if (callback != null){
+                callback.accept(results, state);
+            }else if (listener != null){
+                listener.finished(results);
+            }
+        } catch (Exception e) {}
     }
 
 }

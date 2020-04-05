@@ -18,7 +18,7 @@ services:
           MYSQL_DATABASE: testDB
           MYSQL_ROOT_PASSWORD: root
       ports:
-          - 3317:3306
+          - 3306:3306
       networks:
           - web-app-net
       volumes:
@@ -70,7 +70,7 @@ services:
          app.activemq.password: admin
          management.endpoints.web.exposure.include: health,metrics,httptrace,prometheus
       ports:
-         - 8081:8080
+         - 8080:8080
       depends_on:
          - mysql-db
          - redis

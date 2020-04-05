@@ -18,7 +18,7 @@ services:
           MYSQL_DATABASE: testDB
           MYSQL_ROOT_PASSWORD: root
       ports:
-          - 3317:3306
+          - 3306:3306
       networks:
           - web-app-net
       volumes:

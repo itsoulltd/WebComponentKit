@@ -6,9 +6,9 @@ import com.infoworks.lab.rest.models.Message;
 import java.util.Random;
 import java.util.logging.Logger;
 
-public class ConsolPrintTask extends AbstractTask {
+public class ConsolePrintTask extends AbstractTask {
 
-    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+    private static final Logger logger = Logger.getLogger("ConsolePrintTask");
 
     @Override
     public Message execute(Message message) throws RuntimeException {
@@ -20,7 +20,7 @@ public class ConsolPrintTask extends AbstractTask {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        logger.info("EXECUTE:" + message.toString());
+        logger.info("EXECUTE:" + getMessage().toString());
         return message;
     }
 
@@ -34,7 +34,7 @@ public class ConsolPrintTask extends AbstractTask {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        logger.info("DOING ABORT:" + message.toString());
+        logger.info("DOING ABORT:" + getMessage().toString());
         return message;
     }
 }

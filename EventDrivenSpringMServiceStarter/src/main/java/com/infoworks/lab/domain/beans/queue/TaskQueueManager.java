@@ -39,7 +39,7 @@ public class TaskQueueManager implements TaskManager {
             Message taskMessage = Message.unmarshal(messageClass, jmsMessage.getPayload());
             task.setMessage(taskMessage);
             //
-            start(task, taskMessage);
+            start(task, null);
             message.acknowledge();
             //
         }catch (RuntimeException | IOException
@@ -68,7 +68,7 @@ public class TaskQueueManager implements TaskManager {
             //End Execute:
             if (getListener() != null) {
                 if (mustAbort) {
-                    getListener().abort(task);
+                    getListener().abort(task, msg);
                 } else {
                     getListener().after(task, State.Forward);
                     getListener().finished(msg);
@@ -90,8 +90,11 @@ public class TaskQueueManager implements TaskManager {
             Class<? extends Message> messageClass = (Class<? extends Message>) Class.forName(jmsMessage.getMessageClassName());
             Message taskMessage = Message.unmarshal(messageClass, jmsMessage.getPayload());
             task.setMessage(taskMessage);
+            //Handle error-message:
+            Class<? extends Message> errorClass = (Class<? extends Message>) Class.forName(jmsMessage.getErrorClassName());
+            Message errorMessage = Message.unmarshal(errorClass, jmsMessage.getErrorPayload());
             //
-            stop(task, taskMessage);
+            stop(task, errorMessage);
             message.acknowledge();
             //
         }catch (RuntimeException | IOException

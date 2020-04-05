@@ -42,14 +42,19 @@ public class TaskDispatchQueue implements TaskQueue, QueuedTaskLifecycleListener
     }
 
     @Override
-    public void abort(Task task) {
+    public void abort(Task task, Message error) {
         //Defined:JmsMessage Protocol
         JmsMessage jmsMessage = new JmsMessage()
                 .setTaskClassName(task.getClass().getName())
-                .setMessageClassName(Message.class.getName());
+                .setMessageClassName(Message.class.getName())
+                .setErrorClassName(Message.class.getName());
         if (task.getMessage() != null) {
             jmsMessage.setMessageClassName(task.getMessage().getClass().getName())
                     .setPayload(task.getMessage().toString());
+        }
+        if (error != null){
+            jmsMessage.setErrorClassName(error.getClass().getName())
+                    .setErrorPayload(error.toString());
         }
         jmsTemplate.convertAndSend(abortQueue, jmsMessage.toString());
     }
@@ -72,20 +77,24 @@ public class TaskDispatchQueue implements TaskQueue, QueuedTaskLifecycleListener
 
     @Override
     public void failed(Message message) {
-        if (callback != null){
-            callback.accept(message, TaskStack.State.Failed);
-        }else if (listener != null){
-            listener.failed(message);
-        }
+        try {
+            if (callback != null){
+                callback.accept(message, TaskStack.State.Failed);
+            }else if (listener != null){
+                listener.failed(message);
+            }
+        } catch (Exception e) {}
     }
 
     @Override
     public void finished(Message message) {
-        if (callback != null){
-            callback.accept(message, TaskStack.State.Finished);
-        }else if (listener != null){
-            listener.finished(message);
-        }
+        try {
+            if (callback != null){
+                callback.accept(message, TaskStack.State.Finished);
+            }else if (listener != null){
+                listener.finished(message);
+            }
+        } catch (Exception e) {}
     }
 
 }

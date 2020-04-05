@@ -3,7 +3,7 @@ package com.infoworks.lab.controllers.jms;
 import com.infoworks.lab.beans.tasks.definition.Task;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.domain.beans.tasks.mocks.AbortTask;
-import com.infoworks.lab.domain.beans.tasks.mocks.ConsolPrintTask;
+import com.infoworks.lab.domain.beans.tasks.mocks.ConsolePrintTask;
 import com.infoworks.lab.rest.models.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,9 +52,9 @@ public class MessageController {
             task = abortTask;
         }else{
             Message mac = new Message().setPayload(String.format("{\"message\":\"%s\"}", message));
-            ConsolPrintTask consolPrintTask = new ConsolPrintTask();
-            consolPrintTask.setMessage(mac);
-            task = consolPrintTask;
+            ConsolePrintTask consolePrintTask = new ConsolePrintTask();
+            consolePrintTask.setMessage(mac);
+            task = consolePrintTask;
         }
         taskQueue.add(task);
         //Test:

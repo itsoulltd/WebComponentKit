@@ -1,0 +1,25 @@
+version: '3.5'
+
+networks:
+   web-app-net:
+       name: my-web-app-net
+       #driver: overlay
+       driver: bridge
+
+volumes:
+   mysql-db-storage:
+
+services:
+   mysql-db:
+      image: mysql:8.0.13
+      environment:
+          MYSQL_DATABASE: testDB
+          MYSQL_ROOT_PASSWORD: root@123
+      ports:
+          - 3306:3306
+      networks:
+          - web-app-net
+      volumes:
+          - mysql-db-storage:/var/lib/mysql
+
+##End of Scripts

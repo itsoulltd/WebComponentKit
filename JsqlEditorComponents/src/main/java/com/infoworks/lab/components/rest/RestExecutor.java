@@ -8,6 +8,7 @@ import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.ResponseList;
 import com.infoworks.lab.rest.template.Interactor;
 import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 import com.it.soul.lab.sql.query.*;
 import com.it.soul.lab.sql.query.builder.AbstractQueryBuilder;
 import com.it.soul.lab.sql.query.models.Row;
@@ -23,9 +24,15 @@ import java.util.stream.Stream;
 public class RestExecutor extends AbstractRestExecutor {
 
     private DataSourceKey sourceKey;
+    private String payloadClassName;
 
     public RestExecutor(DataSourceKey sourceKey) {
+        this(Payload.class, sourceKey);
+    }
+
+    public RestExecutor(Class<? extends EntityInterface> type, DataSourceKey sourceKey) {
         this.sourceKey = sourceKey;
+        this.payloadClassName = type.getName();
     }
 
     public DataSourceKey getSourceKey() {
@@ -117,7 +124,8 @@ public class RestExecutor extends AbstractRestExecutor {
         //Calls Come Here
         URI uri = parseURI(getSourceKey());
         try (HttpTemplate<ItemCount, Entity> template = Interactor.create(HttpTemplate.class, uri, ItemCount.class)){
-            Payload payload = new Payload(query.getRow().keyObjectMap());
+            Entity payload = instantiate();
+            payload.unmarshallingFromMap(query.getRow().keyObjectMap(), true);
             ItemCount inserted = template.post(payload);
             return inserted.getCount().intValue();
         } catch (Exception e) {
@@ -130,12 +138,21 @@ public class RestExecutor extends AbstractRestExecutor {
         //Calls Come Here
         URI uri = parseURI(getSourceKey());
         try (HttpTemplate<ItemCount, Entity> template = Interactor.create(HttpTemplate.class, uri, ItemCount.class)){
-            Payload payload = new Payload(query.getRow().keyObjectMap());
+            Entity payload = instantiate();
+            payload.unmarshallingFromMap(query.getRow().keyObjectMap(), true);
             ItemCount inserted = template.put(payload);
             return inserted.getCount().intValue();
         } catch (Exception e) {
             throw new SQLException(e.getMessage());
         }
+    }
+
+    private Entity instantiate() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        if (payloadClassName == null) throw  new InstantiationException("payloadClassName is null.");
+        if (payloadClassName.isEmpty()) throw  new InstantiationException("payloadClassName is empty.");
+        //
+        Entity instance = (Entity) Class.forName(payloadClassName).newInstance();
+        return instance;
     }
 
     @Override

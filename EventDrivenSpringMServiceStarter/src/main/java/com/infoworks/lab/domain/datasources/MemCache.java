@@ -95,6 +95,14 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
     }
 
     @Override
+    public Entity replace(String s, Entity entity) {
+        Entity old = read(s);
+        if(old != null)
+            put(s, entity);
+        return old;
+    }
+
+    @Override
     public boolean containsKey(String key) {
         return client.getMap(key).size() > 0;
     }

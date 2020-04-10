@@ -1,17 +1,12 @@
-package com.infoworks.lab.controllers;
+package com.infoworks.lab.controllers.rest;
 
-import com.infoworks.lab.components.rest.Payload;
 import com.infoworks.lab.domain.entities.Passenger;
-import com.infoworks.lab.domain.repositories.PassengerRepository;
-import com.infoworks.lab.jsql.JsqlConfig;
 import com.infoworks.lab.rest.models.ItemCount;
 import com.it.soul.lab.data.simple.SimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,10 +33,8 @@ public class PassengerController {
     }
 
     @PostMapping @SuppressWarnings("Duplicates")
-    public ItemCount insert(@RequestBody Payload payload){
+    public ItemCount insert(@Valid @RequestBody Passenger passenger){
         //TODO: Test with RestExecutor
-        Passenger passenger = new Passenger();
-        passenger.unmarshallingFromMap(payload.getPayload(), true);
         dataSource.put(passenger.getName(), passenger);
         ItemCount count = new ItemCount();
         count.setCount(Integer.valueOf(dataSource.size()).longValue());
@@ -49,23 +42,20 @@ public class PassengerController {
     }
 
     @PutMapping @SuppressWarnings("Duplicates")
-    public ItemCount update(@RequestBody Payload payload){
+    public ItemCount update(@Valid @RequestBody Passenger passenger){
         //TODO: Test with RestExecutor
-        Passenger passenger = new Passenger();
-        passenger.unmarshallingFromMap(payload.getPayload(), true);
-        dataSource.replace(passenger.getName(), passenger);
+        Passenger old = dataSource.replace(passenger.getName(), passenger);
         ItemCount count = new ItemCount();
-        count.setCount(Integer.valueOf(dataSource.size()).longValue());
+        if (old != null)
+            count.setCount(Integer.valueOf(dataSource.size()).longValue());
         return count;
     }
 
     @DeleteMapping
-    public Boolean delete(@RequestBody Payload payload){
+    public Boolean delete(@RequestParam("name") String name){
         //TODO: Test with RestExecutor
-        Passenger passenger = new Passenger();
-        passenger.unmarshallingFromMap(payload.getPayload(), true);
-        dataSource.remove(passenger.getName());
-        return true;
+        Passenger deleted = dataSource.remove(name);
+        return deleted != null;
     }
 
 }

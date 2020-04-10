@@ -125,7 +125,11 @@ public class RestExecutor extends AbstractRestExecutor {
         URI uri = parseURI(getSourceKey());
         try (HttpTemplate<ItemCount, Entity> template = Interactor.create(HttpTemplate.class, uri, ItemCount.class)){
             Entity payload = instantiate();
-            payload.unmarshallingFromMap(query.getRow().keyObjectMap(), true);
+            if (payload instanceof Payload){
+                ((Payload) payload).setPayload(query.getRow().keyObjectMap());
+            }else{
+                payload.unmarshallingFromMap(query.getRow().keyObjectMap(), true);
+            }
             ItemCount inserted = template.post(payload);
             return inserted.getCount().intValue();
         } catch (Exception e) {
@@ -139,7 +143,11 @@ public class RestExecutor extends AbstractRestExecutor {
         URI uri = parseURI(getSourceKey());
         try (HttpTemplate<ItemCount, Entity> template = Interactor.create(HttpTemplate.class, uri, ItemCount.class)){
             Entity payload = instantiate();
-            payload.unmarshallingFromMap(query.getRow().keyObjectMap(), true);
+            if (payload instanceof Payload){
+                ((Payload) payload).setPayload(query.getRow().keyObjectMap());
+            }else {
+                payload.unmarshallingFromMap(query.getRow().keyObjectMap(), true);
+            }
             ItemCount inserted = template.put(payload);
             return inserted.getCount().intValue();
         } catch (Exception e) {

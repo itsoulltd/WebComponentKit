@@ -1,3 +1,44 @@
+##Setup Using Jitpack:
+
+[![](https://jitpack.io/v/itsoulltd/WebComponentKit.svg)](https://jitpack.io/#itsoulltd/WebComponentKit/1.0-RELEASE)
+
+        Step 1. Add the JitPack repository to your build file
+                <repositories>
+                    <repository>
+                        <id>jitpack.io</id>
+                        <url>https://jitpack.io</url>
+                    </repository>
+                </repositories>
+                
+        Step 2. Add the dependency as you required
+                2.1: HttpRestClient API
+                <dependency>
+                    <groupId>com.github.itsoulltd.WebComponentKit</groupId>
+                    <artifactId>http-rest-client</artifactId>
+                    <version>1.0-RELEASE</version>
+                </dependency>
+                
+                2.2: JsqlEditorComponenet for webapp
+                <dependency>
+                    <groupId>com.github.itsoulltd.WebComponentKit</groupId>
+                    <artifactId>jsql-editor-components</artifactId>
+                    <version>1.0-RELEASE</version>
+                </dependency>
+                
+                2.3: JJWTWebToken parser for webapp
+                <dependency>
+                    <groupId>com.github.itsoulltd.WebComponentKit</groupId>
+                    <artifactId>jjwt-web-token</artifactId>
+                    <version>1.0-RELEASE</version>
+                </dependency>
+
+                2.4: Vaadin Custom Component Library for Vaddin webapp
+                <dependency>
+                    <groupId>com.github.itsoulltd.WebComponentKit</groupId>
+                    <artifactId>vaadin-component</artifactId>
+                    <version>1.0-RELEASE</version>
+                </dependency>
+
 ##To Run SpringMicroServiceStarter or EventDrivenSpringMServiceStarter
 
 ### @WebComponentKit project Root:

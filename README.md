@@ -39,13 +39,12 @@
                     <version>1.0-RELEASE</version>
                 </dependency>
                 
-##How To Use API:
+## How To Use API:
 
 ### TaskStack:
 
-####Create and Running Task.java
+#### Create and Running Task.java
 
-        ~~~
         private TaskStack stack = TaskStack.createSynch(false);
         
         stack.push(new SimpleTask("Wow bro! I am Adams"));
@@ -67,10 +66,10 @@
             System.out.println(result.toString());
             latch.countDown();
         });
-        ~~~
         
-        ###Doing Abort
-        ~~~
+        
+        ### Doing Abort
+        
         stack.push(new SimpleTask("Wow bro! I am Adams"));
         
         stack.push(new AbortTask("Hello bro! I am Hayes"));
@@ -84,10 +83,10 @@
             System.out.println(result.toString());
             latch.countDown();
         });
-        ~~~
         
-        ###Doing Search Query to Server:
-        ~~~
+        
+        ### Doing Search Query to Server:
+        
         SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.DESC, "name","age","salary");
         
         query.add("center")
@@ -98,7 +97,7 @@
         String json = query.toString();
         
         System.out.println(json);
-        ~~~
+        
 
 ##To Run SpringMicroServiceStarter or EventDrivenSpringMServiceStarter
 

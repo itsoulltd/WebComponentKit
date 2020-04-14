@@ -1,4 +1,4 @@
-##Setup Using Jitpack:
+## Setup Using Jitpack:
 
 [![](https://jitpack.io/v/itsoulltd/WebComponentKit.svg)](https://jitpack.io/#itsoulltd/WebComponentKit/1.0-RELEASE)
 
@@ -99,23 +99,23 @@
         System.out.println(json);
         
 
-##To Run SpringMicroServiceStarter or EventDrivenSpringMServiceStarter
+## To Run SpringMicroServiceStarter or EventDrivenSpringMServiceStarter
 
 ### @WebComponentKit project Root:
-####run following cmd:
+#### run following cmd:
 ~>$ mvn clean install -DskipTests
 
-####To run the Docker (If not running)
+#### To run the Docker (If not running)
 ~>$ open -a Docker
 
-####Then goto specific project folder and run following cmd:
+#### Then goto specific project folder and run following cmd:
 ~>$ mvn clean package -DskipTests
 
 ~>$ docker-compose up -d --build
 
-####To Check all container running properly
+#### To Check all container running properly
 ~>$ docker container ls -la
 
-####To Stop Docker
+#### To Stop Docker
 ~>$ killall Docker
 

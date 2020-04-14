@@ -67,6 +67,14 @@
             latch.countDown();
         });
         
+        ### Output:
+        Doing jobs...Let's bro! I am James
+        Doing jobs...Hi there! I am Cris
+        Doing jobs...Hello bro! I am Hayes
+        {"message":"Converted Message","status":201}
+        Doing jobs...Wow bro! I am Adams
+        State: Finished
+        {"payload":"{\"message\":\"Converted Message\",\"status\":201}","status":200}
         
         ### Doing Abort
         
@@ -84,6 +92,14 @@
             latch.countDown();
         });
         
+        ### Output:
+        Doing jobs...Let's bro! I am James
+        Doing jobs...Hi there! I am Cris
+        Doing revert ...:Hello bro! I am Hayes
+        Doing revert ...:Hi there! I am Cris
+        Doing revert ...:Let's bro! I am James
+        State: Failed
+        {"payload":"{\"status\":500,\"error\":\"I AM Aborting! Critical Error @ (Hello bro! I am Hayes)\"}","status":502}
         
         ### Doing Search Query to Server:
         
@@ -97,6 +113,16 @@
         String json = query.toString();
         
         System.out.println(json);
+        
+        ### Output:
+        {   
+            "page":0,
+            "size":10,
+            "descriptors":[{"order":"DESC","keys":["name","age","salary"]}],
+            "properties":[
+                {"key":"center","value":"dasdad","operator":"EQUAL","type":"STRING","nextKey":"radius","logic":"AND"},
+                {"key":"radius","value":"500.0","operator":"EQUAL","type":"DOUBLE"}]
+        }
         
 
 ## To Run SpringMicroServiceStarter or EventDrivenSpringMServiceStarter

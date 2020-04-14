@@ -27,7 +27,7 @@ public class TaskStackTest {
         CountDownLatch latch = new CountDownLatch(1);
         //
         stack.push(new SimpleTask("Wow bro! I am Adams"));
-        stack.push(new SimpleTask("Hello bro! I am Haise", (message) -> {
+        stack.push(new SimpleTask("Hello bro! I am Hayes", (message) -> {
             MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
             System.out.println(event.toString());
             return message;
@@ -58,7 +58,7 @@ public class TaskStackTest {
         CountDownLatch latch = new CountDownLatch(1);
         //
         stack.push(new SimpleTask("Wow bro! I am Adams"));
-        stack.push(new AbortTask("Hello bro! I am Haise"));
+        stack.push(new AbortTask("Hello bro! I am Hayes"));
         stack.push(new SimpleTask("Hi there! I am Cris"));
         stack.push(new SimpleTask("Let's bro! I am James"));
         //

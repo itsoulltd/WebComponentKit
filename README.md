@@ -38,6 +38,67 @@
                     <artifactId>vaadin-component</artifactId>
                     <version>1.0-RELEASE</version>
                 </dependency>
+                
+##How To Use API:
+
+### TaskStack:
+
+####Create and Running Task.java
+
+        ~~~
+        private TaskStack stack = TaskStack.createSynch(false);
+        
+        stack.push(new SimpleTask("Wow bro! I am Adams"));
+        
+        stack.push(new SimpleTask("Hello bro! I am Hayes"));
+        
+        stack.push(new SimpleTask("Hi there! I am Cris", (message) -> {
+            Event event = message.getEvent(Event.class);
+            event.setMessage("Converted Message");
+            event.setStatus(201);
+            message.setEvent(event);
+            return message;
+        }));
+        
+        stack.push(new SimpleTask("Let's bro! I am James"));
+        
+        stack.commit(false, (result, state) -> {
+            System.out.println("State: " + state.name());
+            System.out.println(result.toString());
+            latch.countDown();
+        });
+        ~~~
+        
+        ###Doing Abort
+        ~~~
+        stack.push(new SimpleTask("Wow bro! I am Adams"));
+        
+        stack.push(new AbortTask("Hello bro! I am Hayes"));
+        
+        stack.push(new SimpleTask("Hi there! I am Cris"));
+        
+        stack.push(new SimpleTask("Let's bro! I am James"));
+        
+        stack.commit(false, (result, state) -> {
+            System.out.println("State: " + state.name());
+            System.out.println(result.toString());
+            latch.countDown();
+        });
+        ~~~
+        
+        ###Doing Search Query to Server:
+        ~~~
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.DESC, "name","age","salary");
+        
+        query.add("center")
+                .isEqualTo("#geohash-id")
+                .and("radius")
+                .isEqualTo(500.0);
+
+        String json = query.toString();
+        
+        System.out.println(json);
+        ~~~
 
 ##To Run SpringMicroServiceStarter or EventDrivenSpringMServiceStarter
 

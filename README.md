@@ -120,7 +120,7 @@
             "size":10,
             "descriptors":[{"order":"DESC","keys":["name","age","salary"]}],
             "properties":[
-                {"key":"center","value":"dasdad","operator":"EQUAL","type":"STRING","nextKey":"radius","logic":"AND"},
+                {"key":"center","value":"#geohash-id","operator":"EQUAL","type":"STRING","nextKey":"radius","logic":"AND"},
                 {"key":"radius","value":"500.0","operator":"EQUAL","type":"DOUBLE"}]
         }
         

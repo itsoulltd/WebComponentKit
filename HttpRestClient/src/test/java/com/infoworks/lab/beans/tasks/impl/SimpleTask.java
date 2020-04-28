@@ -40,8 +40,7 @@ public class SimpleTask implements Task {
 
     @Override
     public Message execute(Message message) throws RuntimeException {
-        //System.out.println("I am Starting..." + Thread.currentThread().getName());
-        System.out.println("Doing jobs..." + getMessage().getPayload());
+        System.out.println("("+Thread.currentThread().getName()+") Doing jobs..." + getMessage().getPayload());
         Response response = new Response();
         int rand = RANDOM.nextInt(6) + 1;
         try {
@@ -58,14 +57,13 @@ public class SimpleTask implements Task {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //System.out.println("My Jobs...Done");
+        //
         return response;
     }
 
     @Override
     public Message abort(Message message) throws RuntimeException {
-        //System.out.println("I am Aborting..." + Thread.currentThread().getName());
-        System.out.println("Doing revert ...:" + getMessage().getPayload());
+        System.out.println("("+Thread.currentThread().getName()+") Doing revert ...:" + getMessage().getPayload());
         Response response = new Response();
         int rand = RANDOM.nextInt(3) + 1;
         try {
@@ -79,7 +77,7 @@ public class SimpleTask implements Task {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //System.out.println("My revert process...Done");
+        //
         return response;
     }
 

@@ -5,6 +5,8 @@ import com.infoworks.lab.beans.tasks.definition.Task;
 import com.infoworks.lab.beans.tasks.definition.TaskManager;
 import com.infoworks.lab.rest.models.Message;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -21,6 +23,10 @@ public class SynchQueueManager implements TaskManager {
 
     @Override
     public void start(Task task, Message message) {
+        getService().submit(() -> startTask(task, message));
+    }
+
+    public void startTask(Task task, Message message) {
         if (task != null){
             if (getListener() != null)
                 getListener().before(task, State.Forward);
@@ -48,6 +54,10 @@ public class SynchQueueManager implements TaskManager {
 
     @Override
     public void stop(Task task, Message reason) {
+        getService().submit(() -> stopTask(task, reason));
+    }
+
+    public void stopTask(Task task, Message reason) {
         if (task != null){
             if (getListener() != null)
                 getListener().before(task, State.Backward);
@@ -61,19 +71,6 @@ public class SynchQueueManager implements TaskManager {
         }
     }
 
-    @Override
-    public void terminateRunningTasks(long timeout, TimeUnit unit) {
-        //TODO:
-        //send termination to jms-template for stopping current processing or abandon all active task from
-        // exeQueue:
-    }
-
-    @Override
-    public void close() throws Exception {
-        //TODO:
-        //Clean of any resource:
-    }
-
     public QueuedTaskLifecycleListener getListener() {
         return listener;
     }
@@ -81,4 +78,39 @@ public class SynchQueueManager implements TaskManager {
     public void setListener(QueuedTaskLifecycleListener listener) {
         this.listener = listener;
     }
+
+    protected ExecutorService service;
+
+    public ExecutorService getService() {
+        if (service == null){
+            synchronized (this){
+                service = Executors.newSingleThreadExecutor();
+            }
+        }
+        return service;
+    }
+
+    @Override
+    public void terminateRunningTasks(long timeout, TimeUnit unit) {
+        if (service == null) return;
+        try {
+            if (!service.isShutdown()){
+                if (timeout <= 0l)
+                    service.shutdownNow();
+                else {
+                    service.shutdown();
+                    service.awaitTermination(timeout, unit);
+                }
+            }
+        } catch (Exception e) {}
+        finally {
+            service = null;
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        terminateRunningTasks(0l, TimeUnit.SECONDS);
+    }
+
 }

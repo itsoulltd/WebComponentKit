@@ -55,22 +55,29 @@ public class TransactionQueue implements TaskQueue, QueuedTaskLifecycleListener 
 
     @Override
     public void after(Task task, TaskManager.State state) {
-        if (state == TaskManager.State.Forward){
-            if (!beanQueue.isEmpty()){
-                Task cTask = beanQueue.peek();
-                manager.start(cTask, null);
-            }
-        }else if (state == TaskManager.State.Backward){
-            if (!abortQueue.isEmpty()){
-                Task cTask = abortQueue.peek();
-                manager.stop(cTask, null);
+        if (!beanQueue.isEmpty()){
+            Task cTask = beanQueue.peek();
+            manager.start(cTask, null);
+        }
+        if (!abortQueue.isEmpty()){
+            Task cTask = abortQueue.peek();
+            manager.stop(cTask, null);
+        }
+        //
+        if (beanQueue.isEmpty() && abortQueue.isEmpty()){
+            synchronized (this){
+                this.state = TaskStack.State.None;
             }
         }
     }
 
     @Override
     public void abort(Task task, Message error) {
+        boolean isFirstTask = abortQueue.isEmpty();
         abortQueue.add(task);
+        if (isFirstTask){
+            manager.stop(task, error);
+        }
     }
 
     @Override
@@ -92,12 +99,6 @@ public class TransactionQueue implements TaskQueue, QueuedTaskLifecycleListener 
                 listener.failed(reason);
             }
         } catch (Exception e) {}
-        //
-        if (beanQueue.isEmpty() && abortQueue.isEmpty()){
-            synchronized (this){
-                state = TaskStack.State.None;
-            }
-        }
     }
 
     @Override
@@ -109,12 +110,6 @@ public class TransactionQueue implements TaskQueue, QueuedTaskLifecycleListener 
                 listener.finished(result);
             }
         } catch (Exception e) {}
-        //
-        if (beanQueue.isEmpty() && abortQueue.isEmpty()){
-            synchronized (this){
-                state = TaskStack.State.None;
-            }
-        }
     }
 
     @Override

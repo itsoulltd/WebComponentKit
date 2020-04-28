@@ -1,16 +1,11 @@
 package com.infoworks.lab.beans.tasks.impl;
 
 import com.infoworks.lab.beans.tasks.definition.QueuedTaskLifecycleListener;
-import com.infoworks.lab.beans.tasks.definition.Task;
-import com.infoworks.lab.rest.models.Message;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class AsynchQueueManager extends SynchQueueManager{
-
-    private ExecutorService service;
 
     public AsynchQueueManager() {}
 
@@ -21,42 +16,10 @@ public class AsynchQueueManager extends SynchQueueManager{
     public ExecutorService getService() {
         if (service == null){
             synchronized (this){
-                service = Executors.newSingleThreadExecutor();
+                service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             }
         }
         return service;
     }
 
-    @Override
-    public void start(Task task, Message message) {
-        getService().submit(() -> super.start(task, message));
-    }
-
-    @Override
-    public void stop(Task task, Message reason) {
-        getService().submit(() -> super.stop(task, reason));
-    }
-
-    @Override
-    public void terminateRunningTasks(long timeout, TimeUnit unit) {
-        if (service == null) return;
-        try {
-            if (!service.isShutdown()){
-                if (timeout <= 0l)
-                    service.shutdownNow();
-                else {
-                    service.shutdown();
-                    service.awaitTermination(timeout, unit);
-                }
-            }
-        } catch (Exception e) {}
-        finally {
-            service = null;
-        }
-    }
-
-    @Override
-    public void close() throws Exception {
-        terminateRunningTasks(0l, TimeUnit.SECONDS);
-    }
 }

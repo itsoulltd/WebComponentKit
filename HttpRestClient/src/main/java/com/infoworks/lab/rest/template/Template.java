@@ -6,6 +6,7 @@ import com.it.soul.lab.sql.entity.EntityInterface;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public interface Template<RequestBuilder extends Object
@@ -27,7 +28,8 @@ public interface Template<RequestBuilder extends Object
     void generateThrowable(Response response) throws HttpInvocationException;
 
     default boolean isSecure(EntityInterface consume){
-        return getSecureEntry(consume) != null;
+        Map.Entry<String, Object> secureEntry = getSecureEntry(consume);
+        return Objects.nonNull(secureEntry.getValue());
     }
 
     default Map.Entry<String, Object> getSecureEntry(EntityInterface consume){
@@ -35,7 +37,9 @@ public interface Template<RequestBuilder extends Object
             Map<String, Object> data = consume.marshallingToMap(true);
             Optional<Map.Entry<String, Object>> first = data.entrySet().stream()
                     .filter(entry -> entry.getKey().toLowerCase().contains("authorization")
-                            || entry.getKey().toLowerCase().contains("accesstoken"))
+                            || entry.getKey().toLowerCase().contains("accesstoken")
+                            || entry.getKey().toLowerCase().contains("token")
+                            || entry.getKey().toLowerCase().contains("bearertoken"))
                     .findFirst();
             if (first.isPresent()) {
                 return first.get();

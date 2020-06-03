@@ -29,7 +29,7 @@ public interface Template<RequestBuilder extends Object
 
     default boolean isSecure(EntityInterface consume){
         Map.Entry<String, Object> secureEntry = getSecureEntry(consume);
-        return Objects.nonNull(secureEntry.getValue());
+        return (secureEntry != null && secureEntry.getValue() != null);
     }
 
     default Map.Entry<String, Object> getSecureEntry(EntityInterface consume){

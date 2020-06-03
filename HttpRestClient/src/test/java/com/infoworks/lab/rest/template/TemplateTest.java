@@ -22,6 +22,15 @@ public class TemplateTest {
     }
 
     @Test
+    public void nonAccessTokenTest(){
+        HttpTemplate template = new HttpTemplate();
+        //Case: 1.1
+        NonAcessToken acessToken = new NonAcessToken();
+        Map.Entry<String, Object> secureEntry = template.getSecureEntry(acessToken);
+        Assert.assertTrue((secureEntry == null || secureEntry.getValue() == null));
+    }
+
+    @Test
     public void accessTokenTest(){
         HttpTemplate template = new HttpTemplate();
         //Case: 1.1
@@ -71,6 +80,10 @@ public class TemplateTest {
         acessToken.setAuthorization("any-token");
         secureEntry = template.getSecureEntry(acessToken);
         Assert.assertTrue(Objects.nonNull(secureEntry.getValue()) == true);
+    }
+
+    public static class NonAcessToken extends Message {
+        /**/
     }
 
     public static class AcessToken extends Message {

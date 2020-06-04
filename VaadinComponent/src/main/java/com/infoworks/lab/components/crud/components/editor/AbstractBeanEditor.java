@@ -39,6 +39,7 @@ import com.vaadin.flow.shared.Registration;
 
 import javax.persistence.GeneratedValue;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -356,18 +357,21 @@ public abstract class AbstractBeanEditor<T extends EntityInterface>
 
     protected Converter getValueConverter(Property prop) {
         switch (prop.getType()){
+            case BOOL:
+                return new StringToBooleanConverter("Bool Value!");
             case INT:
                 return new StringToIntegerConverter(0,"Integer Value!");
             case FLOAT:
                 return new StringToFloatConverter(0.0f,"Float Value!");
             case DOUBLE:
                 return new StringToDoubleConverter(0.0d,"Double Value!");
+            case LONG:
+                return new StringToLongConverter(0l,"Long Value!");
+            case BIG_DECIMAL:
+                return new StringToBigDecimalConverter(BigDecimal.ZERO,"BigDecimal Value!");
             case SQLDATE:
             case SQLTIMESTAMP:
                 return new LocalDateToDateConverter();
-            case BOOL:
-                return null;
-
         }
         if (prop.getType() == DataType.NULL_OBJECT){
             return new StringToNullObjectConverter();

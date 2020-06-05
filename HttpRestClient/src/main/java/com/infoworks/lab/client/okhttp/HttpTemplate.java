@@ -8,6 +8,9 @@ import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Route;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.entity.EntityInterface;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,12 +18,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C extends EntityInterface> extends HttpAbstractTemplate implements HttpInteractor<P,C> {
 
@@ -108,10 +108,24 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         return routeTo;
     }
 
-    protected String convertQueryParam(QueryParam...params){
+    protected String urlencodedQueryParam(QueryParam...params){
         if (params == null) return "";
-        StringBuffer buffer = new StringBuffer("?");
+        StringBuffer buffer = new StringBuffer();
+        //Separate Paths:
+        List<String> pathsBag = new ArrayList<>();
+        for (QueryParam query : params) {
+            if (query.getValue() != null && !query.getValue().isEmpty()) {
+                continue;
+            }
+            pathsBag.add(query.getKey());
+        }
+        buffer.append(validatePaths(pathsBag.toArray(new String[0])));
+        //Incorporate QueryParams:
+        buffer.append("?");
         for (QueryParam query : params){
+            if (query.getValue() == null || query.getValue().isEmpty()){
+                continue;
+            }
             try {
                 buffer.append(query.getKey()
                         + "="
@@ -128,7 +142,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         P produce = null;
         Class<P> type = getInferredProduce();
         try {
-            String queryParam = convertQueryParam(params);
+            String queryParam = urlencodedQueryParam(params);
             target = initializeTarget(queryParam);
             Response response = null;
             if (isSecure(consume)){
@@ -186,7 +200,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
 
     public boolean delete(C consume, QueryParam...params) throws HttpInvocationException {
         try {
-            String queryParam = convertQueryParam(params);
+            String queryParam = urlencodedQueryParam(params);
             target = initializeTarget(queryParam);
             Response response = null;
             if (isSecure(consume)){
@@ -252,7 +266,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             if (params instanceof String[]){
                 return URI.create(resourcePath((String[]) params));
             }else if (params instanceof QueryParam[]){
-                String queryParam = convertQueryParam((QueryParam[])params);
+                String queryParam = urlencodedQueryParam((QueryParam[])params);
                 return URI.create(resourcePath(queryParam));
             }
         } catch (MalformedURLException e) {}
@@ -306,8 +320,27 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             if (params instanceof String[]){
                 setTarget(initializeTarget((String[]) params));
             }else if (params instanceof QueryParam[]){
-                String queryParam = convertQueryParam((QueryParam[]) params);
+                String queryParam = urlencodedQueryParam((QueryParam[]) params);
                 setTarget(initializeTarget(queryParam));
+            }else{
+                //Means T...params are arbitrary value e.g. "/path-a", "path-b", QueryParam("offset","0"), QueryParam("limit","10") ... etc
+                //First: Separate Paths from mixed array:
+                List<String> paths = new ArrayList<>();
+                for (Object query : params) {
+                    if (query instanceof String)
+                        paths.add((String) query);
+                }
+                List<String> collector = new ArrayList<>(paths);
+                //Then: Separate QueryParam from mixed array:
+                List<QueryParam> queryParams = new ArrayList<>();
+                for (Object query : params) {
+                    if (query instanceof QueryParam)
+                        queryParams.add((QueryParam) query);
+                }
+                String queryParam = urlencodedQueryParam(queryParams.toArray(new QueryParam[0]));
+                collector.add(queryParam);
+                //Finally:
+                setTarget(initializeTarget(collector.toArray(new String[0])));
             }
         }else {
             setTarget(initializeTarget());

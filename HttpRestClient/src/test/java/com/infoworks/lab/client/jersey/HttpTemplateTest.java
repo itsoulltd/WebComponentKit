@@ -42,4 +42,14 @@ public class HttpTemplateTest {
             System.out.println("Queries: " + queryParams.length);
         }
     }
+
+    @Test
+    public void jerseyTest(){
+
+    }
+
+    @Test
+    public void httookTests(){
+
+    }
 }

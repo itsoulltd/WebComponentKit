@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C extends EntityInterface> extends HttpAbstractTemplate implements HttpInteractor<P,C> {
 
@@ -101,12 +102,15 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         P produce = null;
         Class<P> type = getInferredProduce();
         try {
-            target = initializeTarget();
-            if (params != null){
-                Arrays.stream(params).forEach(param -> {
-                    target = getTarget().queryParam(param.getKey(), param.getValue());
-                });
+            //Finding those are intended to be path: e.g. new QueryParam("key", "") OR new QueryParam("key", null)
+            if (params != null && params.length > 0) {
+                String[] paths = parsePathsFrom(params);
+                target = initializeTarget(paths);
+                mutateTargetWith(params);
+            }else{
+                target = initializeTarget();
             }
+            //
             Response response;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume).get();
@@ -119,6 +123,20 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             e.printStackTrace();
         }
         return produce;
+    }
+
+    private String[] parsePathsFrom(QueryParam...params){
+        return Arrays.stream(params)
+                .filter(query -> query.getValue() == null || query.getValue().isEmpty())
+                .map(query -> query.getKey())
+                .collect(Collectors.toList()).toArray(new String[0]);
+    }
+
+    private void mutateTargetWith(QueryParam...params){
+        if (target == null) return;
+        Arrays.stream(params)
+                .filter(query -> query.getValue() != null && !query.getValue().isEmpty())
+                .forEach(query -> target = getTarget().queryParam(query.getKey(), query.getValue()));
     }
 
     public P post(C consume, String...paths) throws HttpInvocationException {
@@ -163,12 +181,15 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
 
     public boolean delete(C consume, QueryParam...params) throws HttpInvocationException {
         try {
-            target = initializeTarget();
-            if (params != null){
-                Arrays.stream(params).forEach(param -> {
-                    target = getTarget().queryParam(param.getKey(), param.getValue());
-                });
+            //Finding those are intended to be path: e.g. new QueryParam("key", "") OR new QueryParam("key", null)
+            if (params != null && params.length > 0) {
+                String[] paths = parsePathsFrom(params);
+                target = initializeTarget(paths);
+                mutateTargetWith(params);
+            }else {
+                target = initializeTarget();
             }
+            //
             Response response;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
@@ -293,6 +314,16 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
                 setTarget(initializeTarget());
                 Arrays.stream((QueryParam[])params).forEach(param ->
                     setTarget(getTarget().queryParam(param.getKey(), param.getValue()))
+                );
+            }else{
+                //Means T...params are arbitrary value e.g. "/path-a", "path-b", QueryParam("offset","0"), QueryParam("limit","10") ... etc
+                //First: Separate Paths from mixed array:
+                String[] paths = Arrays.stream(params).filter(obj -> obj instanceof String).collect(Collectors.toList()).toArray(new String[0]);
+                setTarget(initializeTarget(paths));
+                //Then: Separate QueryParam from mixed array:
+                QueryParam[] queryParams = Arrays.stream(params).filter(obj -> obj instanceof QueryParam).collect(Collectors.toList()).toArray(new QueryParam[0]);
+                Arrays.stream(queryParams).forEach(param ->
+                        setTarget(getTarget().queryParam(param.getKey(), param.getValue()))
                 );
             }
         }else {

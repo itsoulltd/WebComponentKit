@@ -165,12 +165,9 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
     @Override
     public void reloadGrid() {
         //Fetch data from persistence data Source and load into storage:
-        if (getMemStorage().size() == 0){
-            SQLSelectQuery query = getSelectQuery(getQuery());
-            executeQuery(query);
-            //TODO: has UI impact:
-            getMaxOffsetQuery();
-        }
+        SQLSelectQuery query = getSelectQuery(getQuery());
+        executeQuery(query);
+        getMaxOffsetQuery();
         super.reloadGrid();
     }
 

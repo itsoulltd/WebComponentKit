@@ -34,7 +34,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
     }
 
     protected final Query next(Query prev){
-        if (prev.getOffset() >= getMaxOffsetQuery().getOffset()) return prev;
+        if (prev.getOffset() >= getMaxOffsetQuery(false).getOffset()) return prev;
         Query next = new Query(prev.getOffset() + prev.getLimit()
                 , prev.getLimit()
                 , prev.getSortOrders()
@@ -90,8 +90,8 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
 
     private Query maxLimitQuery;
 
-    protected final Query getMaxOffsetQuery() {
-        if (maxLimitQuery == null){
+    protected final Query getMaxOffsetQuery(boolean refresh) {
+        if (maxLimitQuery == null || refresh){
             int max = getRowCount();
             maxLimitQuery = new Query(max
                     , getQuery().getLimit()
@@ -103,11 +103,12 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
     }
 
     protected final Query<E, String> updateMaxOffsetQuery(int byValue) {
-        Query max = new Query(getMaxOffsetQuery().getOffset() + (byValue)
-                , getMaxOffsetQuery().getLimit()
-                , getMaxOffsetQuery().getSortOrders()
-                , getMaxOffsetQuery().getInMemorySorting()
-                , getMaxOffsetQuery().getFilter().isPresent() ? getMaxOffsetQuery().getFilter().get() : null);
+        Query lastMax = getMaxOffsetQuery(byValue == 0 ? true : false);
+        Query max = new Query(lastMax.getOffset() + (byValue)
+                , lastMax.getLimit()
+                , lastMax.getSortOrders()
+                , lastMax.getInMemorySorting()
+                , lastMax.getFilter().isPresent() ? lastMax.getFilter().get() : null);
         this.maxLimitQuery = max;
         updateCellFooter(getGrid());
         return max;
@@ -143,8 +144,8 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
 
     protected void updateCellFooter(Grid<E> grid) {
         Grid.Column cell = grid.getColumns().get(0);
-        cell.setFooter("Total: " + ((getMaxOffsetQuery() != null)
-                ? getMaxOffsetQuery().getOffset()
+        cell.setFooter("Total: " + ((getMaxOffsetQuery(false) != null)
+                ? getMaxOffsetQuery(false).getOffset()
                 : getMemStorage().size()));
     }
 
@@ -167,7 +168,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         //Fetch data from persistence data Source and load into storage:
         SQLSelectQuery query = getSelectQuery(getQuery());
         executeQuery(query);
-        getMaxOffsetQuery();
+        getMaxOffsetQuery(false);
         super.reloadGrid();
     }
 
@@ -201,6 +202,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
             try {
                 if (item.update(getExecutor())) {
                     super.save(item);
+                    updateMaxOffsetQuery(0);
                     LOG.info("UPDATED: " + id);
                 }
             } catch (SQLException e) {

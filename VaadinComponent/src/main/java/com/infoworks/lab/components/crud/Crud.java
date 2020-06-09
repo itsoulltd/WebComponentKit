@@ -151,4 +151,7 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
         if (editor == null) return new String[0];
         return editor.propertyKeys(item);
     }
+
+    public Configurator getConfigurator(){return configurator;}
+
 }

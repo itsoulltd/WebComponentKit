@@ -168,7 +168,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         //Fetch data from persistence data Source and load into storage:
         SQLSelectQuery query = getSelectQuery(getQuery());
         executeQuery(query);
-        getMaxOffsetQuery(false);
+        updateMaxOffsetQuery(0); //force update the MaxOffsetQuery & also update footer
         super.reloadGrid();
     }
 

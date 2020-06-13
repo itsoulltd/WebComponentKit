@@ -2,6 +2,7 @@ package com.infoworks.lab.jjwt;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.infoworks.lab.cryptor.util.SecretKeyAlgo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -25,9 +26,9 @@ public class JWTValidator implements TokenValidation{
         return secret.getBytes();
     }
 
-    protected Key generateKey(String secret) throws Exception {
+    protected Key generateKey(String secret, SecretKeyAlgo algo) throws Exception {
         byte[] bytes = validateSecret(secret);
-        Key key = new SecretKeySpec(bytes, 0, bytes.length, "DES");
+        Key key = new SecretKeySpec(bytes, 0, bytes.length, algo.name());
         return key;
     }
 
@@ -39,7 +40,14 @@ public class JWTValidator implements TokenValidation{
             if (secret == null || secret.isEmpty())
                 throw new Exception("Secret is null or empty");
             //
-            Key key = generateKey(secret);
+            SecretKeyAlgo algo = SecretKeyAlgo.DES;
+            if (args.length >= 2) {
+                try {
+                    algo = SecretKeyAlgo.valueOf(args[1]);
+                } catch (IllegalArgumentException e) {}
+            }
+            //
+            Key key = generateKey(secret, algo);
             Jws<Claims> cl = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
             String issuerID = null;
             if (args.length >= 2) issuerID = args[1];

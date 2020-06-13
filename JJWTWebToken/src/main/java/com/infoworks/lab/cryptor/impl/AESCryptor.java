@@ -1,6 +1,7 @@
 package com.infoworks.lab.cryptor.impl;
 
 import com.infoworks.lab.cryptor.definition.Cryptor;
+import com.infoworks.lab.cryptor.util.SecretKeyAlgo;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -51,7 +52,7 @@ public class AESCryptor implements Cryptor {
         byte[] key = mykey.getBytes("UTF-8");
         key = getSha().digest(key);
         key = Arrays.copyOf(key, 16);
-        SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+        SecretKeySpec secretKey = new SecretKeySpec(key, SecretKeyAlgo.AES.name());
         return secretKey;
     }
 

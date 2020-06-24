@@ -6,7 +6,9 @@ import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Template;
 import com.it.soul.lab.sql.entity.EntityInterface;
+import com.it.soul.lab.sql.query.models.Property;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 
 import javax.ws.rs.client.Client;
@@ -44,6 +46,23 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
             if (entry != null)
                 this.builder.header(HttpHeaders.AUTHORIZATION
                         , HttpInteractor.authorizationValue(entry.getValue().toString()));
+        }
+
+        @Override
+        public Invocation<Response, MediaType> addProperties(Property...properties) {
+            if (builder != null){
+                for (Property property : properties) {
+                    if (property.getKey() != null && property.getValue() != null){
+                        if (Invocation.TIMEOUT.CONNECT.key().equalsIgnoreCase(property.getKey())) {
+                            builder.property(ClientProperties.CONNECT_TIMEOUT, property.getValue());
+                        }
+                        if (TIMEOUT.READ.key().equalsIgnoreCase(property.getKey())) {
+                            builder.property(ClientProperties.READ_TIMEOUT, property.getValue());
+                        }
+                    }
+                }
+            }
+            return this;
         }
 
         @Override

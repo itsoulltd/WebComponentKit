@@ -8,6 +8,7 @@ import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Route;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.entity.EntityInterface;
+import com.it.soul.lab.sql.query.models.Property;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,6 +28,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
     private String _domain;
     private Class<P> inferredProduce;
     private Class<C> inferredConsume;
+    private List<Property> properties;
 
     public HttpTemplate(){
         /*Must needed to create dynamic instance from type*/
@@ -46,6 +49,8 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         Arrays.stream(config).forEach(o -> {
             if (o instanceof URI){
                 _domain = ((URI)o).toString();
+            }else if(o instanceof Property) {
+                getProperties().add((Property) o);
             }else if (o instanceof Class<?>){
                 if (inferredProduce == null) inferredProduce = (Class<P>) o;
                 else if (inferredConsume == null) inferredConsume = (Class<C>) o;
@@ -61,6 +66,13 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
     private Class<? extends EntityInterface> getInferredConsume(){
         if (inferredConsume == null) inferredConsume = (Class<C>) Entity.class;
         return inferredConsume;
+    }
+
+    private List<Property> getProperties(){
+        if (properties == null){
+            properties = new ArrayList<>();
+        }
+        return properties;
     }
 
     @Override
@@ -113,9 +125,13 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             //
             Response response;
             if (isSecure(consume)){
-                response = getAuthorizedJsonRequest(consume).get();
+                response = getAuthorizedJsonRequest(consume)
+                        .addProperties(getProperties().toArray(new Property[0]))
+                        .get();
             }else{
-                response = getJsonRequest().get();
+                response = getJsonRequest()
+                        .addProperties(getProperties().toArray(new Property[0]))
+                        .get();
             }
             produce = inflate(response, type);
 
@@ -147,9 +163,12 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             Response response;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
+                        .addProperties(getProperties().toArray(new Property[0]))
                         .post(consume, MediaType.APPLICATION_JSON_TYPE);
             }else{
-                response = getJsonRequest().post(consume, MediaType.APPLICATION_JSON_TYPE);
+                response = getJsonRequest()
+                        .addProperties(getProperties().toArray(new Property[0]))
+                        .post(consume, MediaType.APPLICATION_JSON_TYPE);
             }
             produce = inflate(response, type);
 
@@ -167,9 +186,12 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             Response response;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
+                        .addProperties(getProperties().toArray(new Property[0]))
                         .put(consume, MediaType.APPLICATION_JSON_TYPE);
             }else{
-                response = getJsonRequest().put(consume, MediaType.APPLICATION_JSON_TYPE);
+                response = getJsonRequest()
+                        .addProperties(getProperties().toArray(new Property[0]))
+                        .put(consume, MediaType.APPLICATION_JSON_TYPE);
             }
             produce = inflate(response, type);
 
@@ -193,9 +215,12 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             Response response;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
+                        .addProperties(getProperties().toArray(new Property[0]))
                         .delete(consume, MediaType.APPLICATION_JSON_TYPE);
             }else{
-                response = getJsonRequest().delete(consume, MediaType.APPLICATION_JSON_TYPE);
+                response = getJsonRequest()
+                        .addProperties(getProperties().toArray(new Property[0]))
+                        .delete(consume, MediaType.APPLICATION_JSON_TYPE);
             }
             if (response.getStatusInfo() == Response.Status.INTERNAL_SERVER_ERROR) throw new HttpInvocationException("Internal Server Error!");
             return response.getStatusInfo() == Response.Status.OK;

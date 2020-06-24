@@ -8,12 +8,15 @@ import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Template;
 import com.it.soul.lab.sql.entity.EntityInterface;
+import com.it.soul.lab.sql.query.models.Property;
 import okhttp3.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class HttpAbstractTemplate extends AbstractTemplate implements Template<Request.Builder
         , Invocation<Response, MediaType>
@@ -22,6 +25,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
     public class InvocationBuilder implements Invocation<Response, MediaType> {
 
         private MediaType mediaType;
+        private List<Property> properties;
 
         public InvocationBuilder(MediaType mediaType) {
             this.mediaType = mediaType;
@@ -37,11 +41,29 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
             }
         }
 
+        private List<Property> getProperties(){
+            if (properties == null){
+                properties = new ArrayList<>();
+            }
+            return properties;
+        }
+
+        @Override
+        public Invocation<Response, MediaType> addProperties(Property... properties) {
+            for (Property property : properties) {
+                if (property.getKey() != null && property.getValue() != null){
+                    getProperties().add(property);
+                }
+            }
+            return this;
+        }
+
         public Response get() throws HttpInvocationException {
             try {
                 Request request = HttpAbstractTemplate.this.getTarget()
                         .get().build();
                 setUri(request);
+                initWebClient(getProperties().toArray(new Property[0]));
                 Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
                 return response;
             } catch (IOException e) {
@@ -56,6 +78,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                         .post(requestBody)
                         .build();
                 setUri(request);
+                initWebClient(getProperties().toArray(new Property[0]));
                 Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
                 return response;
             } catch (IOException e) {
@@ -71,6 +94,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                         .put(requestBody)
                         .build();
                 setUri(request);
+                initWebClient(getProperties().toArray(new Property[0]));
                 Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
                 return response;
             } catch (IOException e) {
@@ -84,6 +108,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                 Request request = HttpAbstractTemplate.this.getTarget()
                         .delete().build();
                 setUri(request);
+                initWebClient(getProperties().toArray(new Property[0]));
                 Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
                 return response;
             } catch (IOException e) {
@@ -99,6 +124,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                         .delete(requestBody)
                         .build();
                 setUri(request);
+                initWebClient(getProperties().toArray(new Property[0]));
                 Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
                 return response;
             } catch (IOException e) {
@@ -173,9 +199,33 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
         return buffer;
     }
 
-    private final OkHttpClient webClient;
-    public HttpAbstractTemplate() {
-        webClient = new OkHttpClient();
+    private ReentrantLock _lock;
+    private OkHttpClient webClient;
+    public HttpAbstractTemplate() {_lock = new ReentrantLock();}
+
+    protected OkHttpClient initWebClient(Property...properties){
+        if (webClient == null){
+            _lock.lock();
+            try {
+                OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
+                for (Property property : properties) {
+                    if (Invocation.TIMEOUT.CONNECT.key().equalsIgnoreCase(property.getKey())){
+                        builder.connectTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
+                    }
+                    if (Invocation.TIMEOUT.READ.key().equalsIgnoreCase(property.getKey())){
+                        builder.connectTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
+                    }
+                    if (Invocation.TIMEOUT.WRITE.key().equalsIgnoreCase(property.getKey())){
+                        builder.connectTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
+                    }
+                }
+                webClient = builder.build();
+            }catch (Exception e) {}
+            finally {
+                _lock.unlock();
+            }
+        }
+        return webClient;
     }
 
     public final Request.Builder initializeTarget(String... params) throws MalformedURLException {

@@ -212,10 +212,10 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                         builder.connectTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
                     }
                     if (Invocation.TIMEOUT.READ.key().equalsIgnoreCase(property.getKey())){
-                        builder.connectTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
+                        builder.readTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
                     }
                     if (Invocation.TIMEOUT.WRITE.key().equalsIgnoreCase(property.getKey())){
-                        builder.connectTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
+                        builder.writeTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
                     }
                 }
                 webClient = builder.build();

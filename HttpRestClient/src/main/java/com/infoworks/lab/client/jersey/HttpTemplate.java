@@ -362,7 +362,10 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         Response response = null;
         try {
             CircuitBreaker breaker = CircuitBreaker.create(HttpCircuitBreaker.class);
-            Invocation invocation = isSecure(consume) ? getAuthorizedJsonRequest(consume) : getJsonRequest();
+            Invocation invocation = isSecure(consume) ? getAuthorizedJsonRequest(consume)
+                    .addProperties(getProperties().toArray(new Property[0]))
+                    : getJsonRequest()
+                    .addProperties(getProperties().toArray(new Property[0]));
             if (breaker != null) response = (Response) breaker.call(invocation, method, consume);
             else response = callForwarding(invocation, method, consume);
         } catch (IllegalAccessException e) {

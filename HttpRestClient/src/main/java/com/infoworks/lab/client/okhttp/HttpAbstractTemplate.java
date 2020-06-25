@@ -25,7 +25,6 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
     public class InvocationBuilder implements Invocation<Response, MediaType> {
 
         private MediaType mediaType;
-        private List<Property> properties;
 
         public InvocationBuilder(MediaType mediaType) {
             this.mediaType = mediaType;
@@ -39,13 +38,6 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                         .addHeader(HttpInteractor.authorizationKey()
                                 , HttpInteractor.authorizationValue(entry.getValue().toString()));
             }
-        }
-
-        private List<Property> getProperties(){
-            if (properties == null){
-                properties = new ArrayList<>();
-            }
-            return properties;
         }
 
         @Override
@@ -63,8 +55,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                 Request request = HttpAbstractTemplate.this.getTarget()
                         .get().build();
                 setUri(request);
-                initWebClient(getProperties().toArray(new Property[0]));
-                Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
+                Response response = getWebClient().newCall(request).execute();
                 return response;
             } catch (IOException e) {
                 throw new HttpInvocationException(e.getMessage());
@@ -78,8 +69,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                         .post(requestBody)
                         .build();
                 setUri(request);
-                initWebClient(getProperties().toArray(new Property[0]));
-                Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
+                Response response = getWebClient().newCall(request).execute();
                 return response;
             } catch (IOException e) {
                 throw new HttpInvocationException(e.getMessage());
@@ -94,8 +84,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                         .put(requestBody)
                         .build();
                 setUri(request);
-                initWebClient(getProperties().toArray(new Property[0]));
-                Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
+                Response response = getWebClient().newCall(request).execute();
                 return response;
             } catch (IOException e) {
                 throw new HttpInvocationException(e.getMessage());
@@ -108,8 +97,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                 Request request = HttpAbstractTemplate.this.getTarget()
                         .delete().build();
                 setUri(request);
-                initWebClient(getProperties().toArray(new Property[0]));
-                Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
+                Response response = getWebClient().newCall(request).execute();
                 return response;
             } catch (IOException e) {
                 throw new HttpInvocationException(e.getMessage());
@@ -124,8 +112,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                         .delete(requestBody)
                         .build();
                 setUri(request);
-                initWebClient(getProperties().toArray(new Property[0]));
-                Response response = HttpAbstractTemplate.this.webClient.newCall(request).execute();
+                Response response = getWebClient().newCall(request).execute();
                 return response;
             } catch (IOException e) {
                 throw new HttpInvocationException(e.getMessage());
@@ -203,7 +190,19 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
     private OkHttpClient webClient;
     public HttpAbstractTemplate() {_lock = new ReentrantLock();}
 
-    protected OkHttpClient initWebClient(Property...properties){
+    private List<Property> properties;
+    private List<Property> getProperties(){
+        if (properties == null){
+            properties = new ArrayList<>();
+        }
+        return properties;
+    }
+
+    public OkHttpClient getWebClient() {
+        return initWebClient(getProperties().toArray(new Property[0]));
+    }
+
+    private OkHttpClient initWebClient(Property...properties){
         if (webClient == null){
             _lock.lock();
             try {

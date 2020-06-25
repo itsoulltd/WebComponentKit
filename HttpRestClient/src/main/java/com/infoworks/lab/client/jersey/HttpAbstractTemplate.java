@@ -54,10 +54,10 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
                 for (Property property : properties) {
                     if (property.getKey() != null && property.getValue() != null){
                         if (Invocation.TIMEOUT.CONNECT.key().equalsIgnoreCase(property.getKey())) {
-                            builder.property(ClientProperties.CONNECT_TIMEOUT, property.getValue());
+                            builder.property(ClientProperties.CONNECT_TIMEOUT, Integer.valueOf(property.getValue().toString()));
                         }
                         if (TIMEOUT.READ.key().equalsIgnoreCase(property.getKey())) {
-                            builder.property(ClientProperties.READ_TIMEOUT, property.getValue());
+                            builder.property(ClientProperties.READ_TIMEOUT, Integer.valueOf(property.getValue().toString()));
                         }
                     }
                 }

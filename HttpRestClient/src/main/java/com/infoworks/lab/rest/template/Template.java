@@ -2,11 +2,11 @@ package com.infoworks.lab.rest.template;
 
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.it.soul.lab.sql.entity.EntityInterface;
+import com.it.soul.lab.sql.query.models.Property;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 public interface Template<RequestBuilder extends Object
@@ -47,4 +47,5 @@ public interface Template<RequestBuilder extends Object
         }
         return null;
     }
+    Property[] getProperties();
 }

@@ -39,7 +39,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
     private String _domain;
     private Class<P> inferredProduce;
     private Class<C> inferredConsume;
-    private List<Property> properties;
+    private List<Property> properties = new ArrayList<>();
 
     public HttpTemplate(){}
 
@@ -58,7 +58,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             if (o instanceof URI){
                 _domain = ((URI)o).toString();
             }else if(o instanceof Property) {
-                getProperties().add((Property) o);
+                properties.add((Property) o);
             }else if (o instanceof Class<?>){
                 if (inferredProduce == null) inferredProduce = (Class<P>) o;
                 else if (inferredConsume == null) inferredConsume = (Class<C>) o;
@@ -76,11 +76,8 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         return inferredConsume;
     }
 
-    private List<Property> getProperties(){
-        if (properties == null){
-            properties = new ArrayList<>();
-        }
-        return properties;
+    public Property[] getProperties(){
+        return properties.toArray(new Property[0]);
     }
 
     @Override
@@ -156,13 +153,9 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             target = initializeTarget(queryParam);
             Response response = null;
             if (isSecure(consume)){
-                response = getAuthorizedJsonRequest(consume)
-                        .addProperties(getProperties().toArray(new Property[0]))
-                        .get();
+                response = getAuthorizedJsonRequest(consume).get();
             }else{
-                response = getJsonRequest()
-                        .addProperties(getProperties().toArray(new Property[0]))
-                        .get();
+                response = getJsonRequest().get();
             }
             produce = inflate(response, type);
 
@@ -180,12 +173,9 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             Response response = null;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
-                        .addProperties(getProperties().toArray(new Property[0]))
                         .post(consume, MediaType.parse("application/json;charset=utf-8"));
             }else{
-                response = getJsonRequest()
-                        .addProperties(getProperties().toArray(new Property[0]))
-                        .post(consume, MediaType.parse("application/json;charset=utf-8"));
+                response = getJsonRequest().post(consume, MediaType.parse("application/json;charset=utf-8"));
             }
             produce = inflate(response, type);
 
@@ -203,12 +193,9 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             Response response = null;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
-                        .addProperties(getProperties().toArray(new Property[0]))
                         .put(consume, MediaType.parse("application/json;charset=utf-8"));
             }else{
-                response = getJsonRequest()
-                        .addProperties(getProperties().toArray(new Property[0]))
-                        .put(consume, MediaType.parse("application/json;charset=utf-8"));
+                response = getJsonRequest().put(consume, MediaType.parse("application/json;charset=utf-8"));
             }
             produce = inflate(response, type);
 
@@ -225,12 +212,9 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             Response response = null;
             if (isSecure(consume)){
                 response = getAuthorizedJsonRequest(consume)
-                        .addProperties(getProperties().toArray(new Property[0]))
                         .delete(consume, MediaType.parse("application/json;charset=utf-8"));
             }else{
-                response = getJsonRequest()
-                        .addProperties(getProperties().toArray(new Property[0]))
-                        .delete(consume, MediaType.parse("application/json;charset=utf-8"));
+                response = getJsonRequest().delete(consume, MediaType.parse("application/json;charset=utf-8"));
             }
             if (response.code() == 500) throw new HttpInvocationException("Internal Server Error!");
             return response.code() == 200;
@@ -371,10 +355,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         //CircuitBreaker CODE:
         Response response;
         CircuitBreaker breaker = getCircuitBreaker(params);
-        Invocation invocation = isSecure(consume) ? getAuthorizedJsonRequest(consume)
-                .addProperties(getProperties().toArray(new Property[0]))
-                : getJsonRequest()
-                .addProperties(getProperties().toArray(new Property[0]));
+        Invocation invocation = isSecure(consume) ? getAuthorizedJsonRequest(consume) : getJsonRequest();
         if (breaker != null) response = (Response) breaker.call(invocation, method, consume);
         else response = callForwarding(invocation, method, consume);
         //

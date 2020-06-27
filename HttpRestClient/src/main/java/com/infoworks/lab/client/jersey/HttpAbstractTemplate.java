@@ -50,7 +50,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
 
         @Override
         public Invocation<Response, MediaType> addProperties(Property...properties) {
-            if (builder != null){
+            if (builder != null && properties != null){
                 for (Property property : properties) {
                     if (property.getKey() != null && property.getValue() != null){
                         if (Invocation.TIMEOUT.CONNECT.key().equalsIgnoreCase(property.getKey())) {
@@ -165,7 +165,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
 
     public Invocation<Response, MediaType> getRequest(MediaType type){
         if (getTarget() != null){
-            return new InvocationBuilder(type);
+            return new InvocationBuilder(type).addProperties(getProperties());
         }
         return null;
     }
@@ -176,7 +176,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
 
     public Invocation<Response, MediaType> getAuthorizedRequest(EntityInterface consume, MediaType type){
         if (getTarget() != null){
-            return new InvocationBuilder(type, consume);
+            return new InvocationBuilder(type, consume).addProperties(getProperties());
         }
         return null;
     }

@@ -40,16 +40,6 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
             }
         }
 
-        @Override
-        public Invocation<Response, MediaType> addProperties(Property... properties) {
-            for (Property property : properties) {
-                if (property.getKey() != null && property.getValue() != null){
-                    getProperties().add(property);
-                }
-            }
-            return this;
-        }
-
         public Response get() throws HttpInvocationException {
             try {
                 Request request = HttpAbstractTemplate.this.getTarget()
@@ -190,16 +180,8 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
     private OkHttpClient webClient;
     public HttpAbstractTemplate() {_lock = new ReentrantLock();}
 
-    private List<Property> properties;
-    private List<Property> getProperties(){
-        if (properties == null){
-            properties = new ArrayList<>();
-        }
-        return properties;
-    }
-
     public OkHttpClient getWebClient() {
-        return initWebClient(getProperties().toArray(new Property[0]));
+        return initWebClient(getProperties());
     }
 
     private OkHttpClient initWebClient(Property...properties){
@@ -207,15 +189,19 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
             _lock.lock();
             try {
                 OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
-                for (Property property : properties) {
-                    if (Invocation.TIMEOUT.CONNECT.key().equalsIgnoreCase(property.getKey())){
-                        builder.connectTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
-                    }
-                    if (Invocation.TIMEOUT.READ.key().equalsIgnoreCase(property.getKey())){
-                        builder.readTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
-                    }
-                    if (Invocation.TIMEOUT.WRITE.key().equalsIgnoreCase(property.getKey())){
-                        builder.writeTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
+                if (properties != null) {
+                    for (Property property : properties) {
+                        if (property.getKey() != null && property.getValue() != null) {
+                            if (Invocation.TIMEOUT.CONNECT.key().equalsIgnoreCase(property.getKey())){
+                                builder.connectTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
+                            }
+                            if (Invocation.TIMEOUT.READ.key().equalsIgnoreCase(property.getKey())){
+                                builder.readTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
+                            }
+                            if (Invocation.TIMEOUT.WRITE.key().equalsIgnoreCase(property.getKey())){
+                                builder.writeTimeout(Long.valueOf(property.getValue().toString()), TimeUnit.MILLISECONDS);
+                            }
+                        }
                     }
                 }
                 webClient = builder.build();

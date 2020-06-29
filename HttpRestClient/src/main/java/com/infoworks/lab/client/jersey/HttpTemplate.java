@@ -2,11 +2,11 @@ package com.infoworks.lab.client.jersey;
 
 import com.infoworks.lab.exceptions.HttpInvocationException;
 import com.infoworks.lab.rest.breaker.CircuitBreaker;
+import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
 import com.infoworks.lab.rest.template.Route;
-import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.it.soul.lab.sql.query.models.Property;
 
@@ -64,7 +64,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
     }
 
     private Class<? extends EntityInterface> getInferredConsume(){
-        if (inferredConsume == null) inferredConsume = (Class<C>) Entity.class;
+        if (inferredConsume == null) inferredConsume = (Class<C>) Message.class;
         return inferredConsume;
     }
 

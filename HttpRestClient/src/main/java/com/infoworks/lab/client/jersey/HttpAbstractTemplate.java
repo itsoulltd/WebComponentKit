@@ -50,7 +50,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
 
         @Override
         public Invocation<Response, MediaType> addProperties(Property...properties) {
-            if (builder != null && properties != null){
+            if (builder != null && properties != null && properties.length > 0){
                 for (Property property : properties) {
                     if (property.getKey() != null && property.getValue() != null){
                         if (Invocation.TIMEOUT.CONNECT.key().equalsIgnoreCase(property.getKey())) {

@@ -189,7 +189,7 @@ public abstract class HttpAbstractTemplate extends AbstractTemplate implements T
             _lock.lock();
             try {
                 OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
-                if (properties != null) {
+                if (properties != null && properties.length > 0) {
                     for (Property property : properties) {
                         if (property.getKey() != null && property.getValue() != null) {
                             if (Invocation.TIMEOUT.CONNECT.key().equalsIgnoreCase(property.getKey())){

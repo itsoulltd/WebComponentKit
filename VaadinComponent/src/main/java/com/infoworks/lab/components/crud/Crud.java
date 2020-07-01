@@ -29,7 +29,9 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
         grid.setPageSize(configurator.getGridPageSize());
         configurator.getDataSource().setGrid(grid);
         getGrid().setSelectionMode(configurator.getSelectionMode());
-        this.searchBar = new SearchBar(configurator.getBeanType(), createSearchBarConfigurator());
+        if (!configurator.isHideSearchBar()) {
+            this.searchBar = new SearchBar(configurator.getBeanType(), createSearchBarConfigurator());
+        }
         this.parentLayout = prepareParentLayout();
         getContent().add(this.parentLayout);
     }
@@ -37,7 +39,9 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
     protected Component prepareParentLayout(){
         VerticalLayout parent = new VerticalLayout();
         parent.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.STRETCH);
-        parent.add(searchBar);
+        if (searchBar != null) {
+            parent.add(searchBar);
+        }
         parent.add(configurator.getDataSource().getGrid());
         //
         if (configurator.isDialog()) {
@@ -114,6 +118,20 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
 
     private void configureDialogForm(VerticalLayout parent){
         this.dialog = configurator.getDialog();
+        configureSearchBarEvents();
+        //
+        this.dialog.addSaveClickListener((item, event) -> {
+
+            System.out.println(((T)item).marshallingToMap(false));
+            configurator.getDataSource().save((T)item);
+            this.dialog.close();
+            configurator.getDataSource().reloadGrid();
+        });
+    }
+
+    private void configureSearchBarEvents() {
+        if (searchBar == null) return;
+        //Action on AddNew Button on SearchBar:
         searchBar.addClickListener((event) -> {
             try {
                 EntityInterface ei = configurator.getBeanType().newInstance();
@@ -124,18 +142,10 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
                 e.printStackTrace();
             }
         });
-        //
+        //Action on value-changed event on Search Field:
         searchBar.addValueChangeListener((event) ->
-            configurator.getDataSource().addSearchFilter(event.getValue().toString())
+                configurator.getDataSource().addSearchFilter(event.getValue().toString())
         );
-        //
-        this.dialog.addSaveClickListener((item, event) -> {
-
-            System.out.println(((T)item).marshallingToMap(false));
-            configurator.getDataSource().save((T)item);
-            this.dialog.close();
-            configurator.getDataSource().reloadGrid();
-        });
     }
 
     private SearchBar.SearchBarConfigurator createSearchBarConfigurator(){

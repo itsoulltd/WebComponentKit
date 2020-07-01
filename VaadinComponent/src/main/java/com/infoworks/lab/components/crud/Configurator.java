@@ -21,6 +21,7 @@ public class Configurator {
     private BeanEditor editor;
     private BeanDialog dialog;
     private int pageSize = 10;
+    private boolean hideSearchBar;
 
     public Configurator(Class<? extends EntityInterface> beanType) {
         this.beanType = beanType;
@@ -33,10 +34,6 @@ public class Configurator {
     public Configurator setDisplayType(EditorDisplayType displayType) {
         this.displayType = displayType;
         return this;
-    }
-
-    public boolean isDialog(){
-        return displayType == EditorDisplayType.DIALOG;
     }
 
     public GridDataSource getDataSource() {
@@ -55,6 +52,10 @@ public class Configurator {
     public Configurator setSelectionMode(Grid.SelectionMode selectionMode) {
         this.selectionMode = selectionMode;
         return this;
+    }
+
+    public boolean isDialog(){
+        return displayType == EditorDisplayType.DIALOG;
     }
 
     public boolean isEmbedded() {
@@ -134,6 +135,15 @@ public class Configurator {
 
     public Configurator setGridPageSize(int pageSize) {
         this.pageSize = pageSize;
+        return this;
+    }
+
+    public boolean isHideSearchBar() {
+        return hideSearchBar;
+    }
+
+    public Configurator setHideSearchBar(boolean hideSearchBar) {
+        this.hideSearchBar = hideSearchBar;
         return this;
     }
 }

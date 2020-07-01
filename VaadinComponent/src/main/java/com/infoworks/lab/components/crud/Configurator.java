@@ -21,7 +21,7 @@ public class Configurator {
     private BeanEditor editor;
     private BeanDialog dialog;
     private int pageSize = 10;
-    private boolean hideSearchBar;
+    private boolean hideSearchBar; //Bu Default False
 
     public Configurator(Class<? extends EntityInterface> beanType) {
         this.beanType = beanType;

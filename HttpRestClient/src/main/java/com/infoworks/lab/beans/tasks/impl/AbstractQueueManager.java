@@ -43,7 +43,10 @@ public abstract class AbstractQueueManager implements TaskManager {
             if (getListener() != null)
                 getListener().before(task, State.Backward);
             //Call Execute:
-            Message msg = task.abort(reason);
+            Message msg = null;
+            try {
+                msg = task.abort(reason);
+            } catch (RuntimeException e) {}
             //End Execute:
             if (getListener() != null) {
                 getListener().after(task, State.Backward);

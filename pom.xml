@@ -51,6 +51,7 @@
     </dependencies>
 
     <profiles>
+        <!-- ~>$ mvn -P <profile-id> clean install -->
         <profile>
             <id>http-clients</id>
             <modules>

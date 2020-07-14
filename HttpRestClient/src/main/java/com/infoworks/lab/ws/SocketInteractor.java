@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 
 public interface SocketInteractor extends ConfigurableInteractor {
 
+    void enableHeartbeat(long[] heartbeat);
     void setAuthorizationHeader(String token);
     void setQueryParam(String query, String param);
     void connect(String url, long timeoutInSeconds)

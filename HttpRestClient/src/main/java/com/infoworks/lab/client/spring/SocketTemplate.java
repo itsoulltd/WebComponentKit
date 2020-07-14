@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
@@ -50,18 +51,17 @@ public class SocketTemplate extends AbstractTemplate implements SocketInteractor
             stompClient = new WebSocketStompClient(webSocketClient);
         }
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        //stompClient.setTaskScheduler(taskScheduler);
     }
 
     public SocketTemplate() {}
 
+    public SocketTemplate(SocketType type) {
+        configureTemplate(type);
+    }
+
     @Override
     protected String domain() throws MalformedURLException {
         return null;
-    }
-
-    public SocketTemplate(SocketType type) {
-        configureTemplate(type);
     }
 
     @Override
@@ -257,4 +257,17 @@ public class SocketTemplate extends AbstractTemplate implements SocketInteractor
         }
     }
 
+    @Override
+    public void enableHeartbeat(long[] heartbeat) {
+        if (stompClient == null || isConnected()) {
+            LOG.warning("WebSocketStompClient is already connected. Can't enable heartbeat after connect(...) call.");
+            return;
+        }
+        //
+        stompClient.setDefaultHeartbeat(heartbeat);
+        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors() / 2);
+        taskScheduler.setThreadNamePrefix("ws-heartbeat-scheduler-");
+        stompClient.setTaskScheduler(taskScheduler);
+    }
 }

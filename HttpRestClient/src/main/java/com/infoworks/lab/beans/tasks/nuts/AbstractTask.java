@@ -1,5 +1,6 @@
 package com.infoworks.lab.beans.tasks.nuts;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.infoworks.lab.beans.tasks.definition.Task;
 import com.infoworks.lab.rest.models.Message;
 import com.it.soul.lab.sql.query.models.Property;
@@ -7,6 +8,7 @@ import com.it.soul.lab.sql.query.models.Row;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Function;
 
 public abstract class AbstractTask implements Task {
@@ -80,5 +82,21 @@ public abstract class AbstractTask implements Task {
 
     public void setConverter(Function<Message, Message> converter) {
         this.converter = converter;
+    }
+
+    protected Object getPropertyValue(String key) throws RuntimeException{
+        String message = getMessage().getPayload();
+        if (message != null && Message.isValidJson(message)){
+            if(message.startsWith("[")) {throw new RuntimeException("AbstractTask: JsonArray is not supported.");}
+            try {
+                Map<String, Object> data = Message.unmarshal(new TypeReference<Map<String, Object>>() {}, message);
+                Object obj = data.get(key);
+                if (obj == null) throw new IOException("AbstractTask: Invalid Property Access");
+                return obj;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        throw new RuntimeException("AbstractTask: Invalid Property Access");
     }
 }

@@ -48,8 +48,10 @@ public class SynchTaskManager implements TaskManager  {
             stop(task, result);//ABORT-SEQUENCE:
         }else {
             if (task.next() == null){
-                if (getListener() != null)
-                    getListener().finished(result);//TERMINATION:
+                if (getListener() != null) {
+                    Message converted = task.convert(result);
+                    getListener().finished(converted);//TERMINATION:
+                }
             }else{
                 Message converted = task.convert(result);
                 start(task.next(), converted);//START-NEXT:

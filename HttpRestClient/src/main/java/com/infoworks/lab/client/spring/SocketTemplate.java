@@ -266,6 +266,7 @@ public class SocketTemplate extends AbstractTemplate implements SocketInteractor
         //
         stompClient.setDefaultHeartbeat(heartbeat != null ? heartbeat : stompClient.getDefaultHeartbeat());
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.initialize();
         taskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors() / 2);
         taskScheduler.setThreadNamePrefix("ws-heartbeat-scheduler-");
         stompClient.setTaskScheduler(taskScheduler);

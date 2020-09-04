@@ -151,24 +151,27 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
 
     private ComponentEventListener<ClickEvent<Button>> previousAction = (event) -> {
         Query previous = previous(getQuery());
-        SQLSelectQuery query = getSelectQuery(previous);
-        executeQuery(query);
-        reloadGrid();
+        reloadSelectQuery(previous);
+        super.reloadGrid();
     };
 
     private ComponentEventListener<ClickEvent<Button>> nextAction = (event) -> {
         Query next = next(getQuery());
+        reloadSelectQuery(next);
+        super.reloadGrid();
+    };
+
+    private void reloadSelectQuery(Query next) {
+        //Fetch data from persistence data Source and load into storage:
         SQLSelectQuery query = getSelectQuery(next);
         executeQuery(query);
-        reloadGrid();
-    };
+        //force update the MaxOffsetQuery & also update footer
+        updateMaxOffsetQuery(0);
+    }
 
     @Override
     public void reloadGrid() {
-        //Fetch data from persistence data Source and load into storage:
-        SQLSelectQuery query = getSelectQuery(getQuery());
-        executeQuery(query);
-        updateMaxOffsetQuery(0); //force update the MaxOffsetQuery & also update footer
+        reloadSelectQuery(getQuery());
         super.reloadGrid();
     }
 

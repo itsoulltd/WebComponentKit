@@ -56,6 +56,19 @@ public class SearchQuery extends PagingQuery implements WhereClause {
         return _queryPredicate;
     }
 
+    public Predicate getQueryPredicate(){
+        //TODO: Need Refactoring:
+        Predicate clause = null;
+        for (QueryProperty qp: getSortedList()) {
+            if (clause == null){
+                clause = new Where(qp.getKey()).isEqualTo(qp.getValue());
+            }else {
+                clause.and(qp.getKey()).isEqualTo(qp.getValue());
+            }
+        }
+        return clause;
+    }
+
     public WhereClause add(String key){
         getPredicate().and(key);
         return this;

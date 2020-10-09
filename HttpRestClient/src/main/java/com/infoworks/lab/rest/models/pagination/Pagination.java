@@ -14,7 +14,7 @@ public interface Pagination<P extends Pagination> {
     Integer getSize();
     void setSize(Integer size);
     List<SortDescriptor> getDescriptors();
-    void setDescriptors(List descriptors);
+    void setDescriptors(List<SortDescriptor> descriptors);
 
     static <T extends Pagination> T createQuery(Class<T> type, int size, SortOrder order, String...keys) {
         Pagination query = null;

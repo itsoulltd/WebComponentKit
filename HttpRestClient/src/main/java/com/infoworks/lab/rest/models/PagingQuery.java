@@ -4,18 +4,16 @@ import com.infoworks.lab.rest.models.events.Event;
 import com.infoworks.lab.rest.models.pagination.Pagination;
 import com.infoworks.lab.rest.models.pagination.SortDescriptor;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PagingQuery extends Event implements Pagination<PagingQuery> {
 
     private Integer page = 0;
     private Integer size = 0;
-    private List<SortDescriptor> descriptors;
+    private List<SortDescriptor> descriptors = new ArrayList<>();
 
-    public PagingQuery() {
-        descriptors = Arrays.asList(new SortDescriptor());
-    }
+    public PagingQuery() {}
 
     public Integer getPage() {
         return page;
@@ -38,8 +36,9 @@ public class PagingQuery extends Event implements Pagination<PagingQuery> {
         return descriptors;
     }
 
-    public void setDescriptors(List descriptors) {
-        this.descriptors = descriptors;
+    public void setDescriptors(List<SortDescriptor> descriptors) {
+        if (descriptors == null || descriptors.isEmpty()) return;
+        this.descriptors.addAll(descriptors);
     }
 
     @Override

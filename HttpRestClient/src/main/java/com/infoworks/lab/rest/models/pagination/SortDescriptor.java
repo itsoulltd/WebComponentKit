@@ -6,21 +6,21 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class SortDescriptor extends Entity implements Externalizable {
 
-    private SortOrder order;
-    private List<String> keys;
+    private SortOrder order = SortOrder.ASC;
+    private List<String> keys = new ArrayList<>();
 
     public SortDescriptor(SortOrder order) {
         this.order = order;
     }
 
-    public SortDescriptor() {
-        this(SortOrder.ASE);
-    }
+    public SortDescriptor() {}
 
     public SortOrder getOrder() {
         return order;
@@ -35,7 +35,8 @@ public class SortDescriptor extends Entity implements Externalizable {
     }
 
     public void setKeys(List<String> keys) {
-        this.keys = keys;
+        if (keys == null || keys.isEmpty()) return;
+        this.keys.addAll(keys);
     }
 
     @Override

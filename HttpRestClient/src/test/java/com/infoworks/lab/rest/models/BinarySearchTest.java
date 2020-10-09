@@ -154,7 +154,7 @@ public class BinarySearchTest {
         userInfoList.setUsers(infoList);
 
         //Sorting in Action
-        userInfoList.sort(SortOrder.ASE, "username");
+        userInfoList.sort(SortOrder.ASC, "username");
         List<UserInfo> sorted = userInfoList.getUsers();
         sorted.forEach(emailInfo -> System.out.println(emailInfo.getUsername()));
         //Search in Action

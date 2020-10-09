@@ -56,6 +56,7 @@ public class SearchQuery extends PagingQuery implements WhereClause {
         return _queryPredicate;
     }
 
+    @JsonIgnore
     public Predicate getQueryPredicate(){
         //TODO: Need Refactoring:
         Predicate clause = null;

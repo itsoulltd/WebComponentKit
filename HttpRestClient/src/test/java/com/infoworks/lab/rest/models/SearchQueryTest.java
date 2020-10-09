@@ -142,6 +142,23 @@ public class SearchQueryTest {
         Assert.assertTrue(person1 == null);
     }
 
+    @Test
+    public void leadTest(){
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.ASC, "CLUSTER_NAME","REGION_NAME", "AM_NAME");
+        query.add("ROLE_NAME").isEqualTo("Gittu").and("PERSON_MOBILE").isEqualTo("01712645571");
+        String result = query.toString();
+        System.out.println(result);
+        //
+        try {
+            SearchQuery recreate = new ObjectMapper().readValue(result, SearchQuery.class);
+            recreate.getDescriptors().forEach(sortDescriptor -> {
+                System.out.println(sortDescriptor.toString());
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static class Person extends Message{
 
         private String name;

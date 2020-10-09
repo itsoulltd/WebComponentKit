@@ -43,7 +43,7 @@ public class ResponseList<C extends Response> extends Response{
     }
 
     private int compareWithOrder(SortOrder order, C o1, C o2){
-        if (order == SortOrder.ASE)
+        if (order == SortOrder.ASC)
             return compare(o1, o2);
         else
             return compare(o2, o1);

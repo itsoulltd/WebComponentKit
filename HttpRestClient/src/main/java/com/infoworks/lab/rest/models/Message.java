@@ -123,7 +123,7 @@ public class Message<E extends Event> extends Entity implements Externalizable {
     }
 
     @JsonIgnore
-    protected static ObjectMapper getJsonSerializer(){
+    public static ObjectMapper getJsonSerializer(){
         ObjectMapper jsonSerializer = new ObjectMapper();
         jsonSerializer.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         jsonSerializer.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);

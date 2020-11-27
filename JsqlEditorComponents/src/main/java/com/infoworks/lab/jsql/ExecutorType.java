@@ -4,5 +4,6 @@ public enum ExecutorType {
     SQL,
     JPQL,
     CQL,
-    REST
+    REST,
+    IN_MEM
 }

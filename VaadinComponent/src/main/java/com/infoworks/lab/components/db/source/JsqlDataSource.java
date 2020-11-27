@@ -34,6 +34,6 @@ public interface JsqlDataSource<T extends EntityInterface> extends GridDataSourc
     }
 
     static <GDS extends GridDataSource> GDS createDataSource(Class<GDS> type, ExecutorType executorType){
-        return createDataSource(type, executorType, JsqlConfig.createDataSourceKey("app.db"));
+        return createDataSource(type, executorType, DataSourceKey.createDataSourceKey("app.db"));
     }
 }

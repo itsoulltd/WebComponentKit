@@ -1,8 +1,9 @@
 package com.infoworks.lab.jjwt;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.infoworks.lab.cryptor.util.SecretKeyAlgo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -19,49 +20,44 @@ import java.util.logging.Logger;
 
 public class JWTValidator implements TokenValidation{
 
-    private Logger LOG = Logger.getLogger(this.getClass().getSimpleName());
+    protected Logger LOG = Logger.getLogger(this.getClass().getSimpleName());
 
     protected byte[] validateSecret(String secret) throws Exception{
         if (secret == null) throw new Exception("Secret Can't be null!!!");
         return secret.getBytes();
     }
 
-    protected Key generateKey(String secret, SecretKeyAlgo algo) throws Exception {
-        byte[] bytes = validateSecret(secret);
-        Key key = new SecretKeySpec(bytes, 0, bytes.length, algo.name());
-        return key;
+    protected String getSecret(JWTHeader header, String...args) throws Exception{
+        String secret = null;
+        if (args.length >= 1) secret = args[0];
+        if (secret == null || secret.isEmpty())
+            throw new Exception("Secret must not null or empty");
+        //
+        return secret;
     }
 
-    public Boolean isValid(String token, String...args){
-        Boolean result;
+    @Override
+    public Boolean isValid(String token, String... args) {
+        //
+        token = TokenValidation.parseToken(token, "Bearer ");
+        //LOG.info(token);
+        String[] parts = token.split("\\.");
+        //LOG.info("HEADER: " + new String(Base64.getDecoder().decode(parts[0])));
+        //LOG.info("HEADER: " + new String(Base64.getDecoder().decode(parts[1])));
         try {
-            String secret = null;
-            if (args.length >= 1) secret = args[0];
-            if (secret == null || secret.isEmpty())
-                throw new Exception("Secret is null or empty");
-            //
-            SecretKeyAlgo algo = SecretKeyAlgo.DES;
-            if (args.length >= 2) {
-                try {
-                    algo = SecretKeyAlgo.valueOf(args[1]);
-                } catch (IllegalArgumentException e) {}
-            }
-            //
-            Key key = generateKey(secret, algo);
+            ObjectMapper mapper = getJsonSerializer();
+            JWTHeader header = mapper.readValue(new String(Base64.getDecoder().decode(parts[0])), JWTHeader.class);
+            String secret = getSecret(header, args);
+            byte[] bytes = this.validateSecret(secret);
+            Key key = new SecretKeySpec(bytes, 0, bytes.length, header.getAlg());
             Jws<Claims> cl = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
-            String issuerID = null;
-            if (args.length >= 2) issuerID = args[1];
-            if(issuerID != null) {
-                String issuer = cl.getBody().getIssuer();
-                result = issuerID.equalsIgnoreCase(issuer);
-            }else {
-                result = true;
-            }
+            Claims claims =  cl.getBody();
+            LOG.info("JWT Claims: " + claims.toString());
+            return true;
         } catch (Exception e) {
             LOG.log(Level.WARNING, e.getMessage(), e);
-            result = false;
         }
-        return result;
+        return false;
     }
 
     @Override
@@ -99,11 +95,12 @@ public class JWTValidator implements TokenValidation{
         return null;
     }
 
-    private ObjectMapper getJsonSerializer() {
+    protected ObjectMapper getJsonSerializer() {
         ObjectMapper jsonSerializer = new ObjectMapper();
-        //jsonSerializer.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        //jsonSerializer.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-        //jsonSerializer.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        jsonSerializer.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        jsonSerializer.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+        jsonSerializer.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         return jsonSerializer;
     }
+
 }

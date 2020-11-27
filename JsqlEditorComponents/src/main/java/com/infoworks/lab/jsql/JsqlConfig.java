@@ -1,6 +1,7 @@
 package com.infoworks.lab.jsql;
 
 import com.infoworks.lab.components.rest.RestExecutor;
+import com.it.soul.lab.connect.DriverClass;
 import com.it.soul.lab.connect.JDBConnectionPool;
 import com.it.soul.lab.jpql.service.JPQLExecutor;
 import com.it.soul.lab.jpql.service.ORMController;
@@ -10,18 +11,25 @@ import com.it.soul.lab.sql.SQLExecutor;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.infoworks.lab.jsql.DataSourceKey.Keys;
 
 public class JsqlConfig {
 
+    private Logger LOG = Logger.getLogger(this.getClass().getSimpleName());
+    private DataSource dataSource;
     private Set<String> configuredKeys = new ConcurrentSkipListSet<>();
 
     public JsqlConfig() {}
+
+    public JsqlConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     private synchronized void config(String key, DataSourceKey container){
         if (key != null && configuredKeys.contains(key)) return;
@@ -32,13 +40,8 @@ public class JsqlConfig {
             JDBConnectionPool.configure(key, createDataSource(container));
             configuredKeys.add(key);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            LOG.log(Level.WARNING, e.getMessage(), e);
         }
-    }
-
-    private DataSourceKey getDefaultKeys() {
-        DataSourceKey container = createDataSourceKey(null);
-        return container;
     }
 
     public Connection pullConnection(String key, DataSourceKey container){
@@ -47,13 +50,13 @@ public class JsqlConfig {
             config(key, container);
             connection = JDBConnectionPool.connection(key);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            LOG.log(Level.WARNING, e.getMessage(), e);
         }
         return connection;
     }
 
     public Connection pullConnection(String key){
-        DataSourceKey container = getDefaultKeys();
+        DataSourceKey container = DataSourceKey.createDataSourceKey(null);
         return pullConnection(key, container);
     }
 
@@ -72,7 +75,7 @@ public class JsqlConfig {
 
     public QueryExecutor create(ExecutorType type, String key) {
         if (type == ExecutorType.SQL){
-            DataSourceKey container = getDefaultKeys();
+            DataSourceKey container = DataSourceKey.createDataSourceKey(null);
             return create(type, key, container);
         }else {
             return create(type, key, null);
@@ -80,7 +83,10 @@ public class JsqlConfig {
     }
 
     public DataSource createDataSource(DataSourceKey container) throws SQLException{
+        //Return if passed in constructor:
+        if (dataSource != null) return dataSource;
 
+        //Else create a un-managed datasource:
         String username = container.get(Keys.USERNAME);
         if(username==null) username = Keys.USERNAME.defaultValue();
 
@@ -115,10 +121,11 @@ public class JsqlConfig {
                     , name
                     , queryParam);
         }
-        System.out.println("DATA-SOURCE URL: " + url);
+        LOG.info("DATA-SOURCE URL: " + url);
         //
         DataSource ds = createDataSource(url, driverClassName, username, password);
         configureDataSource(ds);
+        dataSource = ds;
         return ds;
     }
 
@@ -138,24 +145,21 @@ public class JsqlConfig {
             poolDS.setMaxActive(10);
             poolDS.setMaxIdle(5);
             poolDS.setMinIdle(2);
-            //poolDS.setValidationQuery("select now()");
+            poolDS.setTimeBetweenEvictionRunsMillis(34*1000);
+            poolDS.setMinEvictableIdleTimeMillis(55*1000);
+            if(((org.apache.tomcat.jdbc.pool.DataSource) ds).getDriverClassName()
+                    .equalsIgnoreCase(DriverClass.MYSQL.toString())) {
+                poolDS.setValidationQuery("SELECT 1");//for MySqlDB
+            }else if(((org.apache.tomcat.jdbc.pool.DataSource) ds).getDriverClassName()
+                    .equalsIgnoreCase(DriverClass.OracleOCI9i.toString())){
+                poolDS.setValidationQuery("SELECT 1 from dual"); //for OraclDB
+            }
+            poolDS.setValidationInterval(34*1000);
+            poolDS.setTestOnBorrow(true);
+            poolDS.setRemoveAbandoned(true);
+            poolDS.setRemoveAbandonedTimeout(55);
+            poolDS.setLoginTimeout(60*1000);
         }
-    }
-
-    public static DataSourceKey createDataSourceKey(String suffix) {
-        if (suffix == null || suffix.isEmpty()) suffix = "app.db";
-        Map<String, String> env = System.getenv();
-        DataSourceKey container = new DataSourceKey();
-        container.set(DataSourceKey.Keys.URL, env.get(suffix + ".url"));
-        container.set(DataSourceKey.Keys.DRIVER, env.get(suffix + ".driver-class-name"));
-        container.set(DataSourceKey.Keys.SCHEMA, env.get(suffix + ".schema"));
-        container.set(DataSourceKey.Keys.USERNAME, env.get(suffix + ".username"));
-        container.set(DataSourceKey.Keys.PASSWORD, env.get(suffix + ".password"));
-        container.set(DataSourceKey.Keys.HOST, env.get(suffix + ".host"));
-        container.set(DataSourceKey.Keys.PORT, env.get(suffix + ".port"));
-        container.set(DataSourceKey.Keys.NAME, env.get(suffix + ".name"));
-        container.set(DataSourceKey.Keys.QUERY, env.get(suffix + ".query"));
-        return container;
     }
 
 }

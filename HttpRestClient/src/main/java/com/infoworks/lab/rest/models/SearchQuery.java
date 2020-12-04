@@ -66,6 +66,13 @@ public class SearchQuery extends PagingQuery implements WhereClause {
         return this;
     }
 
+    @Override
+    public boolean containValidStuff(String value) {
+        //TODO: CHECK all sort-descriptor keys for malicious stuff:
+        boolean myStuff = true;
+        return super.containValidStuff(value) && myStuff;
+    }
+
     private boolean _isPropertiesSorted;
 
     @JsonIgnore
@@ -181,7 +188,7 @@ public class SearchQuery extends PagingQuery implements WhereClause {
     protected void updateCurrentProperty(Object o, Operator opt) {
         if (getCurrent() == null) return;
         QueryProperty current = getCurrent();
-        if (o != null) {
+        if (validate(o)) {
             if (o instanceof Object[]){
                 current.setType(DataType.getDataType(o));
                 List<String> a = Arrays.stream(((Object[]) o))

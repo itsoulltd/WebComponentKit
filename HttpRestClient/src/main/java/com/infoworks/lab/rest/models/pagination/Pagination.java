@@ -15,6 +15,7 @@ public interface Pagination<P extends Pagination> {
     void setSize(Integer size);
     List<SortDescriptor> getDescriptors();
     void setDescriptors(List<SortDescriptor> descriptors);
+    boolean containValidStuff(String value);
 
     static <T extends Pagination> T createQuery(Class<T> type, int size, SortOrder order, String...keys) {
         Pagination query = null;
@@ -31,5 +32,9 @@ public interface Pagination<P extends Pagination> {
             e.printStackTrace();
         }
         return (T) query;
+    }
+
+    default boolean validate(Object value){
+        return value != null && containValidStuff(value.toString());
     }
 }

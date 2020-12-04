@@ -42,6 +42,12 @@ public class PagingQuery extends Event implements Pagination<PagingQuery> {
     }
 
     @Override
+    public boolean containValidStuff(String value) {
+        //TODO: CHECK all sort-descriptor keys for malicious stuff:
+        return true;
+    }
+
+    @Override
     public PagingQuery next() {
         PagingQuery query = jumpTo(++page);
         return query;

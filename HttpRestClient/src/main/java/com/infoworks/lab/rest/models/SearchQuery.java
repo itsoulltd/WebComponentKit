@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.it.soul.lab.sql.query.models.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -152,13 +153,16 @@ public class SearchQuery extends PagingQuery implements WhereClause {
                 result = Long.valueOf(value);
                 break;
             case FLOAT:
-                result = Double.valueOf(value);
+                result = Float.valueOf(value);
                 break;
             case BOOL:
                 result = Boolean.valueOf(value);
                 break;
             case DOUBLE:
                 result = Double.valueOf(value);
+                break;
+            case BIG_DECIMAL:
+                result = new BigDecimal(value);
                 break;
             case UUID:
                 result = UUID.fromString(value);
@@ -356,6 +360,8 @@ public class SearchQuery extends PagingQuery implements WhereClause {
             return SearchQuery.this;
         }
 
+        private ExpressionInterpreter expression;
+
         @Override
         public Predicate not() {
             return this;
@@ -371,14 +377,54 @@ public class SearchQuery extends PagingQuery implements WhereClause {
             return this;
         }
 
+        private Predicate createExpression(QueryProperty property, Logic logic) {
+            ExpressionInterpreter exp = new Expression(new Property(property.getKey(), property.getValue()), property.getOperator());
+            return create(exp, logic);
+        }
+
+        private Predicate create(ExpressionInterpreter exp, Logic logic){
+            if(expression == null) {
+                expression = exp;
+            }
+            if(logic != null) {
+                if(logic == Logic.AND) { createAnd(exp);}
+                else {createOr(exp);}
+            }
+            return this;
+        }
+
+        private void createAnd(ExpressionInterpreter exp) {
+            expression = new AndExpression(expression, exp);
+        }
+
+        private void createOr(ExpressionInterpreter exp) {
+            expression = new OrExpression(expression, exp);
+        }
+
         @Override
         public String interpret() {
-            return null;
+            if (expression == null){
+                Logic logic = null;
+                for (QueryProperty property : getProperties()) {
+                    if (!validate(property.getValue())) continue;
+                    createExpression(property, logic);
+                    logic = property.getLogic();
+                }
+            }
+            return expression.interpret();
         }
 
         @Override
         public Expression[] resolveExpressions() {
-            return new Expression[0];
+            if (expression == null){
+                Logic logic = null;
+                for (QueryProperty property : getProperties()) {
+                    if (!validate(property.getValue())) continue;
+                    createExpression(property, logic);
+                    logic = property.getLogic();
+                }
+            }
+            return expression.resolveExpressions();
         }
     }
 

@@ -3,6 +3,7 @@ package com.infoworks.lab.rest.models;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoworks.lab.rest.models.pagination.Pagination;
 import com.infoworks.lab.rest.models.pagination.SortOrder;
+import com.it.soul.lab.sql.query.models.Expression;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -154,6 +155,29 @@ public class SearchQueryTest {
             recreate.getDescriptors().forEach(sortDescriptor -> {
                 System.out.println(sortDescriptor.toString());
             });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void predicateTest(){
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.ASC, "CLUSTER_NAME","REGION_NAME", "AM_NAME");
+        query.add("ROLE_NAME").isEqualTo("Gittu")
+                .or("PERSON_MOBILE").isEqualTo("01712645571")
+                .and("age").isGreaterThen(32);
+        String result = query.toString();
+        System.out.println("Where Clause Before: "+ query.getPredicate().interpret());
+        System.out.println(result);
+        //
+        try {
+            SearchQuery recreate = new ObjectMapper().readValue(result, SearchQuery.class);
+            recreate.getDescriptors().forEach(sortDescriptor -> {
+                System.out.println(sortDescriptor.toString());
+            });
+            System.out.println("Where Clause After: "+ recreate.getPredicate().interpret());
+            Expression[] expressions = recreate.getPredicate().resolveExpressions();
+            System.out.println("");
         } catch (IOException e) {
             e.printStackTrace();
         }

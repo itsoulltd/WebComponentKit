@@ -411,7 +411,7 @@ public class SearchQuery extends PagingQuery implements WhereClause {
                     logic = property.getLogic();
                 }
             }
-            return expression.interpret();
+            return (expression != null) ? expression.interpret() : "";
         }
 
         @Override
@@ -424,7 +424,7 @@ public class SearchQuery extends PagingQuery implements WhereClause {
                     logic = property.getLogic();
                 }
             }
-            return expression.resolveExpressions();
+            return (expression != null) ? expression.resolveExpressions() : new Expression[0];
         }
     }
 

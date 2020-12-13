@@ -62,14 +62,68 @@ public class SearchQuery extends PagingQuery implements WhereClause {
         return this;
     }
 
-    public WhereClause remove(String key){
-        //TODO
+    public WhereClause remove(String...keys){
+        if (keys != null && keys.length > 0){
+            //First Take a snapshot of all properties:
+            List<QueryProperty> cache = new ArrayList<>(getProperties());
+            //Clean Current State:
+            removeAll();
+            //Loop through all-properties:
+            List<String> skipList = Arrays.asList(keys);
+            List<QueryProperty> props = cache.stream()
+                    .filter(query -> !skipList.contains(query.getKey()))
+                    .collect(Collectors.toList());
+            //add all except given keys:
+            reconstructRelations(props);
+            setProperties(props);
+            //Done
+            return this;
+        }else {
+            return removeAll();
+        }
+    }
+
+    private void reconstructRelations(List<QueryProperty> props) {
+        QueryProperty carry = null;
+        for (QueryProperty query : props) {
+            if (carry != null && carry.getNextKey() != null){
+                if (!query.getKey().equalsIgnoreCase(carry.getNextKey())){
+                    //Means: chain was disconnected due to removal:
+                    //Reconstruct the chain:
+                    carry.setNextKey(query.getKey());
+                }
+            }
+            carry = query;
+        }
+        if (carry != null){
+            //Set the termination:
+            carry.setNextKey(null);
+            carry.setLogic(null);
+        }
+    }
+
+    public WhereClause removeAll(){
+        //Remove all:
+        synchronized (this.properties) {
+            getProperties().clear();
+            getSortedList().clear();
+            _queryPredicate = new QueryPredicate();
+        }
         return this;
     }
 
     @Override
     public boolean containValidStuff(String value) {
         //TODO: CHECK all sort-descriptor keys for malicious stuff:
+        //AVOID: 'OR'/'or'/'AND'/'and' in the value. e.g. SELECT * FROM Users WHERE UserId = 105 OR 1=1;
+        //AVOID: ""="" e.g.  SELECT * FROM Users WHERE Name ="" or ""="" AND Pass ="" or ""="";
+        //AVOID: Batched SQL Statements. e.g.
+                //txtUserId = getRequestString("UserId");
+                //txtSQL = "SELECT * FROM Users WHERE UserId = " + txtUserId;
+                //User input =>  txtUserId = 105; DROP TABLE Suppliers
+                //results in=> SELECT * FROM Users WHERE UserId = 105; DROP TABLE Suppliers;
+        //DO: Use SQL Parameters for Protection e.g. SELECT * FROM Customer WHERE userId = ?;
+        //And user java prepare-statement commend:
         boolean myStuff = true;
         return super.containValidStuff(value) && myStuff;
     }

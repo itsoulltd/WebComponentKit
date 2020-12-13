@@ -183,6 +183,81 @@ public class SearchQueryTest {
         }
     }
 
+    @Test
+    public void removeFromFirstTest(){
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.ASC);
+        query.add("ROLE_NAME").isEqualTo("Gittu")
+                .or("PERSON_MOBILE").isEqualTo("01712645571")
+                .and("age").isGreaterThen(32);
+        String result = query.toString();
+        System.out.println("Before: " + result);
+        //
+        query.remove("ROLE_NAME");
+        Assert.assertEquals(query.toString(), "{\"page\":0,\"size\":10,\"descriptors\":[{\"order\":\"ASC\",\"keys\":[]}],\"properties\":[{\"key\":\"PERSON_MOBILE\",\"value\":\"01712645571\",\"operator\":\"EQUAL\",\"type\":\"STRING\",\"nextKey\":\"age\",\"logic\":\"AND\"},{\"key\":\"age\",\"value\":\"32\",\"operator\":\"GREATER_THAN\",\"type\":\"INT\"}]}");
+        System.out.println("After: " + query.toString());
+        System.out.println(query.getPredicate().interpret());
+    }
+
+    @Test
+    public void removeFromMiddleTest(){
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.ASC);
+        query.add("ROLE_NAME").isEqualTo("Gittu")
+                .or("PERSON_MOBILE").isEqualTo("01712645571")
+                .and("age").isGreaterThen(32);
+        String result = query.toString();
+        System.out.println("Before: " + result);
+        //
+        query.remove("PERSON_MOBILE");
+        Assert.assertEquals(query.toString(), "{\"page\":0,\"size\":10,\"descriptors\":[{\"order\":\"ASC\",\"keys\":[]}],\"properties\":[{\"key\":\"ROLE_NAME\",\"value\":\"Gittu\",\"operator\":\"EQUAL\",\"type\":\"STRING\",\"nextKey\":\"age\",\"logic\":\"OR\"},{\"key\":\"age\",\"value\":\"32\",\"operator\":\"GREATER_THAN\",\"type\":\"INT\"}]}");
+        System.out.println("After: " + query.toString());
+        System.out.println(query.getPredicate().interpret());
+    }
+
+    @Test
+    public void removeFromLastTest(){
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.ASC);
+        query.add("ROLE_NAME").isEqualTo("Gittu")
+                .or("PERSON_MOBILE").isEqualTo("01712645571")
+                .and("age").isGreaterThen(32);
+        String result = query.toString();
+        System.out.println("Before: " + result);
+        //
+        query.remove("age");
+        Assert.assertEquals(query.toString(), "{\"page\":0,\"size\":10,\"descriptors\":[{\"order\":\"ASC\",\"keys\":[]}],\"properties\":[{\"key\":\"ROLE_NAME\",\"value\":\"Gittu\",\"operator\":\"EQUAL\",\"type\":\"STRING\",\"nextKey\":\"PERSON_MOBILE\",\"logic\":\"OR\"},{\"key\":\"PERSON_MOBILE\",\"value\":\"01712645571\",\"operator\":\"EQUAL\",\"type\":\"STRING\"}]}");
+        System.out.println("After: " + query.toString());
+        System.out.println(query.getPredicate().interpret());
+    }
+
+    @Test
+    public void removeFromFirstAndLastTest(){
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.ASC);
+        query.add("ROLE_NAME").isEqualTo("Gittu")
+                .or("PERSON_MOBILE").isEqualTo("01712645571")
+                .and("age").isGreaterThen(32);
+        String result = query.toString();
+        System.out.println("Before: " + result);
+        //
+        query.remove("age", "ROLE_NAME");
+        Assert.assertEquals(query.toString(), "{\"page\":0,\"size\":10,\"descriptors\":[{\"order\":\"ASC\",\"keys\":[]}],\"properties\":[{\"key\":\"PERSON_MOBILE\",\"value\":\"01712645571\",\"operator\":\"EQUAL\",\"type\":\"STRING\"}]}");
+        System.out.println("After: " + query.toString());
+        System.out.println(query.getPredicate().interpret());
+    }
+
+    @Test
+    public void removeFromAllTest(){
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.ASC);
+        query.add("ROLE_NAME").isEqualTo("Gittu")
+                .or("PERSON_MOBILE").isEqualTo("01712645571")
+                .and("age").isGreaterThen(32);
+        String result = query.toString();
+        System.out.println("Before: " + result);
+        //
+        query.remove("age", "ROLE_NAME", "PERSON_MOBILE");
+        Assert.assertEquals(query.toString(), "{\"page\":0,\"size\":10,\"descriptors\":[{\"order\":\"ASC\",\"keys\":[]}],\"properties\":[]}");
+        System.out.println("After: " + query.toString());
+        System.out.println(query.getPredicate().interpret());
+    }
+
     private static class Person extends Message{
 
         private String name;

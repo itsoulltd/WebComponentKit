@@ -1,9 +1,8 @@
 package com.infoworks.lab.jjwt;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.infoworks.lab.jwtoken.definition.AccessToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -43,9 +42,9 @@ public class JWTValidator implements TokenValidation{
         //LOG.info(token);
         String[] parts = token.split("\\.");
         //LOG.info("HEADER: " + new String(Base64.getDecoder().decode(parts[0])));
-        //LOG.info("HEADER: " + new String(Base64.getDecoder().decode(parts[1])));
+        //LOG.info("PAYLOAD: " + new String(Base64.getDecoder().decode(parts[1])));
         try {
-            ObjectMapper mapper = getJsonSerializer();
+            ObjectMapper mapper = AccessToken.getJsonSerializer();
             JWTHeader header = mapper.readValue(new String(Base64.getDecoder().decode(parts[0])), JWTHeader.class);
             String secret = getSecret(header, args);
             byte[] bytes = this.validateSecret(secret);
@@ -80,7 +79,7 @@ public class JWTValidator implements TokenValidation{
         String decodedValue = parsePayloadFromToken(token);
         if (decodedValue != null){
             try {
-                ObjectMapper mapper = getJsonSerializer();
+                ObjectMapper mapper = AccessToken.getJsonSerializer();
                 Map<String, String> payload = mapper.readValue(decodedValue
                         , new TypeReference<Map<String, String>>(){});
                 return (payload != null) ? payload.get(key) : null;
@@ -94,7 +93,7 @@ public class JWTValidator implements TokenValidation{
         String decodedValue = parsePayloadFromToken(token);
         if (decodedValue != null){
             try {
-                ObjectMapper mapper = getJsonSerializer();
+                ObjectMapper mapper = AccessToken.getJsonSerializer();
                 Payload payload = mapper.readValue(decodedValue, payloadClass);
                 return payload;
             } catch (IOException e) {LOG.log(Level.WARNING, e.getMessage(), e);}
@@ -114,14 +113,6 @@ public class JWTValidator implements TokenValidation{
             }
         }
         return null;
-    }
-
-    protected ObjectMapper getJsonSerializer() {
-        ObjectMapper jsonSerializer = new ObjectMapper();
-        jsonSerializer.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        jsonSerializer.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-        jsonSerializer.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return jsonSerializer;
     }
 
 }

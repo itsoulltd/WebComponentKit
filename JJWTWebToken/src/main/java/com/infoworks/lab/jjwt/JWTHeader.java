@@ -14,23 +14,26 @@ public class JWTHeader extends Entity {
         return typ;
     }
 
-    public void setTyp(String typ) {
+    public JWTHeader setTyp(String typ) {
         this.typ = typ;
+        return this;
     }
 
     public String getAlg() {
         return alg;
     }
 
-    public void setAlg(String alg) {
+    public JWTHeader setAlg(String alg) {
         this.alg = alg;
+        return this;
     }
 
     public String getKid() {
         return kid;
     }
 
-    public void setKid(String kid) {
+    public JWTHeader setKid(String kid) {
         this.kid = kid;
+        return this;
     }
 }

@@ -8,6 +8,8 @@ public class JWTPayload extends Entity {
     private long iat;
     private long nbf;
     private long exp;
+    private String iss;
+    private String sub;
     private Map<String, String> data;
 
     public JWTPayload() {}
@@ -42,5 +44,21 @@ public class JWTPayload extends Entity {
 
     public void setData(Map<String, String> data) {
         this.data = data;
+    }
+
+    public String getIss() {
+        return iss;
+    }
+
+    public void setIss(String iss) {
+        this.iss = iss;
+    }
+
+    public String getSub() {
+        return sub;
+    }
+
+    public void setSub(String sub) {
+        this.sub = sub;
     }
 }

@@ -75,21 +75,42 @@ public class JWTValidator implements TokenValidation{
         return parsePayload(token, "sub");
     }
 
-    protected String parsePayload(String token, String key){
-        if (token == null || token.isEmpty()) return null;
+    public String parsePayload(String token, String key){
         if (key == null || key.isEmpty()) return null;
+        String decodedValue = parsePayloadFromToken(token);
+        if (decodedValue != null){
+            try {
+                ObjectMapper mapper = getJsonSerializer();
+                Map<String, String> payload = mapper.readValue(decodedValue
+                        , new TypeReference<Map<String, String>>(){});
+                return (payload != null) ? payload.get(key) : null;
+            } catch (IOException e) {LOG.log(Level.WARNING, e.getMessage(), e);}
+        }
+        return null;
+    }
+
+    @Override
+    public <Payload extends JWTPayload> Payload parsePayload(String token, Class<Payload> payloadClass) {
+        String decodedValue = parsePayloadFromToken(token);
+        if (decodedValue != null){
+            try {
+                ObjectMapper mapper = getJsonSerializer();
+                Payload payload = mapper.readValue(decodedValue, payloadClass);
+                return payload;
+            } catch (IOException e) {LOG.log(Level.WARNING, e.getMessage(), e);}
+        }
+        return null;
+    }
+
+    private String parsePayloadFromToken(String token){
+        if (token == null || token.isEmpty()) return null;
         String[] sections = token.split("\\.");
-        if (sections.length > 2){
+        if (sections.length > 2) {
             String payload64 = sections[1];
             byte[] decoded = Base64.getDecoder().decode(payload64);
             String decodedValue = new String(decoded);
-            if (decodedValue != null && decodedValue.startsWith("{")){
-                try {
-                    ObjectMapper mapper = getJsonSerializer();
-                    Map<String, String> payload = mapper.readValue(decodedValue
-                            , new TypeReference<Map<String, String>>(){});
-                    return (payload != null) ? payload.get(key) : null;
-                } catch (IOException e) {}
+            if (decodedValue != null && decodedValue.startsWith("{")) {
+                return decodedValue;
             }
         }
         return null;

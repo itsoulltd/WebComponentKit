@@ -5,6 +5,7 @@ public interface TokenValidation {
     String getIssuer(String token, String... args);
     String getUserID(String token, String... args);
     String getTenantID(String token, String... args);
+    <Header extends JWTHeader> Header parseHeader(String token, Class<Header> payloadClass);
     <Payload extends JWTPayload> Payload parsePayload(String token, Class<Payload> payloadClass);
     String parsePayload(String token, String key);
     static <T extends TokenValidation> T createValidator(Class<T> type) throws IllegalAccessException, InstantiationException{

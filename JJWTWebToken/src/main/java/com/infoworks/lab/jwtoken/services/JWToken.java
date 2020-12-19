@@ -3,6 +3,7 @@ package com.infoworks.lab.jwtoken.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.infoworks.lab.jjwt.JWTHeader;
 import com.infoworks.lab.jjwt.JWTPayload;
+import com.infoworks.lab.jjwt.JWTValidator;
 import com.infoworks.lab.jwtoken.definition.AccessToken;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import io.jsonwebtoken.*;
@@ -63,10 +64,21 @@ public class JWToken implements AccessToken {
             //Check if token already created, then check the expiration date etc etc.
             if(token == null) {
                 return generateToken(timeToLive);
+            }else{
+                if (getHeader() == null){
+                    JWTValidator validator = new JWTValidator();
+                    setHeader(validator.parseHeader(token, JWTHeader.class));
+                }
+                if (getPayload() == null){
+                    JWTValidator validator = new JWTValidator();
+                    JWTPayload payload = validator.parsePayload(token, JWTPayload.class);
+                    payload.setExp(timeToLive.getTimeInMillis());
+                    setPayload(payload);
+                }
+                String jwtToken = generateJWToken(getSigAlgo()
+                        , timeToLive);
+                return jwtToken;
             }
-            String jwtToken = generateJWToken(getSigAlgo()
-                    , timeToLive);
-            return jwtToken;
         } catch (Exception e) {
             LOG.warning(e.getMessage());
             throw new RuntimeException(e);
@@ -117,15 +129,21 @@ public class JWToken implements AccessToken {
             Key key = generateKey();
             JwtBuilder builder = Jwts.builder()
                     .signWith(sig, key);
-
+            //
             if(getHeader() != null) builder.setHeaderParams(getHeader().marshallingToMap(true));
-            if(getPayload() != null){
+            if(this.payload != null){
+                if (this.payload.getIat() <= 0l){
+                    this.payload.setIat(new Date().getTime());
+                }
+                if (this.payload.getExp() <= 0l){
+                    this.payload.setExp(timeToLive.getTimeInMillis());
+                }
                 builder.setPayload(getPayload());
             }else {
                 builder.setIssuedAt(new Date())
-                .setExpiration(timeToLive.getTime());
+                        .setExpiration(timeToLive.getTime());
             }
-
+            //
             return builder.compact();
         } catch (Exception e) {
             LOG.warning(e.getMessage());

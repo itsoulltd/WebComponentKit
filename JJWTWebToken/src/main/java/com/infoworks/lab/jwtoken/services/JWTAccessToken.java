@@ -9,21 +9,11 @@ public class JWTAccessToken extends JWToken{
 
     private SecretGenerator secretGenerator;
     private String password;
-    private String salt;
 
     public JWTAccessToken(String secret, String password, SecretGenerator secretGenerator) {
         super(secret);
         this.password = password;
         this.secretGenerator = secretGenerator;
-    }
-
-    public JWToken setSalt(String salt) {
-        this.salt = salt;
-        return this;
-    }
-
-    public String getSalt() {
-        return this.salt != null ? salt : getSecretGenerator().generateSalt(12);
     }
 
     private String getPassword() {
@@ -35,9 +25,8 @@ public class JWTAccessToken extends JWToken{
     }
 
     protected Key generateKey(){
-        SecretGenerator gen = getSecretGenerator();
         String passPhrase = getPassword() + getSecret();
-        String keyString = gen.generateSecurePassword(passPhrase, getSalt());
+        String keyString = getSecretGenerator().generateSecurePassword(passPhrase, getSecret());
         Key key = new SecretKeySpec(keyString.getBytes(), 0, keyString.getBytes().length, getSigAlgo().name());
         return key;
     }

@@ -43,13 +43,15 @@ public class JWTAccessTokenTest {
                 .addData("permission","yes")
                 .addData("hasAccess","yes");
         //
-        JWToken token = new JWTAccessToken("ym@evol@si@anahos", "123456", new SecretGen())
+        AccessToken token = new JWTAccessToken("em@evol@si@anahos", "123456", new SecretGen())
                 .setPayload(payload)
                 .setHeader(new JWTHeader().setTyp("mytype").setKid("112223344"));
         //
         String tokenKey = token.generateToken(AccessToken.defaultTokenTimeToLive());
         System.out.println(tokenKey);
         //
+        boolean isTrue = token.isValid(tokenKey);
+        Assert.assertTrue(isTrue);
     }
 
     public static class SecretGen implements SecretGenerator {

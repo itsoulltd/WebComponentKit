@@ -1,6 +1,8 @@
 package com.infoworks.lab.jjwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoworks.lab.jwtoken.definition.AccessToken;
 import io.jsonwebtoken.Claims;
@@ -97,6 +99,24 @@ public class JWTValidator implements TokenValidation{
                 Payload payload = mapper.readValue(decodedValue, payloadClass);
                 return payload;
             } catch (IOException e) {LOG.log(Level.WARNING, e.getMessage(), e);}
+        }
+        return null;
+    }
+
+    @Override
+    public <Header extends JWTHeader> Header parseHeader(String token, Class<Header> headerClass) {
+        if (token == null || token.isEmpty()) return null;
+        String[] parts = token.split("\\.");
+        if (parts.length > 1) {
+            try {
+                ObjectMapper mapper = AccessToken.getJsonSerializer();
+                Header header = mapper.readValue(new String(Base64.getDecoder().decode(parts[0])), headerClass);
+                return header;
+            } catch (JsonMappingException e) {
+                LOG.log(Level.WARNING, e.getMessage(), e);
+            } catch (JsonProcessingException e) {
+                LOG.log(Level.WARNING, e.getMessage(), e);
+            }
         }
         return null;
     }

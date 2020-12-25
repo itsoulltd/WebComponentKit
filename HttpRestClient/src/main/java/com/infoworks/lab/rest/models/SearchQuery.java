@@ -112,22 +112,6 @@ public class SearchQuery extends PagingQuery implements WhereClause {
         return this;
     }
 
-    @Override
-    public boolean containValidStuff(String value) {
-        //TODO: CHECK all sort-descriptor keys for malicious stuff:
-        //AVOID: 'OR'/'or'/'AND'/'and' in the value. e.g. SELECT * FROM Users WHERE UserId = 105 OR 1=1;
-        //AVOID: ""="" e.g.  SELECT * FROM Users WHERE Name ="" or ""="" AND Pass ="" or ""="";
-        //AVOID: Batched SQL Statements. e.g.
-                //txtUserId = getRequestString("UserId");
-                //txtSQL = "SELECT * FROM Users WHERE UserId = " + txtUserId;
-                //User input =>  txtUserId = 105; DROP TABLE Suppliers
-                //results in=> SELECT * FROM Users WHERE UserId = 105; DROP TABLE Suppliers;
-        //DO: Use SQL Parameters for Protection e.g. SELECT * FROM Customer WHERE userId = ?;
-        //And user java prepare-statement commend:
-        boolean myStuff = true;
-        return super.containValidStuff(value) && myStuff;
-    }
-
     private boolean _isPropertiesSorted;
 
     @JsonIgnore

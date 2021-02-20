@@ -1,8 +1,5 @@
 package com.infoworks.lab.jjwt;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoworks.lab.jwtoken.definition.AccessToken;
 import io.jsonwebtoken.Claims;
@@ -10,10 +7,9 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Base64;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,11 +25,11 @@ public class JWTValidator implements TokenValidation{
     }
 
     protected String getSecret(JWTHeader header, String...args) throws Exception{
-        String secret = null;
-        if (args.length >= 1) secret = args[0];
+        StringBuffer buffer = new StringBuffer();
+        Arrays.stream(args).forEach(str -> buffer.append(str));
+        String secret = buffer.toString();
         if (secret == null || secret.isEmpty())
             throw new Exception("Secret must not null or empty");
-        //
         return secret;
     }
 
@@ -63,76 +59,17 @@ public class JWTValidator implements TokenValidation{
 
     @Override
     public String getIssuer(String token, String... args) {
-        return parsePayload(token, "iss");
+        return TokenValidation.getPayloadValue("iss", token);
     }
 
     @Override
     public String getUserID(String token, String... args) {
-        return parsePayload(token, "iss");
+        return TokenValidation.getPayloadValue("iss", token);
     }
 
     @Override
-    public String getTenantID(String token, String... args) {
-        return parsePayload(token, "sub");
-    }
-
-    public String parsePayload(String token, String key){
-        if (key == null || key.isEmpty()) return null;
-        String decodedValue = parsePayloadFromToken(token);
-        if (decodedValue != null){
-            try {
-                ObjectMapper mapper = AccessToken.getJsonSerializer();
-                Map<String, String> payload = mapper.readValue(decodedValue
-                        , new TypeReference<Map<String, String>>(){});
-                return (payload != null) ? payload.get(key) : null;
-            } catch (IOException e) {LOG.log(Level.WARNING, e.getMessage(), e);}
-        }
-        return null;
-    }
-
-    @Override
-    public <Payload extends JWTPayload> Payload parsePayload(String token, Class<Payload> payloadClass) {
-        String decodedValue = parsePayloadFromToken(token);
-        if (decodedValue != null){
-            try {
-                ObjectMapper mapper = AccessToken.getJsonSerializer();
-                Payload payload = mapper.readValue(decodedValue, payloadClass);
-                return payload;
-            } catch (IOException e) {LOG.log(Level.WARNING, e.getMessage(), e);}
-        }
-        return null;
-    }
-
-    @Override
-    public <Header extends JWTHeader> Header parseHeader(String token, Class<Header> headerClass) {
-        if (token == null || token.isEmpty()) return null;
-        String[] parts = token.split("\\.");
-        if (parts.length > 1) {
-            try {
-                ObjectMapper mapper = AccessToken.getJsonSerializer();
-                Header header = mapper.readValue(new String(Base64.getDecoder().decode(parts[0])), headerClass);
-                return header;
-            } catch (JsonMappingException e) {
-                LOG.log(Level.WARNING, e.getMessage(), e);
-            } catch (JsonProcessingException e) {
-                LOG.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-        return null;
-    }
-
-    private String parsePayloadFromToken(String token){
-        if (token == null || token.isEmpty()) return null;
-        String[] sections = token.split("\\.");
-        if (sections.length > 2) {
-            String payload64 = sections[1];
-            byte[] decoded = Base64.getDecoder().decode(payload64);
-            String decodedValue = new String(decoded);
-            if (decodedValue != null && decodedValue.startsWith("{")) {
-                return decodedValue;
-            }
-        }
-        return null;
+    public String getSubject(String token, String... args) {
+        return TokenValidation.getPayloadValue("sub", token);
     }
 
 }

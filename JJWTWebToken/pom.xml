@@ -20,6 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>[2.9.10.5,)</jackson.version>
         <javax.json>1.1.4</javax.json>
+        <jaxb.version>2.3.2</jaxb.version>
     </properties>
 
     <dependencies>
@@ -51,6 +52,19 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
             <version>${javax.json}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- API, java.xml.bind module -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jaxb.version}</version>
+        </dependency>
+        <!-- Runtime, com.sun.xml.bind module -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${jaxb.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

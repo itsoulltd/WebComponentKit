@@ -3,7 +3,7 @@ package com.infoworks.lab.jwtoken.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.infoworks.lab.jjwt.JWTHeader;
 import com.infoworks.lab.jjwt.JWTPayload;
-import com.infoworks.lab.jjwt.JWTValidator;
+import com.infoworks.lab.jjwt.TokenValidation;
 import com.infoworks.lab.jwtoken.definition.AccessToken;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import io.jsonwebtoken.*;
@@ -66,12 +66,10 @@ public class JWToken implements AccessToken {
                 return generateToken(timeToLive);
             }else{
                 if (getHeader() == null){
-                    JWTValidator validator = new JWTValidator();
-                    setHeader(validator.parseHeader(token, JWTHeader.class));
+                    setHeader(TokenValidation.parseHeader(token, JWTHeader.class));
                 }
                 if (getPayload() == null){
-                    JWTValidator validator = new JWTValidator();
-                    JWTPayload payload = validator.parsePayload(token, JWTPayload.class);
+                    JWTPayload payload = TokenValidation.parsePayload(token, JWTPayload.class);
                     payload.setExp(timeToLive.getTimeInMillis());
                     setPayload(payload);
                 }
@@ -118,7 +116,7 @@ public class JWToken implements AccessToken {
         return this.secret;
     }
 
-    protected Key generateKey(){
+    public Key generateKey(){
         String keyString = getSecret();
         Key key = new SecretKeySpec(keyString.getBytes(), 0, keyString.getBytes().length, getSigAlgo().name());
         return key;

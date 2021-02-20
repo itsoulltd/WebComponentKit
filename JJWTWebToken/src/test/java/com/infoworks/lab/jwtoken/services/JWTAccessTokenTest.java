@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
-import static org.junit.Assert.*;
-
 public class JWTAccessTokenTest {
 
     @Before
@@ -43,7 +41,7 @@ public class JWTAccessTokenTest {
                 .addData("permission","yes")
                 .addData("hasAccess","yes");
         //
-        AccessToken token = new JWTAccessToken("em@evol@si@anahos", "123456", new SecretGen())
+        AccessToken token = new JWTAccessToken("em@evol@si@anahos", "123456")
                 .setPayload(payload)
                 .setHeader(new JWTHeader().setTyp("mytype").setKid("112223344"));
         //
@@ -51,6 +49,37 @@ public class JWTAccessTokenTest {
         System.out.println(tokenKey);
         //
         boolean isTrue = token.isValid(tokenKey);
+        Assert.assertTrue(isTrue);
+        //
+        JWTValidator validator = new JWTValidator();
+        isTrue = validator.isValid(tokenKey, "em@evol@si@anahos", "123456");
+        Assert.assertTrue(isTrue);
+    }
+
+    @Test
+    public void refreshTest(){
+        //
+        JWTPayload payload = new JWTPayload().setSub("hi.there!")
+                .setIss("towhid")
+                .setIat(new Date().getTime())
+                .setExp(AccessToken.defaultTokenTimeToLive().getTimeInMillis())
+                .addData("permission","yes")
+                .addData("hasAccess","yes");
+        //
+        AccessToken token = new JWTAccessToken("em@evol@si@anahos", "123456")
+                .setPayload(payload)
+                .setHeader(new JWTHeader().setTyp("mytype").setKid("112223344"));
+        //
+        String actual = token.generateToken(AccessToken.defaultTokenTimeToLive());
+        System.out.println("actual: " + actual);
+        //
+        AccessToken refresh = new JWTAccessToken("em@evol@si@anahos", "123456");
+        String refreshToken = refresh.refreshToken(actual, AccessToken.defaultTokenTimeToLive());
+        System.out.println("expected: " + refreshToken);
+        Assert.assertNotEquals(refreshToken, actual);
+        //
+        JWTValidator validator = new JWTValidator();
+        boolean isTrue = validator.isValid(refreshToken, "em@evol@si@anahos", "123456");
         Assert.assertTrue(isTrue);
     }
 

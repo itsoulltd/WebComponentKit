@@ -16,6 +16,10 @@ public class JWTAccessToken extends JWToken{
         this.secretGenerator = secretGenerator;
     }
 
+    public JWTAccessToken(String secret, String password) {
+        this(secret, password, null);
+    }
+
     private String getPassword() {
         return this.password;
     }
@@ -24,9 +28,11 @@ public class JWTAccessToken extends JWToken{
         return this.secretGenerator;
     }
 
-    protected Key generateKey(){
-        String passPhrase = getPassword() + getSecret();
-        String keyString = getSecretGenerator().generateSecurePassword(passPhrase, getSecret());
+    public Key generateKey(){
+        String passPhrase = getSecret() + getPassword();
+        String keyString = (getSecretGenerator() != null)
+                ? getSecretGenerator().generateSecurePassword(passPhrase, getSecret())
+                : passPhrase;
         Key key = new SecretKeySpec(keyString.getBytes(), 0, keyString.getBytes().length, getSigAlgo().name());
         return key;
     }

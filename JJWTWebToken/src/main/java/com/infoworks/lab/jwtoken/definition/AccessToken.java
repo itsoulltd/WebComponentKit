@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.security.Key;
 import java.util.Calendar;
 
 public interface AccessToken extends AutoCloseable{
-	
+
+	Key generateKey();
 	String generateToken(Calendar timeToLive) throws RuntimeException;
 	String refreshToken(String token, Calendar timeToLive) throws RuntimeException;
 	Boolean isValid(String token);

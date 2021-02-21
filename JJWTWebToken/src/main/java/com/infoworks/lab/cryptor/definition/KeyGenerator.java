@@ -1,4 +1,4 @@
-package com.infoworks.lab.jwtoken.definition;
+package com.infoworks.lab.cryptor.definition;
 
 import com.infoworks.lab.cryptor.util.SecretKeyAlgo;
 
@@ -10,8 +10,8 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
-public interface SecretGenerator {
-    default SecretKeyAlgo getSecretKeyAlgo() {return SecretKeyAlgo.AES;}
+public interface KeyGenerator {
+    default SecretKeyAlgo getKeyAlgo() {return SecretKeyAlgo.AES;}
     default String generateUUID(){return UUID.randomUUID().toString();}
     default String generateSecureUUID(){
         try {
@@ -33,8 +33,8 @@ public interface SecretGenerator {
         }
         return new String(returnValue);
     }
-    String generateSecurePassword(String password, String salt);
-    SecretKey generateSecretKey() throws NoSuchAlgorithmException;
+    String generatePassword(String password, String salt);
+    SecretKey generateKey() throws NoSuchAlgorithmException;
     byte[] encrypt(String securePassword, String accessTokenMaterial);
     byte[] hash(char[] password, byte[] salt);
 }

@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.security.Key;
 import java.util.Calendar;
 
-public interface AccessToken extends AutoCloseable{
+public interface TokenProvider extends AutoCloseable{
 
-	Key generateKey();
+	Key generateKey(String...args);
 	String generateToken(Calendar timeToLive) throws RuntimeException;
 	String refreshToken(String token, Calendar timeToLive) throws RuntimeException;
 	Boolean isValid(String token);

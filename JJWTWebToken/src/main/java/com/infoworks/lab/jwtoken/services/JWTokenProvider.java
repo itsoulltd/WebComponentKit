@@ -3,18 +3,19 @@ package com.infoworks.lab.jwtoken.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.infoworks.lab.jjwt.JWTHeader;
 import com.infoworks.lab.jjwt.JWTPayload;
-import com.infoworks.lab.jjwt.TokenValidation;
-import com.infoworks.lab.jwtoken.definition.AccessToken;
+import com.infoworks.lab.jjwt.TokenValidator;
+import com.infoworks.lab.jwtoken.definition.TokenProvider;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import io.jsonwebtoken.*;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
 
-public class JWToken implements AccessToken {
+public class JWTokenProvider implements TokenProvider {
 
     protected Logger LOG = Logger.getLogger(this.getClass().getSimpleName());
 
@@ -24,24 +25,25 @@ public class JWToken implements AccessToken {
     private SignatureAlgorithm sigAlgo = SignatureAlgorithm.HS512;
 
 
-    public JWToken(String secret) {
+    public JWTokenProvider(String secret) {
         this.secret = secret;
     }
+
     protected SignatureAlgorithm getSigAlgo() {
         return sigAlgo;
     }
 
-    public JWToken setSigAlgo(SignatureAlgorithm sigAlgo) {
+    public JWTokenProvider setSigAlgo(SignatureAlgorithm sigAlgo) {
         this.sigAlgo = sigAlgo;
         return this;
     }
 
-    public JWToken setHeader(JWTHeader header) {
+    public JWTokenProvider setHeader(JWTHeader header) {
         this.header = header;
         return this;
     }
 
-    public JWToken setPayload(JWTPayload payload) {
+    public JWTokenProvider setPayload(JWTPayload payload) {
         this.payload = payload;
         return this;
     }
@@ -66,10 +68,10 @@ public class JWToken implements AccessToken {
                 return generateToken(timeToLive);
             }else{
                 if (getHeader() == null){
-                    setHeader(TokenValidation.parseHeader(token, JWTHeader.class));
+                    setHeader(TokenValidator.parseHeader(token, JWTHeader.class));
                 }
                 if (getPayload() == null){
-                    JWTPayload payload = TokenValidation.parsePayload(token, JWTPayload.class);
+                    JWTPayload payload = TokenValidator.parsePayload(token, JWTPayload.class);
                     payload.setExp(timeToLive.getTimeInMillis());
                     setPayload(payload);
                 }
@@ -86,7 +88,7 @@ public class JWToken implements AccessToken {
     @Override
     public Boolean isValid(String token) {
         try {
-            Key key = generateKey();
+            Key key = generateKey(getSecret());
             Jws<Claims> cl = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
             Claims claims =  cl.getBody();
             LOG.info("JWT Claims: " + claims.toString());
@@ -112,19 +114,24 @@ public class JWToken implements AccessToken {
         dispose();
     }
 
-    public String getSecret() {
+    private String getSecret() {
         return this.secret;
     }
 
-    public Key generateKey(){
-        String keyString = getSecret();
-        Key key = new SecretKeySpec(keyString.getBytes(), 0, keyString.getBytes().length, getSigAlgo().name());
+    public Key generateKey(String...args){
+        StringBuffer buffer = new StringBuffer();
+        Arrays.stream(args).forEach(str -> buffer.append(str));
+        String keyString = buffer.toString();
+        Key key = new SecretKeySpec(keyString.getBytes()
+                , 0
+                , keyString.getBytes().length
+                , getSigAlgo().name());
         return key;
     }
 
     protected final String generateJWToken(SignatureAlgorithm sig, Calendar timeToLive) {
         try {
-            Key key = generateKey();
+            Key key = generateKey(getSecret());
             JwtBuilder builder = Jwts.builder()
                     .signWith(sig, key);
             //
@@ -152,7 +159,7 @@ public class JWToken implements AccessToken {
     private String getPayload() {
         if (this.payload != null){
             try {
-                return AccessToken.getJsonSerializer().writeValueAsString(this.payload);
+                return TokenProvider.getJsonSerializer().writeValueAsString(this.payload);
             } catch (JsonProcessingException e) {
                 LOG.warning(e.getMessage());
             }

@@ -3,7 +3,7 @@ package com.infoworks.lab.jwtoken.services;
 import com.infoworks.lab.jjwt.JWTHeader;
 import com.infoworks.lab.jjwt.JWTPayload;
 import com.infoworks.lab.jjwt.JWTValidator;
-import com.infoworks.lab.jwtoken.definition.AccessToken;
+import com.infoworks.lab.jwtoken.definition.TokenProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
-public class JWTokenTest {
+public class JWTokenProviderTest {
 
     @Before
     public void setUp() throws Exception {
@@ -27,15 +27,15 @@ public class JWTokenTest {
         JWTPayload payload = new JWTPayload().setSub("hi.there!")
                 .setIss("towhid")
                 .setIat(new Date().getTime())
-                .setExp(AccessToken.defaultTokenTimeToLive().getTimeInMillis())
+                .setExp(TokenProvider.defaultTokenTimeToLive().getTimeInMillis())
                 .addData("permission","yes")
                 .addData("hasAccess","yes");
         //
-        AccessToken token = new JWToken("ym@evol@si@anahos")
+        TokenProvider token = new JWTokenProvider("ym@evol@si@anahos")
                 .setPayload(payload)
                 .setHeader(new JWTHeader().setTyp("mytype").setKid("112223344"));
         //
-        String tokenKey = token.generateToken(AccessToken.defaultTokenTimeToLive());
+        String tokenKey = token.generateToken(TokenProvider.defaultTokenTimeToLive());
         System.out.println(tokenKey);
         //
         boolean isTrue = token.isValid(tokenKey);
@@ -52,19 +52,19 @@ public class JWTokenTest {
         JWTPayload payload = new JWTPayload().setSub("hi.there!")
                 .setIss("towhid")
                 .setIat(new Date().getTime())
-                .setExp(AccessToken.defaultTokenTimeToLive().getTimeInMillis())
+                .setExp(TokenProvider.defaultTokenTimeToLive().getTimeInMillis())
                 .addData("permission","yes")
                 .addData("hasAccess","yes");
         //
-        AccessToken token = new JWToken("ym@evol@si@anahos")
+        TokenProvider token = new JWTokenProvider("ym@evol@si@anahos")
                 .setPayload(payload)
                 .setHeader(new JWTHeader().setTyp("mytype").setKid("112223344"));
         //
-        String actual = token.generateToken(AccessToken.defaultTokenTimeToLive());
+        String actual = token.generateToken(TokenProvider.defaultTokenTimeToLive());
         System.out.println("actual: " + actual);
         //
-        AccessToken refresh = new JWToken("ym@evol@si@anahos");
-        String refreshToken = refresh.refreshToken(actual, AccessToken.defaultTokenTimeToLive());
+        TokenProvider refresh = new JWTokenProvider("ym@evol@si@anahos");
+        String refreshToken = refresh.refreshToken(actual, TokenProvider.defaultTokenTimeToLive());
         System.out.println("expected: " + refreshToken);
         Assert.assertNotEquals(refreshToken, actual);
         //

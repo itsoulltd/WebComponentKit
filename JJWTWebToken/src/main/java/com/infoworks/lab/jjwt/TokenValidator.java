@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.infoworks.lab.jwtoken.definition.AccessToken;
+import com.infoworks.lab.jwtoken.definition.TokenProvider;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
 
-public interface TokenValidation {
+public interface TokenValidator {
 
     Boolean isValid(String token, String... args);
     String getIssuer(String token, String... args);
@@ -23,7 +23,7 @@ public interface TokenValidation {
         String[] parts = token.split("\\.");
         if (parts.length > 1) {
             try {
-                ObjectMapper mapper = AccessToken.getJsonSerializer();
+                ObjectMapper mapper = TokenProvider.getJsonSerializer();
                 Header header = mapper.readValue(new String(Base64.getDecoder().decode(parts[0])), payloadClass);
                 return header;
             } catch (JsonMappingException e) {
@@ -40,7 +40,7 @@ public interface TokenValidation {
         String decodedValue = parsePayload(token);
         if (decodedValue != null){
             try {
-                ObjectMapper mapper = AccessToken.getJsonSerializer();
+                ObjectMapper mapper = TokenProvider.getJsonSerializer();
                 Payload payload = mapper.readValue(decodedValue, payloadClass);
                 return payload;
             } catch (IOException e) {throw new RuntimeException(e);}
@@ -67,7 +67,7 @@ public interface TokenValidation {
         String decodedValue = parsePayload(token);
         if (decodedValue != null){
             try {
-                ObjectMapper mapper = AccessToken.getJsonSerializer();
+                ObjectMapper mapper = TokenProvider.getJsonSerializer();
                 Map<String, String> payload = mapper.readValue(decodedValue
                         , new TypeReference<Map<String, String>>(){});
                 return (payload != null) ? payload.get(key) : null;
@@ -85,7 +85,7 @@ public interface TokenValidation {
         }
     }
 
-    static <T extends TokenValidation> T createValidator(Class<T> type) throws IllegalAccessException, InstantiationException{
+    static <T extends TokenValidator> T createValidator(Class<T> type) throws IllegalAccessException, InstantiationException{
         return type.newInstance();
     }
 }

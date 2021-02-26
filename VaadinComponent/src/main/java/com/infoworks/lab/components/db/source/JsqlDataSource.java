@@ -29,6 +29,8 @@ public interface JsqlDataSource<T extends EntityInterface> extends GridDataSourc
             }
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
         return source;
     }

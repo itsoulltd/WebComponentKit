@@ -44,23 +44,18 @@ public class JsqlConfig {
         }
     }
 
-    public Connection pullConnection(String key, DataSourceKey container){
-        Connection connection = null;
-        try {
-            config(key, container);
-            connection = JDBConnectionPool.connection(key);
-        } catch (SQLException e) {
-            LOG.log(Level.WARNING, e.getMessage(), e);
-        }
+    public Connection pullConnection(String key, DataSourceKey container) throws SQLException{
+        config(key, container);
+        Connection connection = JDBConnectionPool.connection(key);
         return connection;
     }
 
-    public Connection pullConnection(String key){
+    public Connection pullConnection(String key) throws SQLException{
         DataSourceKey container = DataSourceKey.createDataSourceKey(null);
         return pullConnection(key, container);
     }
 
-    public QueryExecutor create(ExecutorType type, String key, DataSourceKey container) {
+    public QueryExecutor create(ExecutorType type, String key, DataSourceKey container) throws Exception{
         if (type == ExecutorType.SQL) {
             Connection connection = pullConnection(key, container);
             return new SQLExecutor(connection);
@@ -73,7 +68,7 @@ public class JsqlConfig {
         return null;
     }
 
-    public QueryExecutor create(ExecutorType type, String key) {
+    public QueryExecutor create(ExecutorType type, String key) throws Exception{
         if (type == ExecutorType.SQL){
             DataSourceKey container = DataSourceKey.createDataSourceKey(null);
             return create(type, key, container);

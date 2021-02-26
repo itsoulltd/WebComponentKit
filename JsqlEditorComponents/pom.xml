@@ -11,7 +11,7 @@
 
     <artifactId>jsql-editor-components</artifactId>
     <packaging>jar</packaging>
-    <version>1.10.5-RELEASE</version>
+    <version>1.10.6-RELEASE</version>
 
     <properties>
         <java.version>1.8</java.version>

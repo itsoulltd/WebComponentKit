@@ -39,13 +39,13 @@
         <dependency>
             <groupId>com.infoworks.lab</groupId>
             <artifactId>http-rest-client</artifactId>
-            <version>1.10.5-RELEASE</version>
+            <version>1.10.6-RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.infoworks.lab</groupId>
             <artifactId>jsql-editor-components</artifactId>
-            <version>1.10.5-RELEASE</version>
+            <version>1.10.6-RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api -->

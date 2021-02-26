@@ -39,6 +39,8 @@ public class PasswordRuleConstraint implements ConstraintValidator<PasswordRule,
         if (result.isValid()) {
             return true;
         }
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(String.join(",", validator.getMessages(result))).addConstraintViolation();
         return false;
     }
 

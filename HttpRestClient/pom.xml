@@ -23,6 +23,7 @@
         <javax.json>1.1.4</javax.json>
         <spring.version>5.0.4.RELEASE</spring.version>
         <okhttp.version>4.4.0</okhttp.version>
+        <passay.version>1.0</passay.version>
     </properties>
 
     <dependencies>
@@ -107,6 +108,11 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>2.0.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.passay</groupId>
+            <artifactId>passay</artifactId>
+            <version>${passay.version}</version>
         </dependency>
     </dependencies>
 

@@ -34,10 +34,16 @@ public class LedgerTest {
 
     @Before
     public void setUp() throws Exception {
-        connector = new SQLConnector(SourceConfig.JDBC_MYSQL)
+        /*connector = new SQLConnector(SourceConfig.JDBC_MYSQL)
                 .url("jdbc:mysql://localhost:3316/ledgerDB")
                 .username("root")
-                .password("towhid@123")
+                .password("root@123")
+                .skipSchemaGeneration(false);*/
+        //Testing with Embedded DB:
+        connector = new SQLConnector(SourceConfig.EMBEDDED_H2)
+                .url("jdbc:h2:mem:ledgerDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=FALSE")
+                .username("sa")
+                .password("")
                 .skipSchemaGeneration(false);
         cryptor = new AESCipher();
     }
@@ -52,7 +58,7 @@ public class LedgerTest {
         cryptor = null;
     }
 
-    //@Test
+    @Test
     public void doAccounting(){
         //Clean First:
         try {
@@ -75,8 +81,9 @@ public class LedgerTest {
                 .build();
 
         //Transfer request:
+        String transactionRef = "T:1:" + (new Random().nextInt(9)+1);
         TransferRequest transferRequest1 = book.createTransferRequest()
-                .reference("T:1:" + (new Random().nextInt(9)+1))
+                .reference(transactionRef)
                 .type("testing1")
                 .account("CASH_ACCOUNT_1").debit("5.00", "EUR")
                 .account("REVENUE_ACCOUNT_1").credit("5.00", "EUR")
@@ -98,37 +105,21 @@ public class LedgerTest {
                     //
                 });
 
+        //Search For Account:
+        List<Transaction> cashAccountTransactionList = book.findTransactions("CASH_ACCOUNT_1");
+        Assert.assertTrue(cashAccountTransactionList.size() > 0);
+        List<Transaction> revenueAccountTransactionList = book.findTransactions("REVENUE_ACCOUNT_1");
+        Assert.assertTrue(revenueAccountTransactionList.size() > 0);
+
+        //Search For Transaction:
+        Transaction transaction1 = book.getTransactionByRef(transactionRef);
+        Assert.assertTrue(transaction1 != null);
+
         //At the end close the ledger book:
         book.close();
-        ////////////////////////////////////////////////////////////////
-        //Second Ledger
-        chartOfAccounts = new ChartOfAccounts.ChartOfAccountsBuilder()
-                .create("CASH_ACCOUNT_2", "1000.00", "EUR")
-                .retrive("CASH_ACCOUNT_1")
-                .build();
-
-        Ledger book2 = new Ledger.LedgerBuilder(chartOfAccounts)
-                .name("Master-Ledger-2")
-                .connector(connector)
-                .client("FB_" + "test_user_a", "test_tenant_a")
-                .secret("ILoveYou-BD")
-                .build();
-
-        //Transfer request:
-        TransferRequest transferRequest2 = book.createTransferRequest()
-                .reference("T:2:" + (new Random().nextInt(9)+1))
-                .type("testing2")
-                .account("CASH_ACCOUNT_1").debit("7.00", "EUR")
-                .account("CASH_ACCOUNT_2").credit("7.00", "EUR")
-                .build();
-
-        book2.commit(transferRequest2);
-
-        //At the end close the ledger book:
-        book2.close();
     }
 
-    //@Test
+    //@Test //Run when transactions are persisted in realDB like MySQL
     public void doTransaction(){
         //
         ChartOfAccounts chartOfAccounts = new ChartOfAccounts.ChartOfAccountsBuilder()

@@ -232,7 +232,8 @@ public class SearchQuery extends PagingQuery implements WhereClause {
         QueryProperty current = getCurrent();
         if (validate(o)) {
             if (o instanceof Object[]){
-                current.setType(DataType.getDataType(o));
+                //current.setType(DataType.getDataType(o));
+                current.setType(DataType.LIST);
                 List<String> a = Arrays.stream(((Object[]) o))
                         .map(obj -> "'"+obj.toString()+"'")
                         .collect(Collectors.toList());

@@ -10,7 +10,6 @@ public enum SourceConfig {
   EMBEDDED_HSQL("org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:dataSource", "sa", "", "h2-schema.sql"),
   EMBEDDED_DERBY("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:memory:dataSource;create=true",
           "sa", "", "derby-schema.sql"),
-  JDBC_H2("org.h2.Driver", "", "", "", "h2-schema.sql"),
   JDBC_MYSQL("com.mysql.jdbc.Driver", "", "", "", "mysql-schema.sql"),
   JDBC_POSTGRES("org.postgresql.Driver", "", "", "", "postgres-schema.sql");
 

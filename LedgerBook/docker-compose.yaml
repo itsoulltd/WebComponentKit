@@ -14,7 +14,7 @@ services:
       image: mysql:8.0.13
       environment:
           MYSQL_DATABASE: ledgerDB
-          MYSQL_ROOT_PASSWORD: towhid@123
+          MYSQL_ROOT_PASSWORD: root@123
       ports:
           - 3316:3306
       networks:

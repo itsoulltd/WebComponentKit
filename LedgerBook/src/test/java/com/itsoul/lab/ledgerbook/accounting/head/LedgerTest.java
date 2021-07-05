@@ -68,6 +68,7 @@ public class LedgerTest {
         ChartOfAccounts chartOfAccounts = new ChartOfAccounts.ChartOfAccountsBuilder()
                 .create("CASH_ACCOUNT_1", "1000.00", "EUR")
                 .create("REVENUE_ACCOUNT_1", "0.00", "EUR")
+                .create("CASH_ACCOUNT_2", "2000.00", "EUR")
                 .build();
         //
         String secret = "ILoveYou-BD";
@@ -105,6 +106,16 @@ public class LedgerTest {
                     //
                 });
 
+        //More Transactions:
+        String transactionRef2 = "T:1:" + (new Random().nextInt(9)+1);
+        TransferRequest transferRequest2 = book.createTransferRequest()
+                .reference(transactionRef2)
+                .type("testing2")
+                .account("CASH_ACCOUNT_1").credit("15.00", "EUR")
+                .account("CASH_ACCOUNT_2").debit("15.00", "EUR")
+                .build();
+        book.commit(transferRequest2);
+
         //Search For Account:
         List<Transaction> cashAccountTransactionList = book.findTransactions("CASH_ACCOUNT_1");
         Assert.assertTrue(cashAccountTransactionList.size() > 0);
@@ -114,6 +125,8 @@ public class LedgerTest {
         //Search For Transaction:
         Transaction transaction1 = book.getTransactionByRef(transactionRef);
         Assert.assertTrue(transaction1 != null);
+        Transaction transaction2 = book.getTransactionByRef(transactionRef2);
+        Assert.assertTrue(transaction2 != null);
 
         //At the end close the ledger book:
         book.close();

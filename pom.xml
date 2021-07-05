@@ -13,6 +13,7 @@
         <module>JsqlEditorComponents</module>
         <module>HttpRestClient</module>
         <module>JJWTWebToken</module>
+        <module>Simulator</module>
     </modules>
 
     <properties>

@@ -1,0 +1,23 @@
+version: '3.5'
+
+networks:
+   ledger-app-net:
+       name: ledger-app-net
+       #driver: overlay
+       driver: bridge
+
+volumes:
+   mysql-ledger-storage:
+
+services:
+   mysql-db:
+      image: mysql:8.0.13
+      environment:
+          MYSQL_DATABASE: ledgerDB
+          MYSQL_ROOT_PASSWORD: towhid@123
+      ports:
+          - 3316:3306
+      networks:
+          - ledger-app-net
+      volumes:
+          - mysql-ledger-storage:/var/lib/mysql

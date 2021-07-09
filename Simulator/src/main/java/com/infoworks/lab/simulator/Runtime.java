@@ -30,7 +30,7 @@ public abstract class Runtime {
         }
     }
 
-    protected static Optional<Object> getSystemProperty(String property, Class type){
+    public static Optional<Object> getSystemProperty(String property, Class type){
         if (System.getProperty(property) == null){
             return Optional.ofNullable(null);
         }
@@ -54,7 +54,7 @@ public abstract class Runtime {
         return Optional.ofNullable(null);
     }
 
-    protected int numberScanner(String cmdStr, Integer defaultValue) {
+    public static int numberScanner(String cmdStr, Integer defaultValue) {
         int size = defaultValue;
         while (true){
             try{
@@ -68,7 +68,7 @@ public abstract class Runtime {
         return size;
     }
 
-    protected String stringScanner(String cmdStr, Integer max){
+    public static String stringScanner(String cmdStr, Integer max){
         if (max <= 0) max = 1;
         String commend = "@";
         while (true){
@@ -79,13 +79,13 @@ public abstract class Runtime {
         return commend;
     }
 
-    protected boolean boolScanner(String cmdStr){
+    public static boolean boolScanner(String cmdStr){
         System.out.print(cmdStr + "? :(yes/no)");
         String commend = new Scanner(System.in).nextLine();
         return commend.toLowerCase().startsWith("y");
     }
 
-    protected boolean randomBoolean(){
+    public static boolean randomBoolean(){
         int rand = new Random().nextInt(2);
         boolean accept = (rand >= 1 ? true : false);
         return accept;
@@ -95,7 +95,8 @@ public abstract class Runtime {
         Optional optClassName = getSystemProperty("classname", String.class);
         if (optClassName.isPresent() == false){
             LOG.info("classname can't be null");
-            System.exit(0);
+            optClassName = Optional.ofNullable(stringScanner("Please enter full qualified name of the extended Runtime class", 512));
+            if(optClassName.isPresent() == false) System.exit(0);
         }
         String className = optClassName.get().toString();
         int round =  0;

@@ -7,13 +7,13 @@ import com.infoworks.lab.rest.models.Message;
 
 import java.util.concurrent.TimeUnit;
 
-public class SynchTaskManager implements TaskManager  {
+public class SyncTaskManager implements TaskManager  {
 
     private TaskLifecycleListener listener;
 
-    public SynchTaskManager() {}
+    public SyncTaskManager() {}
 
-    public SynchTaskManager(TaskLifecycleListener listener) {
+    public SyncTaskManager(TaskLifecycleListener listener) {
         this.listener = listener;
     }
 

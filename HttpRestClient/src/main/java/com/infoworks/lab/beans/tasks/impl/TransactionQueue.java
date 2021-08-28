@@ -22,8 +22,8 @@ public class TransactionQueue implements TaskQueue, QueuedTaskLifecycleListener 
 
     public TransactionQueue(boolean synch) {
         this.manager = (synch)
-                ? TaskManager.createSynchQ(this)
-                : TaskManager.createAsynchQ(this);
+                ? TaskManager.createSyncQ(this)
+                : TaskManager.createAsyncQ(this);
         beanQueue = new ConcurrentLinkedDeque<>();
         abortQueue = new ConcurrentLinkedDeque<>();
     }

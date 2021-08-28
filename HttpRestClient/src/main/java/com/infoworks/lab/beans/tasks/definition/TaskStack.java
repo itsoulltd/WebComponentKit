@@ -30,8 +30,8 @@ public interface TaskStack {
         return create(TransactionStack.class);
     }
 
-    static TaskStack createSynch(boolean synch){
-        return new TransactionStack(synch);
+    static TaskStack createSync(boolean sync){
+        return new TransactionStack(sync);
     }
 
     TaskStack push(Task task);

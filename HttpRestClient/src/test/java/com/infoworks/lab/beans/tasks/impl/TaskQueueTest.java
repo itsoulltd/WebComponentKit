@@ -14,7 +14,7 @@ public class TaskQueueTest {
 
     @Before
     public void before(){
-        queue = TaskQueue.createSynch(false);
+        queue = TaskQueue.createSync(false);
     }
 
     @After
@@ -26,7 +26,7 @@ public class TaskQueueTest {
     public void stackTest(){
 
         boolean isSynch = true;
-        TaskQueue queue = TaskQueue.createSynch(isSynch);
+        TaskQueue queue = TaskQueue.createSync(isSynch);
         CountDownLatch latch = new CountDownLatch(1);
         AtomicInteger counter = new AtomicInteger(0);
         //
@@ -58,7 +58,7 @@ public class TaskQueueTest {
     public void stackAbortTest(){
 
         boolean isSynch = false;
-        TaskQueue queue = TaskQueue.createSynch(isSynch);
+        TaskQueue queue = TaskQueue.createSync(isSynch);
         CountDownLatch latch = new CountDownLatch(1);
         AtomicInteger counter = new AtomicInteger(0);
         //

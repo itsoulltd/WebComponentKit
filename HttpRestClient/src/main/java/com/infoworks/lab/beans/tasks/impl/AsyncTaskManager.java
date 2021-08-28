@@ -1,23 +1,30 @@
 package com.infoworks.lab.beans.tasks.impl;
 
-import com.infoworks.lab.beans.tasks.definition.QueuedTaskLifecycleListener;
 import com.infoworks.lab.beans.tasks.definition.Task;
+import com.infoworks.lab.beans.tasks.definition.TaskLifecycleListener;
 import com.infoworks.lab.rest.models.Message;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
-public class SynchQueueManager extends AbstractQueueManager {
+public class AsyncTaskManager extends SyncTaskManager {
 
-    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
-    private QueuedTaskLifecycleListener listener;
+    private ExecutorService service;
 
-    public SynchQueueManager() {}
+    public AsyncTaskManager() {}
 
-    public SynchQueueManager(QueuedTaskLifecycleListener listener) {
-        this.listener = listener;
+    public AsyncTaskManager(TaskLifecycleListener listener) {
+        super(listener);
+    }
+
+    public ExecutorService getService() {
+        if (service == null){
+             synchronized (this){
+                 service = Executors.newSingleThreadExecutor();
+             }
+        }
+        return service;
     }
 
     @Override
@@ -28,25 +35,6 @@ public class SynchQueueManager extends AbstractQueueManager {
     @Override
     public void stop(Task task, Message reason) {
         getService().submit(() -> super.stop(task, reason));
-    }
-
-    public QueuedTaskLifecycleListener getListener() {
-        return listener;
-    }
-
-    public void setListener(QueuedTaskLifecycleListener listener) {
-        this.listener = listener;
-    }
-
-    protected ExecutorService service;
-
-    public ExecutorService getService() {
-        if (service == null){
-            synchronized (this){
-                service = Executors.newSingleThreadExecutor();
-            }
-        }
-        return service;
     }
 
     @Override
@@ -71,5 +59,4 @@ public class SynchQueueManager extends AbstractQueueManager {
     public void close() throws Exception {
         terminateRunningTasks(0l, TimeUnit.SECONDS);
     }
-
 }

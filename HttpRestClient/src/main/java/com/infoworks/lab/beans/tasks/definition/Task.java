@@ -4,13 +4,13 @@ import com.infoworks.lab.rest.models.Message;
 
 import java.util.function.Function;
 
-public interface Task {
+public interface Task<In extends Message, Out extends Message> {
     Task next();
     void linkedTo(Task task);
-    Message execute(Message message) throws RuntimeException;
-    Message abort(Message message) throws RuntimeException;
-    default Message getMessage() {return null;}
-    default void setMessage(Message message) {}
+    Out execute(In message) throws RuntimeException;
+    Out abort(In message) throws RuntimeException;
+    default In getMessage() {return null;}
+    default void setMessage(In message) {}
 
     default Function<Message, Message> getConverter() {return null;}
     default MessageConverter getMessageConverter() {return null;}

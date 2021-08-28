@@ -1,31 +1,23 @@
 package com.infoworks.lab.beans.tasks.impl;
 
+import com.infoworks.lab.beans.tasks.definition.QueuedTaskLifecycleListener;
 import com.infoworks.lab.beans.tasks.definition.Task;
-import com.infoworks.lab.beans.tasks.definition.TaskLifecycleListener;
-import com.infoworks.lab.beans.tasks.definition.TaskManager;
 import com.infoworks.lab.rest.models.Message;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
-public class AsynchTaskManager extends SynchTaskManager {
+public class SyncQueueManager extends AbstractQueueManager {
 
-    private ExecutorService service;
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+    private QueuedTaskLifecycleListener listener;
 
-    public AsynchTaskManager() {}
+    public SyncQueueManager() {}
 
-    public AsynchTaskManager(TaskLifecycleListener listener) {
-        super(listener);
-    }
-
-    public ExecutorService getService() {
-        if (service == null){
-             synchronized (this){
-                 service = Executors.newSingleThreadExecutor();
-             }
-        }
-        return service;
+    public SyncQueueManager(QueuedTaskLifecycleListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -36,6 +28,25 @@ public class AsynchTaskManager extends SynchTaskManager {
     @Override
     public void stop(Task task, Message reason) {
         getService().submit(() -> super.stop(task, reason));
+    }
+
+    public QueuedTaskLifecycleListener getListener() {
+        return listener;
+    }
+
+    public void setListener(QueuedTaskLifecycleListener listener) {
+        this.listener = listener;
+    }
+
+    protected ExecutorService service;
+
+    public ExecutorService getService() {
+        if (service == null){
+            synchronized (this){
+                service = Executors.newSingleThreadExecutor();
+            }
+        }
+        return service;
     }
 
     @Override
@@ -60,4 +71,5 @@ public class AsynchTaskManager extends SynchTaskManager {
     public void close() throws Exception {
         terminateRunningTasks(0l, TimeUnit.SECONDS);
     }
+
 }

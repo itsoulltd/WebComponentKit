@@ -5,11 +5,11 @@ import com.infoworks.lab.beans.tasks.definition.QueuedTaskLifecycleListener;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class AsynchQueueManager extends SynchQueueManager{
+public class AsyncQueueManager extends SyncQueueManager {
 
-    public AsynchQueueManager() {}
+    public AsyncQueueManager() {}
 
-    public AsynchQueueManager(QueuedTaskLifecycleListener listener) {
+    public AsyncQueueManager(QueuedTaskLifecycleListener listener) {
         super(listener);
     }
 

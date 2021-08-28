@@ -22,8 +22,8 @@ public interface TaskQueue {
         return create(TransactionQueue.class);
     }
 
-    static TaskQueue createSynch(boolean synch){
-        return new TransactionQueue(synch);
+    static TaskQueue createSync(boolean sync){
+        return new TransactionQueue(sync);
     }
 
     TaskQueue add(Task task);

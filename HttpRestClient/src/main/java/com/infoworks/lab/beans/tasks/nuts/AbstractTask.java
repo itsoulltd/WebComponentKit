@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class AbstractTask implements Task {
+public abstract class AbstractTask<In extends Message, Out extends Message> implements Task<In, Out> {
 
     private Task nextTask;
     private Message message;
@@ -47,11 +47,11 @@ public abstract class AbstractTask implements Task {
         this.converter = converter;
     }
 
-    public AbstractTask(Message message) {
+    public AbstractTask(In message) {
         this.message = message;
     }
 
-    public AbstractTask(Message message, Function<Message, Message> converter) {
+    public AbstractTask(In message, Function<Message, Message> converter) {
         this(message);
         this.converter = converter;
     }
@@ -67,11 +67,11 @@ public abstract class AbstractTask implements Task {
     }
 
     @Override
-    public Message getMessage() {
-        return message;
+    public In getMessage() {
+        return (In) message;
     }
 
-    public void setMessage(Message message) {
+    public void setMessage(In message) {
         this.message = message;
     }
 

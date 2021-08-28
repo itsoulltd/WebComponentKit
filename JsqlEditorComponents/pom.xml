@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.infoworks.lab</groupId>
             <artifactId>http-rest-client</artifactId>
-            <version>1.10.6-RELEASE</version>
+            <version>1.10.7-RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->

@@ -1,9 +1,9 @@
 package com.infoworks.lab.beans.tasks.definition;
 
-import com.infoworks.lab.beans.tasks.impl.AsynchQueueManager;
-import com.infoworks.lab.beans.tasks.impl.AsynchTaskManager;
-import com.infoworks.lab.beans.tasks.impl.SynchQueueManager;
-import com.infoworks.lab.beans.tasks.impl.SynchTaskManager;
+import com.infoworks.lab.beans.tasks.impl.AsyncQueueManager;
+import com.infoworks.lab.beans.tasks.impl.AsyncTaskManager;
+import com.infoworks.lab.beans.tasks.impl.SyncQueueManager;
+import com.infoworks.lab.beans.tasks.impl.SyncTaskManager;
 import com.infoworks.lab.rest.models.Message;
 
 import java.util.concurrent.TimeUnit;
@@ -15,20 +15,20 @@ public interface TaskManager extends AutoCloseable{
         Backward
     }
 
-    static TaskManager createAsynch(TaskLifecycleListener listener){
-        return new AsynchTaskManager(listener);
+    static TaskManager createAsync(TaskLifecycleListener listener){
+        return new AsyncTaskManager(listener);
     }
 
-    static TaskManager createSynch(TaskLifecycleListener listener){
-        return new SynchTaskManager(listener);
+    static TaskManager createSync(TaskLifecycleListener listener){
+        return new SyncTaskManager(listener);
     }
 
-    static TaskManager createAsynchQ(QueuedTaskLifecycleListener listener){
-        return new AsynchQueueManager(listener);
+    static TaskManager createAsyncQ(QueuedTaskLifecycleListener listener){
+        return new AsyncQueueManager(listener);
     }
 
-    static TaskManager createSynchQ(QueuedTaskLifecycleListener listener){
-        return new SynchQueueManager(listener);
+    static TaskManager createSyncQ(QueuedTaskLifecycleListener listener){
+        return new SyncQueueManager(listener);
     }
 
     void start(Task task, Message message);

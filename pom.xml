@@ -15,6 +15,7 @@
         <module>JJWTWebToken</module>
         <module>Simulator</module>
         <module>LedgerBook</module>
+        <module>TFObjectDetectorKit</module>
     </modules>
 
     <properties>

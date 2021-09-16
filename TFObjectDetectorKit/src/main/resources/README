@@ -1,0 +1,117 @@
+## Tensorflow object detection
+##Google-Drive Account
+
+Step 1:
+#Project Dir Structure:
+/
+../data                 [files: object-detection.pbtxt, and others will be generated]
+../images               [files: contain all tagged images and xmls]
+..../test               [files: tagged 10% images and xmls]
+..../train              [files: tagged 90% images and xmls]
+../training             [files: object-detection.pbtxt, ssd_mobilenet_v1_coco.config]
+.. ModelTrainingOnColab.ipynb
+.. generate_tfrecord.py
+.. xml_to_csv.py
+.. xml_to_csv_validator.py
+
+Step 2:
+#Install Anaconda for Tensorflow runtime-env: Create New Env or Activate Old one: e.g. ocr_env
+~>$ conda create -n ocr_env python=3.7
+## And/Or
+~>$ conda activate ocr_env
+
+Step 3:
+#After enabling conda env: install tensorflow-1.15
+#or check version/status of following packages. e.g. ~>$ pip show <package-name>
+~>$ pip install tensorflow==1.15 lxml pillow matplotlib jupyter contextlib2 cython tf_slim
+~>$ brew install protobuf
+~>$ pip install pandas
+
+Step 4:
+##Git Pull and Install Image Detection API from:
+#https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1.md#python-package-installation
+#Git pull Models:
+~>$ git clone https://github.com/tensorflow/models.git models
+~>$ cd models/research
+# Compile protos.
+~>$ protoc object_detection/protos/*.proto --python_out=.
+# Install TensorFlow Object Detection API.
+~>$ cp object_detection/packages/tf1/setup.py .
+~>$ python -m pip install --use-feature=2020-resolver .
+# Test the installation.
+~>$ python object_detection/builders/model_builder_tf1_test.py
+
+Step 5:
+##Installing and using lableImg:
+~>$ git clone https://github.com/tzutalin/labelImg labelImg
+~>$ pip3 install pyqt5 lxml # Install qt and lxml by pip
+~>$ cd labelImg
+~>$ make qt5py3
+~>$ pyrcc5 -o libs/resources.py resources.qrc (optional)
+~>$ python3 labelImg.py
+
+Step 6:
+## label images. split(copy) them into train(80%) / test(20%) folder
+## then run xml to csv converter
+~>$ python xml_to_csv.py
+## after that you may run xml to csv validator
+~>$ python xml_to_csv_validator.py
+
+Step 7:
+## Open generate_tfrecord.py in any python editor, update row_label with our assigned object-detection annotations (look data/object-detection.pbtxt)
+## If every thing is okay then run tf record generator:
+~>$ python generate_tfrecord.py --csv_input=data/test_labels.csv --output_path=data/test.record --image_dir=images/test/
+~>$ python generate_tfrecord.py --csv_input=data/train_labels.csv --output_path=data/train.record --image_dir=images/train/
+
+Step 8:
+## Download object detection model "ssd_mobilenet_v1_coco" & its config file from:
+# https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1_detection_zoo.md
+1. ssd_mobilenet_v1_coco_yyyy_mm_dd.tar [untar into project dir]
+2. ssd_mobilenet_v1_coco.config [save into training dir]
+3. make some changes into training/ssd_mobilenet_v1_coco.config file
+	- num_classes: n [e.g. n as your define classification in object-detection.pbtxt]
+	- fine_tune_checkpoint: "ssd_mobilenet_v1_coco_yyyy_mm_dd/model.ckpt" [e.g path to object detection model dir and checkpoint]
+	- train_input_reader: {
+		  tf_record_input_reader {
+		    input_path: "data/train.record"
+		  }
+		  label_map_path: "data/object-detection.pbtxt"
+		}
+
+	- eval_config: [optional to adjuct e.g. num_examples: 40 insted of default]
+
+	- eval_input_reader: {
+		  tf_record_input_reader {
+		    input_path: "data/test.record"
+		  }
+		  label_map_path: "data/object-detection.pbtxt"
+		  shuffle: false
+		  num_readers: 1
+		}
+
+
+Step 9:
+#####
+# First delete /data dir from model/research/object_detection
+# Then copy /data, /image, /training, /ssd_mobilenet_v1_coco_yyyy_mm_dd dirs into model/research/object_detection dir
+#
+
+Step 9.A:
+##Start Training: (locally)
+~>$ cd models/research
+~>$ set PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+##
+##object_detection
+~>$ python train.py --train_dir=training/ --pipeline_config_path=training/ssd_mobilenet_v1_coco.config --logtostderr
+~>$ copy legacy files in object_detection
+~>$ python export_inference_graph.py --input_type image_tensor --pipeline_config_path training/ssd_mobilenet_v1_coco.config --trained_checkpoint_prefix training/model.ckpt-3207 --output_directory new_graph
+
+Step 9.B:
+##Start Training: (Colab on Cloud)
+### ModelTrainingOnColab
+### download new_graph zip to objectdetection folder
+~>$ copy custom_model_images.py in object detection folder and change test_images folder then run custom_model_images.py
+
+##############################################################################################
+NOTE: If you already had a previously created conda-env, then after activating the env, you can start from Step-6.
+############################################-THE END-#########################################

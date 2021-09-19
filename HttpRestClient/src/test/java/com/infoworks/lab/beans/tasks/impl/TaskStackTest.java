@@ -57,6 +57,41 @@ public class TaskStackTest {
     }
 
     @Test
+    public void reverseStackTest(){
+
+        CountDownLatch latch = new CountDownLatch(1);
+        //
+        //EXE: 4
+        stack.push(new SimpleTask("Hello bro! I am Hayes", (message) -> {
+            MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
+            System.out.println(event.toString());
+            return message;
+        }));
+        //EXE: 3
+        stack.push(new SimpleTask("Wow bro! I am Adams"));
+        //EXE: 2
+        stack.push(new SimpleTask("Hi there! I am Cris", (message) -> {
+            MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
+            event.setMessage("Converted Message");
+            event.setStatus(201);
+            message.setEvent(event);
+            return message;
+        }));
+        //EXE: 1
+        stack.push(new SimpleTask("Let's bro! I am James"));
+        //
+        stack.commit(true, (result, state) -> {
+            System.out.println("State: " + state.name());
+            System.out.println(result.toString());
+            latch.countDown();
+        });
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
     public void stackAbortTest(){
 
         CountDownLatch latch = new CountDownLatch(1);

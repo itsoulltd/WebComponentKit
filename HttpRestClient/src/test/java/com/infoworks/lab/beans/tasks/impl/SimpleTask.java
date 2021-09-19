@@ -1,13 +1,14 @@
 package com.infoworks.lab.beans.tasks.impl;
 
 import com.infoworks.lab.beans.tasks.definition.Task;
+import com.infoworks.lab.beans.tasks.nuts.AbstractTask;
 import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.Response;
 
 import java.util.Random;
 import java.util.function.Function;
 
-public class SimpleTask implements Task {
+public class SimpleTask extends AbstractTask {
 
     private Task nextTask;
     private Message message;

@@ -10,7 +10,7 @@ import java.util.function.BiConsumer;
 public class TransactionStack implements TaskLifecycleListener, TaskStack {
 
     private final TaskManager manager;
-    private final Stack<Task> beanStack;
+    private Stack<Task> beanStack;
     private final Stack<Task> passedStack;
     private State state = State.None;
     private BiConsumer<Message, State> callback;
@@ -65,10 +65,27 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
         if (state == State.Running) return;
         if (beanStack.isEmpty()) return;
         if (reverse) {
-            //TODO: reverse the beanStack order:
-        }
+            beanStack = reverseStack(beanStack);
+        }//end of reverse
         state = State.Running;
         manager.start(beanStack.peek(), null);
+    }
+
+    private Stack<Task> reverseStack(Stack<Task> beanStack) {
+        //Reverse the beanStack order:
+        Stack<Task> rvStack = new Stack<>();
+        while (!beanStack.empty()){
+            Task cItem = beanStack.pop();
+            if (!rvStack.empty()){ //linking previous task as next task, Because we are going forward.
+                Task top = rvStack.peek();
+                cItem.linkedTo(top);
+            }
+            if (rvStack.isEmpty()){ //marking the end of stack.
+                cItem.linkedTo(null);
+            }
+            rvStack.push(cItem);
+        }
+        return rvStack;
     }
 
     @Override

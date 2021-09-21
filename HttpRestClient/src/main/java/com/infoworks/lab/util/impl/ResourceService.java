@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.util.services.iResourceService;
-import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.*;
 import java.util.logging.Logger;
 
-@Service
 public class ResourceService implements iResourceService {
 
     private static Logger LOG = Logger.getLogger(ResourceService.class.getSimpleName());

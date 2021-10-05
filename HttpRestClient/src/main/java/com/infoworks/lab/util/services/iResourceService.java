@@ -21,6 +21,7 @@ public interface iResourceService {
     byte[] readAsBytes(InputStream ios);
     List<Map<String, Object>> readAsJsonObject(String json);
     <T> T readAsJsonObject(String json, TypeReference<T> typeReference);
+    <T> T readAsJsonObject(String json, Class<T> classReference);
     byte[] readImageAsBytes(BufferedImage img, iResourceService.Format format) throws IOException;
     String readImageAsBase64(BufferedImage img, iResourceService.Format format) throws IOException;
     BufferedImage readImageFromBase64(String content) throws IOException;

@@ -82,6 +82,18 @@ public class ResourceService implements iResourceService {
         return null;
     }
 
+    @Override
+    public <T> T readAsJsonObject(String json, Class<T> classReference) {
+        if (Message.isValidJson(json)){
+            try {
+                ObjectMapper objectMapper = Message.getJsonSerializer();
+                T res = objectMapper.readValue(json, classReference);
+                return res;
+            } catch (IOException e) {}
+        }
+        return null;
+    }
+
     public byte[] readImageAsBytes(BufferedImage img, Format format) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ImageIO.write(img, format.value(), bos);

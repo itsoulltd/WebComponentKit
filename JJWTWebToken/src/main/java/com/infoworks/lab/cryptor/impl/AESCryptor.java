@@ -6,6 +6,7 @@ import com.infoworks.lab.cryptor.util.SecretKeyAlgo;
 import com.infoworks.lab.cryptor.util.ShaKey;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -35,7 +36,7 @@ public class AESCryptor implements Cryptor {
 
     private Cipher getCipher(String secret) throws Exception{
         if (cipher == null){
-            SecretKeySpec secretKey = getKeySpace(secret);
+            SecretKey secretKey = getKeySpace(secret);
             cipher = Cipher.getInstance(aesMode.value());
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         }
@@ -44,7 +45,7 @@ public class AESCryptor implements Cryptor {
 
     private Cipher getDecipher(String secret) throws Exception{
         if (decipher == null){
-            SecretKeySpec secretKey = getKeySpace(secret);
+            SecretKey secretKey = getKeySpace(secret);
             decipher = Cipher.getInstance(aesMode.value());
             decipher.init(Cipher.DECRYPT_MODE, secretKey);
         }
@@ -52,7 +53,7 @@ public class AESCryptor implements Cryptor {
     }
 
     @Override
-    public SecretKeySpec getKeySpace(String mykey)
+    public SecretKey getKeySpace(String mykey)
             throws UnsupportedEncodingException, NoSuchAlgorithmException {
         //
         if (mykey == null || mykey.isEmpty())

@@ -25,7 +25,7 @@ public class AESCryptor implements Cryptor {
     private final SecretKeyAlgo secretKeyAlgo;
 
     public AESCryptor() {
-        this(ShaKey.Sha_1, AESMode.AES_ECB_PKCS5Padding, SecretKeyAlgo.AES);
+        this(ShaKey.Sha_256, AESMode.AES_ECB_PKCS5Padding, SecretKeyAlgo.AES);
     }
 
     public AESCryptor(ShaKey shaKey, AESMode aesMode, SecretKeyAlgo secretKeyAlgo) {
@@ -59,11 +59,22 @@ public class AESCryptor implements Cryptor {
         if (mykey == null || mykey.isEmpty())
             throw new UnsupportedEncodingException("SecretKey is null or empty!");
         //
-        byte[] key = mykey.getBytes("UTF-8");
-        key = getSha(shaKey).digest(key);
-        key = Arrays.copyOf(key, 16);
-        SecretKeySpec secretKey = new SecretKeySpec(key, secretKeyAlgo.name());
-        return secretKey;
+        if (aesMode == AESMode.AES_ECB_PKCS5Padding){
+            byte[] key = mykey.getBytes("UTF-8");
+            key = getSha(shaKey).digest(key);
+            key = Arrays.copyOf(key, 16);
+            SecretKeySpec secretKey = new SecretKeySpec(key, secretKeyAlgo.name());
+            return secretKey;
+        }
+        else if (aesMode == AESMode.AES_CBC_PKCS7Padding){
+            throw new NoSuchAlgorithmException(aesMode.value() + " not supported yet");
+        }
+        else if (aesMode == AESMode.AES_GCM_NoPadding){
+            throw new NoSuchAlgorithmException(aesMode.value() + " not supported yet");
+        }
+        else {
+            throw new NoSuchAlgorithmException(aesMode.value() + " not supported yet");
+        }
     }
 
     private MessageDigest getSha(ShaKey shaKey) throws NoSuchAlgorithmException {

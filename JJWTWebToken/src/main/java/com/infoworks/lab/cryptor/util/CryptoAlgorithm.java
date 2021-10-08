@@ -5,7 +5,8 @@ public enum CryptoAlgorithm {
     AES("AES",256),
     DES("DES", 56),
     DESede("DESede", 112),
-    TripleDES("TripleDES", 168);
+    TripleDES("TripleDES", 168),
+    RSA("RSA", 128);
 
     private String description;
     private int length;

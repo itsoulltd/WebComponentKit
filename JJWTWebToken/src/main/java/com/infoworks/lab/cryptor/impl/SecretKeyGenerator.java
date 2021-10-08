@@ -1,7 +1,7 @@
 package com.infoworks.lab.cryptor.impl;
 
 import com.infoworks.lab.cryptor.definition.KeyGenerator;
-import com.infoworks.lab.cryptor.util.SecretKeyAlgo;
+import com.infoworks.lab.cryptor.util.CryptoAlgorithm;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -17,8 +17,8 @@ public class SecretKeyGenerator implements KeyGenerator {
     private static final int KEY_LENGTH = 256;
 
     @Override
-    public SecretKeyAlgo getKeyAlgo() {
-        return SecretKeyAlgo.DES;
+    public CryptoAlgorithm getKeyAlgorithm() {
+        return CryptoAlgorithm.DES;
     }
 
     @Override
@@ -29,8 +29,8 @@ public class SecretKeyGenerator implements KeyGenerator {
 
     @Override
     public SecretKey generateKey() throws NoSuchAlgorithmException {
-        javax.crypto.KeyGenerator secretKeyGenerator = javax.crypto.KeyGenerator.getInstance(getKeyAlgo().name());
-        secretKeyGenerator.init(getKeyAlgo().length());
+        javax.crypto.KeyGenerator secretKeyGenerator = javax.crypto.KeyGenerator.getInstance(getKeyAlgorithm().name());
+        secretKeyGenerator.init(getKeyAlgorithm().length());
         SecretKey secret = secretKeyGenerator.generateKey();
         return secret;
     }

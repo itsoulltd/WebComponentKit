@@ -1,15 +1,15 @@
 package com.infoworks.lab.cryptor.util;
 
-public enum ShaKey {
+public enum HashKey {
 
     //SHA-1, SHA-128, SHA-256
-    Sha_1("SHA-1"),
-    Sha_128("SHA-128"),
-    Sha_256("SHA-256");
+    SHA_1("SHA-1"),
+    SHA_128("SHA-128"),
+    SHA_256("SHA-256");
 
     private String val;
 
-    ShaKey(String val) {
+    HashKey(String val) {
         this.val = val;
     }
 

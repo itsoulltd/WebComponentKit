@@ -1,6 +1,6 @@
 package com.infoworks.lab.cryptor.definition;
 
-import com.infoworks.lab.cryptor.util.SecretKeyAlgo;
+import com.infoworks.lab.cryptor.util.CryptoAlgorithm;
 
 import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public interface KeyGenerator {
-    default SecretKeyAlgo getKeyAlgo() {return SecretKeyAlgo.AES;}
+    default CryptoAlgorithm getKeyAlgorithm() {return CryptoAlgorithm.AES;}
     default String generateUUID(){return UUID.randomUUID().toString();}
     default String generateSecureUUID(){
         try {

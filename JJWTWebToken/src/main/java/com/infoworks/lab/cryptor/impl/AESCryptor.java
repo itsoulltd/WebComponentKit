@@ -1,9 +1,9 @@
 package com.infoworks.lab.cryptor.impl;
 
 import com.infoworks.lab.cryptor.definition.Cryptor;
-import com.infoworks.lab.cryptor.util.AESMode;
-import com.infoworks.lab.cryptor.util.SecretKeyAlgo;
-import com.infoworks.lab.cryptor.util.ShaKey;
+import com.infoworks.lab.cryptor.util.Transformation;
+import com.infoworks.lab.cryptor.util.CryptoAlgorithm;
+import com.infoworks.lab.cryptor.util.HashKey;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -20,24 +20,28 @@ public class AESCryptor implements Cryptor {
     private Cipher decipher;
     private MessageDigest sha;
 
-    private final ShaKey shaKey;
-    private final AESMode aesMode;
-    private final SecretKeyAlgo secretKeyAlgo;
+    private final HashKey hashKey;
+    private final Transformation transformation;
+    private final CryptoAlgorithm cryptoAlgorithm;
 
     public AESCryptor() {
-        this(ShaKey.Sha_256, AESMode.AES_ECB_PKCS5Padding, SecretKeyAlgo.AES);
+        this(HashKey.SHA_256, Transformation.AES_ECB_PKCS5Padding, CryptoAlgorithm.AES);
     }
 
-    public AESCryptor(ShaKey shaKey, AESMode aesMode, SecretKeyAlgo secretKeyAlgo) {
-        this.shaKey = shaKey;
-        this.aesMode = aesMode;
-        this.secretKeyAlgo = secretKeyAlgo;
+    public AESCryptor(HashKey hashKey, Transformation transformation, CryptoAlgorithm cryptoAlgorithm) {
+        this.hashKey = hashKey;
+        this.transformation = transformation;
+        this.cryptoAlgorithm = cryptoAlgorithm;
     }
+
+    public CryptoAlgorithm getAlgorithm() {return cryptoAlgorithm;}
+    public Transformation getTransformation() {return transformation;}
+    public HashKey getHashKey() {return hashKey;}
 
     private Cipher getCipher(String secret) throws Exception{
         if (cipher == null){
-            SecretKey secretKey = getKeySpace(secret);
-            cipher = Cipher.getInstance(aesMode.value());
+            SecretKey secretKey = getSecretKey(secret);
+            cipher = Cipher.getInstance(transformation.value());
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         }
         return cipher;
@@ -45,41 +49,41 @@ public class AESCryptor implements Cryptor {
 
     private Cipher getDecipher(String secret) throws Exception{
         if (decipher == null){
-            SecretKey secretKey = getKeySpace(secret);
-            decipher = Cipher.getInstance(aesMode.value());
+            SecretKey secretKey = getSecretKey(secret);
+            decipher = Cipher.getInstance(transformation.value());
             decipher.init(Cipher.DECRYPT_MODE, secretKey);
         }
         return decipher;
     }
 
     @Override
-    public SecretKey getKeySpace(String mykey)
+    public SecretKey getSecretKey(String mykey)
             throws UnsupportedEncodingException, NoSuchAlgorithmException {
         //
         if (mykey == null || mykey.isEmpty())
             throw new UnsupportedEncodingException("SecretKey is null or empty!");
         //
-        if (aesMode == AESMode.AES_ECB_PKCS5Padding){
+        if (transformation == Transformation.AES_ECB_PKCS5Padding){
             byte[] key = mykey.getBytes("UTF-8");
-            key = getSha(shaKey).digest(key);
+            key = getSha(hashKey).digest(key);
             key = Arrays.copyOf(key, 16);
-            SecretKeySpec secretKey = new SecretKeySpec(key, secretKeyAlgo.name());
+            SecretKeySpec secretKey = new SecretKeySpec(key, cryptoAlgorithm.name());
             return secretKey;
         }
-        else if (aesMode == AESMode.AES_CBC_PKCS7Padding){
-            throw new NoSuchAlgorithmException(aesMode.value() + " not supported yet");
+        else if (transformation == Transformation.AES_CBC_PKCS7Padding){
+            throw new NoSuchAlgorithmException(transformation.value() + " not supported yet");
         }
-        else if (aesMode == AESMode.AES_GCM_NoPadding){
-            throw new NoSuchAlgorithmException(aesMode.value() + " not supported yet");
+        else if (transformation == Transformation.AES_GCM_NoPadding){
+            throw new NoSuchAlgorithmException(transformation.value() + " not supported yet");
         }
         else {
-            throw new NoSuchAlgorithmException(aesMode.value() + " not supported yet");
+            throw new NoSuchAlgorithmException(transformation.value() + " not supported yet");
         }
     }
 
-    private MessageDigest getSha(ShaKey shaKey) throws NoSuchAlgorithmException {
+    private MessageDigest getSha(HashKey hashKey) throws NoSuchAlgorithmException {
         if (sha == null){
-            sha = MessageDigest.getInstance(shaKey.value());
+            sha = MessageDigest.getInstance(hashKey.value());
         }
         return sha;
     }

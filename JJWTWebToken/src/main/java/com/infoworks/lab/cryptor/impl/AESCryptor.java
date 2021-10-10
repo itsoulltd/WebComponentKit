@@ -41,7 +41,7 @@ public class AESCryptor implements Cryptor {
     private Cipher getCipher(String secret) throws Exception{
         if (cipher == null){
             Key secretKey = getKey(secret);
-            cipher = Cipher.getInstance(transformation.value());
+            cipher = Cipher.getInstance(getTransformation().value());
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         }
         return cipher;
@@ -50,7 +50,7 @@ public class AESCryptor implements Cryptor {
     private Cipher getDecipher(String secret) throws Exception{
         if (decipher == null){
             Key secretKey = getKey(secret);
-            decipher = Cipher.getInstance(transformation.value());
+            decipher = Cipher.getInstance(getTransformation().value());
             decipher.init(Cipher.DECRYPT_MODE, secretKey);
         }
         return decipher;
@@ -65,19 +65,19 @@ public class AESCryptor implements Cryptor {
         //
         if (transformation == Transformation.AES_ECB_PKCS5Padding){
             byte[] key = mykey.getBytes("UTF-8");
-            key = getSha(hashKey).digest(key);
+            key = getSha(getHashKey()).digest(key);
             key = Arrays.copyOf(key, 16);
-            SecretKeySpec secretKey = new SecretKeySpec(key, cryptoAlgorithm.name());
+            SecretKeySpec secretKey = new SecretKeySpec(key, getAlgorithm().name());
             return secretKey;
         }
         else if (transformation == Transformation.AES_CBC_PKCS7Padding){
-            throw new NoSuchAlgorithmException(transformation.value() + " not supported yet");
+            throw new NoSuchAlgorithmException(getTransformation().value() + " not supported yet");
         }
         else if (transformation == Transformation.AES_GCM_NoPadding){
-            throw new NoSuchAlgorithmException(transformation.value() + " not supported yet");
+            throw new NoSuchAlgorithmException(getTransformation().value() + " not supported yet");
         }
         else {
-            throw new NoSuchAlgorithmException(transformation.value() + " not supported yet");
+            throw new NoSuchAlgorithmException(getTransformation().value() + " not supported yet");
         }
     }
 

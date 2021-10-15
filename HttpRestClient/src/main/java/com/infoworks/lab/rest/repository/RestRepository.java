@@ -1,4 +1,4 @@
-package com.infoworks.lab.components.rest;
+package com.infoworks.lab.rest.repository;
 
 import com.infoworks.lab.rest.models.ItemCount;
 import com.it.soul.lab.sql.entity.Entity;

@@ -1,6 +1,7 @@
 package com.infoworks.lab.components.rest;
 
 import com.infoworks.lab.rest.models.ItemCount;
+import com.infoworks.lab.rest.repository.RestRepository;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.query.*;
 import com.it.soul.lab.sql.query.builder.AbstractQueryBuilder;

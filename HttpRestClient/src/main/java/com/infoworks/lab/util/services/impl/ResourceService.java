@@ -1,4 +1,4 @@
-package com.infoworks.lab.util.impl;
+package com.infoworks.lab.util.services.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

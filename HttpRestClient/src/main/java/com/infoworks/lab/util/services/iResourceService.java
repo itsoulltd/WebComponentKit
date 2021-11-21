@@ -1,7 +1,7 @@
 package com.infoworks.lab.util.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.infoworks.lab.util.impl.ResourceService;
+import com.infoworks.lab.util.services.impl.ResourceService;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

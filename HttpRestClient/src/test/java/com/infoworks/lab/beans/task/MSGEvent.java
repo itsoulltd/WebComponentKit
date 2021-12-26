@@ -1,4 +1,4 @@
-package com.infoworks.lab.beans.tasks.impl;
+package com.infoworks.lab.beans.task;
 
 import com.infoworks.lab.rest.models.events.Event;
 

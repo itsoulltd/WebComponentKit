@@ -1,5 +1,7 @@
 package com.infoworks.lab.beans.tasks.impl;
 
+import com.infoworks.lab.beans.task.AbortTask;
+import com.infoworks.lab.beans.task.SimpleTask;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import org.junit.After;
 import org.junit.Before;

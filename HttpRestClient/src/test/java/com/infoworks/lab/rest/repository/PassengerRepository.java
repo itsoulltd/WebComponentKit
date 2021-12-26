@@ -60,9 +60,9 @@ public class PassengerRepository extends HttpTemplate<Response, Message> impleme
         return new ItemCount();
     }
 
-    public List<Passenger> fetch(Integer page, Integer limit){
+    public List<Passenger> fetch(Integer offset, Integer limit){
         try {
-            Response items = get(null, new QueryParam("page", page.toString()), new QueryParam("limit", limit.toString()));
+            Response items = get(null, new QueryParam("offset", offset.toString()), new QueryParam("limit", limit.toString()));
             if (items instanceof ResponseList){
                 List<Passenger> collection = ((ResponseList)items).getCollections();
                 return collection;

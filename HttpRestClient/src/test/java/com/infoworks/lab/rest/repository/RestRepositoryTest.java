@@ -57,13 +57,13 @@ public class RestRepositoryTest {
     public void fetch() {
         ItemCount count = getRepository().rowCount();
         int max = count.getCount().intValue();
+        int offset = 0;
         int limit = 5;
-        int page = 0;
         int numOfPage = (max / limit) + 1;
-        while (page < numOfPage){
-            List<Passenger> riders = getRepository().fetch(page, limit);
+        while (offset < numOfPage){
+            List<Passenger> riders = getRepository().fetch(offset, limit);
             riders.forEach(rider -> System.out.println(rider.getName()));
-            page++;
+            offset++;
         }
     }
 

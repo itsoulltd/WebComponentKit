@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity(name = "Passenger")
-@TableName(value = "Passenger")
+@TableName(value = "Passenger", acceptAll = false)
 public class Passenger extends Response {
 
 	@PrimaryKey(name="id", auto=true)
@@ -25,18 +25,22 @@ public class Passenger extends Response {
 	private Integer id = 0;
 
 	@NotNull(message = "Name must not be null")
+	@Column(name = "name")
 	private String name;
 
+	@Column(name = "sex")
 	private String sex = Gender.NONE.name();
 
 	@Min(value = 18, message = "Min Value is 18.")
+	@Column(name = "age")
 	private int age = 18;
 
-
 	@NotNull(message = "DOB Must Not Null") @Past(message = "Date Of Birth Must Be Greater Then Now")
+	@Column(name = "dob")
 	private Date dob = new java.sql.Date(new Date().getTime());
 
 	//@Type(type = "org.hibernate.type.NumericBooleanType")
+	@Column(name = "active")
 	private boolean active;
 
 	@Ignore

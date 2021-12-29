@@ -127,6 +127,12 @@
             <version>1.4.200</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.18</version>
+            <scope>test</scope>
+        </dependency>
         <!-- Cassandra Test -->
         <dependency>
             <groupId>com.datastax.cassandra</groupId>

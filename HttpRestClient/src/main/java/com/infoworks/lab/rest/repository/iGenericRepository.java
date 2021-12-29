@@ -128,11 +128,11 @@ public interface iGenericRepository<E extends Entity, ID> extends iRepository<E,
     default E insert(E entity) throws RuntimeException {
         if (entity == null) return null;
         try {
-            entity.insert(getExecutor());
+            boolean inserted = entity.insert(getExecutor());
+            return inserted ? entity : null;
         } catch (SQLException err) {
             throw new RuntimeException(err.getMessage());
         }
-        return null;
     }
 
     /**
@@ -149,12 +149,13 @@ public interface iGenericRepository<E extends Entity, ID> extends iRepository<E,
             eData.remove(getPrimaryKeyName());
             existing.unmarshallingFromMap(eData, true);
             try {
-                existing.update(getExecutor());
+                boolean updated = existing.update(getExecutor());
+                return updated ? existing : null;
             } catch (SQLException err) {
                 throw new RuntimeException(err.getMessage());
             }
         }
-        return existing;
+        return null;
     }
 
     /**

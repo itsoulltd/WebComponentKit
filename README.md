@@ -40,11 +40,106 @@
                 </dependency>
                 
 ## How To Use API:
+        
+        ###Let's know about Message.java:
+        ###Message is derived from Entity.java
+        Message message = new Message();
+        message.setEvent(new Event()
+                .setEventType(EventType.ADD)
+                .setUuid(UUID.randomUUID().toString())
+                .setTimestamp(String.valueOf(new Date().getTime())));
 
-### TaskStack:
+        String str = Message.getJsonSerializer().writeValueAsString(message);
+        String str2 = message.toString();
+        System.out.println("Message was: " + message.toString());
 
-#### Create and Running Task.java
+        ###Custom Event:
+        Message messageC = new Message();
+        messageC.setEvent(new MyCustomEvent()
+                .setPassenger(new Passenger())
+                .setEventType(EventType.ACTIVATE)
+                .setUuid(UUID.randomUUID().toString())
+                .setTimestamp(String.valueOf(new Date().getTime())));
+        System.out.println("Custom Event Message was: " + messageC.toString());
+        
+        ###Now recreate Message from Json:
+        String remoteJson = messageC.toString();
+        Message myRemoteMessage = Message.unmarshal(Message.class, remoteJson);
+        System.out.println("Both Custom Message is same: " + ( myRemoteMessage.getEvent().getUuid().equals(messageC.getEvent().getUuid()) ? "YES" : "NO" ));
+        
+        ###Let's know about Response.java:
+        ###Response is derived from Message.java
+        Response response = new Response().setStatus(200).setMessage("Successful Transmission");
+        System.out.println("Response was: " + response.toString());
+        
+        ###Let's know about PagingQuery.java & SearchQuery.java:
+        SearchQuery query = Pagination.createQuery(SearchQuery.class
+                , 10
+                , SortOrder.ASC
+                , "CLUSTER_NAME","REGION_NAME", "AM_NAME");
 
+        query.add("ROLE_NAME").isEqualTo("Gittu")
+                .or("PERSON_MOBILE").isEqualTo("01712645571")
+                .and("AGE").isGreaterThen(32);
+
+        System.out.println("Newly-Created: " + query.toString());
+        ###Output:
+        {
+            "page":0,"size":10,
+            "descriptors":[{"order":"ASC","keys":["CLUSTER_NAME","REGION_NAME","AM_NAME"]}],
+            "properties":[
+                {"key":"ROLE_NAME","value":"Gittu","operator":"EQUAL","type":"STRING","nextKey":"PERSON_MOBILE","logic":"OR"},
+                {"key":"PERSON_MOBILE","value":"01712645571","operator":"EQUAL","type":"STRING","nextKey":"AGE","logic":"AND"},
+                {"key":"AGE","value":"32","operator":"GREATER_THAN","type":"INT"}]
+        }
+        
+        ###Now Assume we have a Json String: (carrying over Http Request @Body)
+        String json = "{\"page\":0,\"size\":10,\"descriptors\":[{\"order\":\"ASC\",\"keys\":[\"CLUSTER_NAME\",\"REGION_NAME\",\"AM_NAME\"]}],\"properties\":[{\"key\":\"ROLE_NAME\",\"value\":\"Gittu\",\"operator\":\"EQUAL\",\"type\":\"STRING\",\"nextKey\":\"PERSON_MOBILE\",\"logic\":\"OR\"},{\"key\":\"PERSON_MOBILE\",\"value\":\"01712645571\",\"operator\":\"EQUAL\",\"type\":\"STRING\",\"nextKey\":\"AGE\",\"logic\":\"AND\"},{\"key\":\"AGE\",\"value\":\"32\",\"operator\":\"GREATER_THAN\",\"type\":\"INT\"}]}\n";
+        SearchQuery recreated = Message.unmarshal(SearchQuery.class, json);
+        System.out.println("Re-Created: " + recreated.toString());
+        ###Output:
+        {
+            "page":0,"size":10,
+            "descriptors":[{"order":"ASC","keys":["CLUSTER_NAME","REGION_NAME","AM_NAME"]}],
+            "properties":[
+                {"key":"ROLE_NAME","value":"Gittu","operator":"EQUAL","type":"STRING","nextKey":"PERSON_MOBILE","logic":"OR"},
+                {"key":"PERSON_MOBILE","value":"01712645571","operator":"EQUAL","type":"STRING","nextKey":"AGE","logic":"AND"},
+                {"key":"AGE","value":"32","operator":"GREATER_THAN","type":"INT"}]
+        }
+
+### Task & Task-Runtime:
+        
+#### How to define a Task:
+        
+        public class ExampleTask extends AbstractTask<Message, Response> {
+        
+            //Either override default constructor:
+            public ExampleTask() {super();}
+            //OR
+            //Provide an custom constructor:
+            public ExampleTask(String data) {
+                super(new Property("data", data));
+            }
+    
+            @Override
+            public Response execute(Message message) throws RuntimeException {
+                String savedData = getPropertyValue("data").toString();
+                //....
+                //....
+                return new Response().setMessage(savedData).setStatus(200);
+            }
+    
+            @Override
+            public Response abort(Message message) throws RuntimeException {
+                String reason = message != null ? message.getPayload() : "UnknownError!";
+                return new Response().setMessage(reason).setStatus(500);
+            }
+        }
+        
+        
+#### Create and Running Task Using TaskStack:
+        
+        ###Defining a TaskStack:
         private TaskStack stack = TaskStack.createSynch(false);
         
         stack.push(new SimpleTask("Wow bro! I am Adams"));
@@ -101,28 +196,33 @@
         State: Failed
         {"payload":"{\"status\":500,\"error\":\"I AM Aborting! Critical Error @ (Hello bro! I am Hayes)\"}","status":502}
         
-        ### Doing Search Query to Server:
+#### Make a Registration Task Flow:
+        TaskStack regStack = TaskStack.createSync(true);
         
-        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.DESC, "name","age","salary");
+        regStack.push(new CheckUserExistTask("ahmed@yahoo.com"));
         
-        query.add("center")
-                .isEqualTo("#geohash-id")
-                .and("radius")
-                .isEqualTo(500.0);
-
-        String json = query.toString();
+        regStack.push(new RegistrationTask("ahmed@yahoo.com"
+                , "5467123879"
+                , "ahmed@yahoo.com"
+                , "0101991246"
+                , new Date()
+                , 32));
+                
+        regStack.push(new SendEmailTask("xbox-support@msn.com"
+                , "ahmed@yahoo.com"
+                , "Hi There! .... Greetings"
+                , "new-reg-email-temp-01"));
+                
+        regStack.push(new SendSMSTask("01100909001"
+                , "01786987908"
+                , "Your Registration Completed! Plz check your email."
+                , "new-reg-sms-temp-01"));
+                
+        regStack.commit(true, (message, state) -> {
+            System.out.println("Registration Status: " + state.name());
+        });
         
-        System.out.println(json);
-        
-        ### Output:
-        {   
-            "page":0,
-            "size":10,
-            "descriptors":[{"order":"DESC","keys":["name","age","salary"]}],
-            "properties":[
-                {"key":"center","value":"#geohash-id","operator":"EQUAL","type":"STRING","nextKey":"radius","logic":"AND"},
-                {"key":"radius","value":"500.0","operator":"EQUAL","type":"DOUBLE"}]
-        }
+##### To know more about Task & TaskStack & TaskQueue, visit test classes. Thank you!
         
 #### Please Contact for extended support.
       email@ m.towhid.islam@gmail.com

@@ -34,17 +34,17 @@ public class LedgerTest {
 
     @Before
     public void setUp() throws Exception {
-        /*connector = new SQLConnector(SourceConfig.JDBC_MYSQL)
+        connector = new SQLConnector(SourceConfig.JDBC_MYSQL)
                 .url("jdbc:mysql://localhost:3316/ledgerDB")
                 .username("root")
                 .password("root@123")
-                .skipSchemaGeneration(false);*/
+                .skipSchemaGeneration(false);
         //Testing with Embedded DB:
-        connector = new SQLConnector(SourceConfig.EMBEDDED_H2)
+        /*connector = new SQLConnector(SourceConfig.EMBEDDED_H2)
                 .url("jdbc:h2:mem:ledgerDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=FALSE")
                 .username("sa")
                 .password("")
-                .skipSchemaGeneration(false);
+                .skipSchemaGeneration(false);*/
         cryptor = new AESCipher();
     }
 
@@ -58,7 +58,7 @@ public class LedgerTest {
         cryptor = null;
     }
 
-    @Test
+    //@Test
     public void doAccounting(){
         //Clean First:
         try {

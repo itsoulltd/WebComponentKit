@@ -18,7 +18,7 @@ public class Moderation implements iDocState{
 
     @Override
     public boolean isValidNextState(Class<? extends State> sType) {
-        return true;
+        return Published.class.isAssignableFrom(sType);
     }
 
     @Override

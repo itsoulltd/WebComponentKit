@@ -18,7 +18,7 @@ public class Published implements iDocState{
 
     @Override
     public boolean isValidNextState(Class<? extends State> sType) {
-        return Draft.class.isAssignableFrom(sType) == false;
+        return false;
     }
 
     @Override

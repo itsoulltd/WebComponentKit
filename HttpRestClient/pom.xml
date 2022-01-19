@@ -79,19 +79,25 @@
         </dependency>
         <!-- Jersey-2 bundle ends -->
         <!-- Spring WebSocket Client API -->
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-websocket</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-messaging</artifactId>
-            <version>${spring.version}</version>
-            <scope>provided</scope>
+            <groupId>org.glassfish.tyrus.bundles</groupId>
+            <artifactId>tyrus-standalone-client</artifactId>
+            <version>1.18</version>
+            <scope>test</scope>
         </dependency>
         <!-- -->
         <!-- Okhttp-3 API-->

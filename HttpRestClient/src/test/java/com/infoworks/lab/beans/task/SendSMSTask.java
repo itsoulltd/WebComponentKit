@@ -24,7 +24,7 @@ public class SendSMSTask extends SendEmailTask {
 
     @Override
     public Response abort(Message message) throws RuntimeException {
-        String reason = message != null ? message.getPayload() : "UnknownError!";
+        String reason = message != null ? message.getPayload() : "UnknownError! @" + this.getClass().getSimpleName();
         return new Response().setMessage(reason).setStatus(500);
     }
 }

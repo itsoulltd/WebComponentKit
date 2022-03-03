@@ -22,7 +22,7 @@ public abstract class AbstractTaskQueueManager extends AbstractQueueManager {
         this.listener = listener;
     }
 
-    private Task createTask(String text)
+    protected Task createTask(String text)
             throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
         //Defined:JmsMessage Protocol
         JmsMessage jmsMessage = Message.unmarshal(JmsMessage.class, text);
@@ -45,7 +45,7 @@ public abstract class AbstractTaskQueueManager extends AbstractQueueManager {
         }
     }
 
-    private Message getErrorMessage(String text) throws IOException, ClassNotFoundException {
+    protected Message getErrorMessage(String text) throws IOException, ClassNotFoundException {
         JmsMessage jmsMessage = Message.unmarshal(JmsMessage.class, text);
         //Handle error-message:
         Class<? extends Message> errorClass = (Class<? extends Message>) Class.forName(jmsMessage.getErrorClassName());

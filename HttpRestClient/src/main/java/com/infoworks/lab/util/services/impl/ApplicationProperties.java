@@ -2,8 +2,6 @@ package com.infoworks.lab.util.services.impl;
 
 import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.util.services.iProperties;
-import com.it.soul.lab.data.simple.SimpleDataSource;
-import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.io.*;

@@ -1,11 +1,15 @@
 package com.infoworks.lab.util.services.impl;
 
+import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.util.services.iProperties;
+import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -114,5 +118,20 @@ public class ApplicationProperties implements iProperties {
     @Override
     public void clear() {
         configProp.clear();
+    }
+
+    @Override
+    public <E extends EntityInterface> void putObject(String key, E value) throws IOException{
+        String json = Message.marshal(value);
+        String base64 = Base64.getEncoder().encodeToString(json.getBytes());
+        put(key, base64);
+    }
+
+    @Override
+    public <E extends EntityInterface> E getObject(String key, Class<E> type) throws IOException{
+        String base64 = read(key);
+        String json = new String(Base64.getDecoder().decode(base64));
+        if (!Message.isValidJson(json)) throw new IOException("Invalid Json Format!");
+        return Message.unmarshal(type, json);
     }
 }

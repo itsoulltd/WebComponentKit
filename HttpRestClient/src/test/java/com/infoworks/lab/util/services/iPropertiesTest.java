@@ -105,6 +105,16 @@ public class iPropertiesTest {
     }
 
     @Test
+    public void testReadSync() {
+        Path resourceDirectory = Paths.get("src", "test", "resources", "app.properties");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        //
+        iProperties properties = iProperties.create(absolutePath, null);
+        String[] vals = properties.readSync(0, properties.size());
+        Assert.assertTrue(vals.length == properties.size());
+    }
+
+    @Test
     public void testObject() throws IOException {
         Path resourceDirectory = Paths.get("src", "test", "resources", "app.properties");
         String absolutePath = resourceDirectory.toFile().getAbsolutePath();

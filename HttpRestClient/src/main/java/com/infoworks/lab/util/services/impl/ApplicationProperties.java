@@ -2,6 +2,7 @@ package com.infoworks.lab.util.services.impl;
 
 import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.util.services.iProperties;
+import com.it.soul.lab.data.simple.SimpleDataSource;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
@@ -9,10 +10,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class ApplicationProperties implements iProperties {
 
@@ -133,5 +132,24 @@ public class ApplicationProperties implements iProperties {
         String json = new String(Base64.getDecoder().decode(base64));
         if (!Message.isValidJson(json)) throw new IOException("Invalid Json Format!");
         return Message.unmarshal(type, json);
+    }
+
+    @Override
+    public String[] readSync(int offset, int pageSize) {
+        int size = this.size();
+        int maxItemCount = Math.abs(offset) + Math.abs(pageSize);
+        if (maxItemCount <= size) {
+            String[] values = configProp.values().toArray(new String[0]);
+            List<String> res = Arrays.asList(values).subList(Math.abs(offset), maxItemCount);
+            return res.toArray(new String[0]);
+        }
+        return new String[0];
+    }
+
+    @Override
+    public void readAsync(int offset, int pageSize, Consumer<String[]> consumer) {
+        if(consumer != null) {
+            consumer.accept(readSync(offset, pageSize));
+        }
     }
 }

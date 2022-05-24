@@ -11,7 +11,8 @@ public enum SourceConfig {
   EMBEDDED_DERBY("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:memory:dataSource;create=true",
           "sa", "", "derby-schema.sql"),
   JDBC_MYSQL("com.mysql.jdbc.Driver", "", "", "", "mysql-schema.sql"),
-  JDBC_POSTGRES("org.postgresql.Driver", "", "", "", "postgres-schema.sql");
+  JDBC_POSTGRES("org.postgresql.Driver", "", "", "", "postgres-schema.sql"),
+  JDBC_ORACLE("oracle.jdbc.OracleDriver", "", "", "", "oracle-schema.sql");
 
   private final String driverClassName;
   private final String url;

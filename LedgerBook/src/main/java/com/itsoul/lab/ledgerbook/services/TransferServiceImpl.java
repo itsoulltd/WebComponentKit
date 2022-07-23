@@ -13,6 +13,7 @@ import com.itsoul.lab.generalledger.validation.TransferValidator;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +43,8 @@ public class TransferServiceImpl implements TransferService {
             accountRepository.begin();
             validateRequest(transferRequest);
             for (TransactionLeg leg : transferRequest.getLegs()) {
-                accountRepository.updateBalance(leg);
+                double balance = accountRepository.updateBalance(leg);
+                leg.setBalance(new BigDecimal(balance));
             }
             validator.validBalance(transferRequest.getLegs());
             storeTransaction(transferRequest

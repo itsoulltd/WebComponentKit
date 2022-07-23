@@ -58,7 +58,7 @@ public class LedgerTest {
         cryptor = null;
     }
 
-    //@Test
+    @Test
     public void doAccounting(){
         //Clean First:
         try {

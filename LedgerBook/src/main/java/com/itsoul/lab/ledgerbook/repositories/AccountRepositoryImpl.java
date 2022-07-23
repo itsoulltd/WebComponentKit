@@ -103,9 +103,10 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public void updateBalance(TransactionLeg leg) throws SQLException{
+    public double updateBalance(TransactionLeg leg) throws SQLException{
         //
-        double newBalance = currentBalance(leg.getAccountRef()) + leg.getAmount().getAmount().doubleValue();
+        double currentBalance = currentBalance(leg.getAccountRef());
+        double newBalance = currentBalance + leg.getAmount().getAmount().doubleValue();
         SQLUpdateQuery query = new SQLQuery.Builder(QueryType.UPDATE)
                 .set(new Property("amount", newBalance))
                 .from("account")
@@ -116,9 +117,13 @@ public class AccountRepositoryImpl implements AccountRepository {
         //
         int result = getExecutor().executeUpdate(query);
         //
-        if(result > 0) log.info("Account Updated: " + leg.getAccountRef());
-        else log.warning("Account Update Failed: " + leg.getAccountRef());
-        //
+        if(result > 0) {
+            log.info("Account Updated: " + leg.getAccountRef());
+            return newBalance;
+        } else {
+            log.warning("Account Update Failed: " + leg.getAccountRef());
+            return currentBalance;
+        }
     }
 
     private double currentBalance(String accountRef){

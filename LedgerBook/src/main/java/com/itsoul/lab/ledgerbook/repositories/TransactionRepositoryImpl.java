@@ -58,6 +58,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .add("account_ref")
                 .add("amount")
                 .add("currency")
+                .add("balance")
                 .add("eventTimestamp")
                 .add("signature");
         SQLInsertQuery insertQuery = new SQLQuery.Builder(QueryType.INSERT)
@@ -73,6 +74,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                     .add("account_ref", leg.getAccountRef())
                     .add("amount", leg.getAmount().getAmount().doubleValue())
                     .add("currency", leg.getAmount().getCurrency().getCurrencyCode())
+                    .add("balance", leg.getBalance().doubleValue())
                     .add("eventTimestamp", leg.encryptedTimestamp(getClientRef().getSecret(), cryptor))
                     .add("signature", leg.getSignature());
             rowsToInsert.add(rowToInsert);
@@ -170,7 +172,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .and("transaction_ref").isEqualTo(transactionRef);
         //
         SQLSelectQuery query = new SQLQuery.Builder(QueryType.SELECT)
-                .columns("account_ref", "amount", "currency", "eventTimestamp","signature")
+                .columns("account_ref", "amount", "currency", "balance", "eventTimestamp", "signature")
                 .from("transaction_leg")
                 .where(searchFor)
                 .build();
@@ -222,6 +224,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             Currency currency = Currency.getInstance(rs.getString("currency"));
             Money transferredFunds = new Money(amount, currency);
             TransactionLeg leg = new TransactionLeg(accountRef, transferredFunds);
+            leg.setBalance(new BigDecimal(rs.getString("balance")));
             leg.setEventTimestamp(rs.getString("eventTimestamp"));
             leg.setSignature(rs.getString("signature"));
             return leg;

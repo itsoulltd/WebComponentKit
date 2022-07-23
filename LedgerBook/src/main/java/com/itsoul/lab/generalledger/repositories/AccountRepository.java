@@ -13,7 +13,7 @@ public interface AccountRepository extends Repository{
   boolean accountExists(String accountRef);
   void createAccount(Client clientRef, String accountRef, Money initialAmount);
   Account getAccount(String accountRef);
-  void updateBalance(TransactionLeg leg) throws SQLException;
+  double updateBalance(TransactionLeg leg) throws SQLException;
   void setClientRef(Client clientRef);
   Client getClientRef();
 }

@@ -4,6 +4,7 @@ import com.it.soul.lab.sql.entity.Ignore;
 import com.itsoul.lab.generalledger.services.Cryptor;
 import com.itsoul.lab.generalledger.validation.TransferValidationException;
 
+import java.math.BigDecimal;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
@@ -132,5 +133,14 @@ public final class TransactionLeg extends LedgerEntity {
         return false;
     }
 
+    private BigDecimal balance;
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
 }
 

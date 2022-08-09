@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>web-component-kit</artifactId>
+        <groupId>com.infoworks.lab</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>report-content-io-kit</artifactId>
+    <packaging>jar</packaging>
+    <version>1.10.7-RELEASE</version>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jackson.version>[2.9.10.5,)</jackson.version>
+        <javax.json>1.1.4</javax.json>
+        <poi-version>4.1.2</poi-version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.itsoulltd</groupId>
+            <artifactId>JSQLEditor</artifactId>
+            <version>1.1.4.2-RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.infoworks.lab</groupId>
+            <artifactId>http-rest-client</artifactId>
+            <version>1.10.7-RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--Apache POI-excel-parser -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi-version}</version>
+        </dependency>
+        <!-- Apache POI Streaming api -->
+        <dependency>
+            <groupId>com.monitorjbl</groupId>
+            <artifactId>xlsx-streamer</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <!-- -->
+    </dependencies>
+
+</project>

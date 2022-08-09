@@ -16,6 +16,7 @@
         <module>Simulator</module>
         <module>LedgerBook</module>
         <module>TFObjectDetectorKit</module>
+        <module>ReportContentIOKit</module>
     </modules>
 
     <properties>

@@ -1,0 +1,42 @@
+{
+  "verify": {
+    "isVerified": true
+  },
+  "findRiders": [
+    {
+      "name": "Rahim",
+      "geoHash": "GeoHash-1",
+      "email": "rahim@gmail.com",
+      "age": 19,
+      "gender": "Male"
+    },
+    {
+      "name": "Karim",
+      "geoHash": "GeoHash-2",
+      "email": "karim@gmail.com",
+      "age": 30,
+      "gender": "Male"
+    },
+    {
+      "name": "Jamal",
+      "geoHash": "GeoHash-3",
+      "email": "jamal@gmail.com",
+      "age": 20,
+      "gender": "Male"
+    },
+    {
+      "name": "Naiem",
+      "geoHash": "GeoHash-4",
+      "email": "naiem@gmail.com",
+      "age": 29,
+      "gender": "Male"
+    },
+    {
+      "name": "Naiem Uddin Ahmed",
+      "geoHash": "GeoHash-4",
+      "email": "naiem@gmail.com",
+      "age": 29,
+      "gender": "Male"
+    }
+  ]
+}

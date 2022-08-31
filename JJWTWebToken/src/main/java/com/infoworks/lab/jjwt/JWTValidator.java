@@ -10,7 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.logging.Level;
+import java.util.Date;
 import java.util.logging.Logger;
 
 //We must not use advance Java8 features here: because compatibility of Android Client:
@@ -50,11 +50,18 @@ public class JWTValidator implements TokenValidator {
             Jws<Claims> cl = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
             Claims claims =  cl.getBody();
             LOG.info("JWT Claims: " + claims.toString());
-            return true;
+            //BugFix: claim.getExpiration().getTime() return time in millis with extra 3 0's,
+            //That's why divided by 1000l.
+            //Tested with java-1.8 & 11:
+            long exp = claims.getExpiration().getTime() / 1000l;
+            if (new Date(exp).before(new Date())){
+                return false;
+            } else {
+                return true;
+            }
         } catch (Exception e) {
-            LOG.log(Level.WARNING, e.getMessage(), e);
+            throw new RuntimeException(e.getMessage());
         }
-        return false;
     }
 
     @Override

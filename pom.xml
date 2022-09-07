@@ -17,6 +17,7 @@
         <module>LedgerBook</module>
         <module>TFObjectDetectorKit</module>
         <module>ReportContentIOKit</module>
+        <module>MemCache</module>
     </modules>
 
     <properties>

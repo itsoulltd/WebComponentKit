@@ -36,7 +36,7 @@ public class LettuceDataSourceTest {
 
     @Test
     public void saveTest() {
-        long ttl = Duration.ofMillis(100).toMillis();
+        long ttl = Duration.ofMillis(20).toMillis();
         LettuceDataSource rdatasource = new LettuceDataSource(client, ttl);
         //Save in Redis:
         Response response = new Response().setStatus(300).setMessage("Hi there!");
@@ -54,9 +54,6 @@ public class LettuceDataSourceTest {
 
     @Test
     public void emptyExist() {
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {}
         LettuceDataSource rdatasource = new LettuceDataSource(client);
         //Check from Redis:
         boolean isExist = rdatasource.containsKey("message");

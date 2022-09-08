@@ -12,8 +12,6 @@ import org.redisson.config.Config;
 import java.time.Duration;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
 public class RedissonDataSourceTest {
 
     private RedissonClient client;
@@ -44,7 +42,7 @@ public class RedissonDataSourceTest {
 
     @Test
     public void saveTest() {
-        long ttl = Duration.ofMillis(100).toMillis();
+        long ttl = Duration.ofMillis(20).toMillis();
         RedissonDataSource rdatasource = new RedissonDataSource(client, ttl);
         //Save in Redis:
         Response response = new Response().setStatus(300).setMessage("Hi there!");
@@ -62,9 +60,6 @@ public class RedissonDataSourceTest {
 
     @Test
     public void emptyExist() {
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {}
         RedissonDataSource rdatasource = new RedissonDataSource(client);
         //Check from Redis:
         boolean isExist = rdatasource.containsKey("message");

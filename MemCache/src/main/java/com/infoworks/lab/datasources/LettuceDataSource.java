@@ -75,4 +75,11 @@ public class LettuceDataSource implements RedisDataSource {
         return false;
     }
 
+    @Override
+    public void close() throws Exception {
+        if (client != null){
+            client.close();
+            client = null;
+        }
+    }
 }

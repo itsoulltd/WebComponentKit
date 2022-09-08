@@ -77,6 +77,17 @@ public class RedissonDataSource implements RedisDataSource {
 
     @Override
     public boolean containsKey(String key) {
-        return client.getKeys().countExists(key) > 0;
+        /*RKeys keys = client.getKeys();
+        return keys.countExists(key) > 0;*/
+        RMap data = client.getMap(key);
+        return data != null && data.size() > 0;
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (client != null){
+            //There is nothing to close:
+            client = null;
+        }
     }
 }

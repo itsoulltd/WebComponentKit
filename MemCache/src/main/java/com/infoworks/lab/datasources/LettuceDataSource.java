@@ -3,6 +3,7 @@ package com.infoworks.lab.datasources;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.infoworks.lab.rest.models.Message;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.SetArgs;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 
@@ -43,7 +44,7 @@ public class LettuceDataSource implements RedisDataSource {
     @Override
     public Map<String, Object> remove(String key) {
         RedisCommands<String, String> cmd = connection.sync();
-        //TODO:
+        long id = cmd.del(key);
         return null;
     }
 
@@ -55,7 +56,10 @@ public class LettuceDataSource implements RedisDataSource {
     @Override
     public void put(String key, Map<String, Object> entity, long ttl) {
         RedisCommands<String, String> cmd = connection.sync();
-        //TODO
+        try {
+            if (ttl > 0l) cmd.set(key, Message.marshal(entity), SetArgs.Builder.ex(ttl));
+            else cmd.set(key, Message.marshal(entity));
+        } catch (IOException e) {}
     }
 
     @Override
@@ -69,10 +73,10 @@ public class LettuceDataSource implements RedisDataSource {
     }
 
     @Override
-    public boolean containsKey(String s) {
+    public boolean containsKey(String key) {
         RedisCommands<String, String> cmd = connection.sync();
-        //TODO:
-        return false;
+        long id = cmd.exists(key);
+        return id == 1l;
     }
 
     @Override

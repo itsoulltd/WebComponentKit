@@ -1,5 +1,6 @@
 package com.infoworks.lab.datasources;
 
+import org.redisson.api.RKeys;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 
@@ -77,10 +78,9 @@ public class RedissonDataSource implements RedisDataSource {
 
     @Override
     public boolean containsKey(String key) {
-        /*RKeys keys = client.getKeys();
-        return keys.countExists(key) > 0;*/
-        RMap data = client.getMap(key);
-        return data != null && data.size() > 0;
+        RKeys keys = client.getKeys();
+        long id = keys.countExists(key);
+        return id == 1l;
     }
 
     @Override

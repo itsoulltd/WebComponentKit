@@ -1,0 +1,21 @@
+version: '3.5'
+
+networks:
+  web-app-net:
+    name: my-web-app-net
+    driver: bridge
+
+volumes:
+  redis-storage: {}
+
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - web-app-net
+    volumes:
+      - redis-storage:/data
+
+#End-Of-File

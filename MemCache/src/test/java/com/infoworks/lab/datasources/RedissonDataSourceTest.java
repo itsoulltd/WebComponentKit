@@ -1,5 +1,6 @@
 package com.infoworks.lab.datasources;
 
+import com.infoworks.lab.PerformanceLogger;
 import com.infoworks.lab.rest.models.Response;
 import org.junit.After;
 import org.junit.Assert;
@@ -45,15 +46,21 @@ public class RedissonDataSourceTest {
         long ttl = Duration.ofMillis(20).toMillis();
         RedissonDataSource rdatasource = new RedissonDataSource(client, ttl);
         //Save in Redis:
+        PerformanceLogger logger = new PerformanceLogger();
         Response response = new Response().setStatus(300).setMessage("Hi there!");
         rdatasource.put("message", response.marshallingToMap(true));
+        logger.printMillis("saveTest:put");
         //Check from Redis:
+        logger = new PerformanceLogger();
         boolean isExist = rdatasource.containsKey("message");
+        logger.printMillis("saveTest:contain");
         Assert.assertTrue("Message Failed to Save.", isExist);
         //Read from Redis:
+        logger = new PerformanceLogger();
         Map<String, Object> msg = rdatasource.read("message");
         Response msgRes = new Response();
         msgRes.unmarshallingFromMap(msg, true);
+        logger.printMillis("saveTest:read");
         //
         Assert.assertTrue(response.getStatus().intValue() == msgRes.getStatus().intValue());
     }
@@ -62,7 +69,9 @@ public class RedissonDataSourceTest {
     public void emptyExist() {
         RedissonDataSource rdatasource = new RedissonDataSource(client);
         //Check from Redis:
+        PerformanceLogger logger = new PerformanceLogger();
         boolean isExist = rdatasource.containsKey("message");
+        logger.printMillis("emptyExist:contain");
         Assert.assertTrue("Object Did Exist.", !isExist);
     }
 
@@ -77,7 +86,10 @@ public class RedissonDataSourceTest {
         boolean isExist = rdatasource.containsKey("message");
         Assert.assertTrue("Message Failed to Save.", isExist);
         //Remove from Redis:
+        PerformanceLogger logger = new PerformanceLogger();
         rdatasource.remove("message");
+        logger.printMillis("removeTest:remove");
+        //Checking:
         boolean removed = rdatasource.containsKey("message");
         Assert.assertTrue("Message Removed.", removed == false);
     }

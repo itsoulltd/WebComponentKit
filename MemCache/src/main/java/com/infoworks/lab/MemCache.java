@@ -21,6 +21,7 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
 
     public MemCache(RedisDataSource client) {
         this.client = client;
+        timeToLive = client.getTimeToLive();
     }
 
     public MemCache(RedisDataSource client, Class<? extends EntityInterface> aClass) {
@@ -32,6 +33,7 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
     public MemCache(RedisDataSource client, Class<? extends EntityInterface> aClass, Duration ttl) {
         this(client, aClass);
         this.timeToLive = ttl.toMillis();
+        this.client.setTimeToLive(timeToLive);
     }
 
     public Entity read(String key) {

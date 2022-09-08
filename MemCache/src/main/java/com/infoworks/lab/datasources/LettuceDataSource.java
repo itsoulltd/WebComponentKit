@@ -59,6 +59,16 @@ public class LettuceDataSource implements RedisDataSource {
     }
 
     @Override
+    public void setTimeToLive(long ttl) {
+        this.timeToLive = ttl;
+    }
+
+    @Override
+    public long getTimeToLive() {
+        return timeToLive;
+    }
+
+    @Override
     public boolean containsKey(String s) {
         RedisCommands<String, String> cmd = connection.sync();
         //TODO:

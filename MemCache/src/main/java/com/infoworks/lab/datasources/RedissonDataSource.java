@@ -66,6 +66,16 @@ public class RedissonDataSource implements RedisDataSource {
     }
 
     @Override
+    public void setTimeToLive(long ttl) {
+        this.timeToLive = ttl;
+    }
+
+    @Override
+    public long getTimeToLive() {
+        return timeToLive;
+    }
+
+    @Override
     public boolean containsKey(String key) {
         return client.getKeys().countExists(key) > 0;
     }

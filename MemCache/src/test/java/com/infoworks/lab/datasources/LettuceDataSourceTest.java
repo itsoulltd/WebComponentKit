@@ -3,6 +3,8 @@ package com.infoworks.lab.datasources;
 import com.infoworks.lab.PerformanceLogger;
 import com.infoworks.lab.rest.models.Response;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,25 +16,30 @@ import java.util.Map;
 public class LettuceDataSourceTest {
 
     private RedisClient client;
+    private StatefulRedisConnection<String, String> connection;
 
     @Before
     public void setUp() throws Exception {
         String redisHost = "localhost";
         String redisPort = "6379";
         client = RedisClient.create(String.format("redis://%s:%s",redisHost, redisPort));
+        connection = client.connect();
     }
 
     @After
     public void tearDown() throws Exception {
-        if (client != null)
-            client.close();
+        if (client != null) {
+            connection.close();
+            client.shutdown();
+        }
     }
 
     @Test
     public void connectionTest() {
         long ttl = Duration.ofMillis(1000).toMillis();
         LettuceDataSource rdatasource = new LettuceDataSource(client, ttl);
-        //Assert.assertTrue(client.isShutdown() == false);
+        RedisCommands<String, String> cmd = connection.sync();
+        Assert.assertTrue(cmd.isOpen() == true);
     }
 
     @Test

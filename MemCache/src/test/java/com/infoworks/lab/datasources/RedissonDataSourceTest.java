@@ -32,6 +32,8 @@ public class RedissonDataSourceTest {
 
     @After
     public void tearDown() throws Exception {
+        if (client != null)
+            client.shutdown();
     }
 
     @Test

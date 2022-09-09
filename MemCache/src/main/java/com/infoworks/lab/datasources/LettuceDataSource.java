@@ -13,8 +13,8 @@ import java.util.Map;
 public class LettuceDataSource implements RedisDataSource {
 
     private RedisClient client;
-    private long timeToLive = 0l;
     private StatefulRedisConnection<String, String> connection;
+    private long timeToLive = 0l;
 
     public LettuceDataSource(RedisClient client) {
         this.client = client;

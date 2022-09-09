@@ -86,7 +86,7 @@ public class RedissonDataSource implements RedisDataSource {
     @Override
     public void close() throws Exception {
         if (client != null){
-            client.shutdown();
+            client.shutdown(50l, 70l, TimeUnit.MILLISECONDS);
             client = null;
         }
     }

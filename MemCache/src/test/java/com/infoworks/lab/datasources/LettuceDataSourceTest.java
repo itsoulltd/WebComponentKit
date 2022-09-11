@@ -3,8 +3,8 @@ package com.infoworks.lab.datasources;
 import com.infoworks.lab.PerformanceLogger;
 import com.infoworks.lab.rest.models.Response;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,8 +21,8 @@ public class LettuceDataSourceTest {
     @Before
     public void setUp() throws Exception {
         String redisHost = "localhost";
-        String redisPort = "6379";
-        client = RedisClient.create(String.format("redis://%s:%s",redisHost, redisPort));
+        Integer redisPort = 6379;
+        client = RedisClient.create(new RedisURI(redisHost, redisPort, Duration.ofSeconds(30)));
         connection = client.connect();
     }
 
@@ -38,8 +38,7 @@ public class LettuceDataSourceTest {
     public void connectionTest() {
         long ttl = Duration.ofMillis(1000).toMillis();
         LettuceDataSource rdatasource = new LettuceDataSource(client, ttl);
-        RedisCommands<String, String> cmd = connection.sync();
-        Assert.assertTrue(cmd.isOpen() == true);
+        Assert.assertTrue(rdatasource.isConnectionOpen() == true);
     }
 
     @Test
@@ -71,7 +70,7 @@ public class LettuceDataSourceTest {
         LettuceDataSource rdatasource = new LettuceDataSource(client);
         //Check from Redis:
         PerformanceLogger logger = new PerformanceLogger();
-        boolean isExist = rdatasource.containsKey("message");
+        boolean isExist = rdatasource.containsKey("message-ch");
         logger.printMillis("emptyExist:contain");
         Assert.assertTrue("Object Did Exist.", !isExist);
     }

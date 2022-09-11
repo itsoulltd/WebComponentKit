@@ -72,7 +72,7 @@ public class RedissonDataSourceTest {
         RedissonDataSource rdatasource = new RedissonDataSource(client);
         //Check from Redis:
         PerformanceLogger logger = new PerformanceLogger();
-        boolean isExist = rdatasource.containsKey("message");
+        boolean isExist = rdatasource.containsKey("message-ch");
         logger.printMillis("emptyExist:contain");
         Assert.assertTrue("Object Did Exist.", !isExist);
     }

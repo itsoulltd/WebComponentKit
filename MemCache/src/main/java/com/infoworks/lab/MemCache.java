@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MemCache<Entity extends EntityInterface> implements DataSource<String, Entity> {
+public class MemCache<Entity extends EntityInterface> implements DataSource<String, Entity>, AutoCloseable {
 
     private Logger LOG = Logger.getLogger(this.getClass().getSimpleName());
     private RedisDataSource client;
@@ -125,6 +125,23 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
 
     public long getTimeToLive() {
         return timeToLive;
+    }
+
+    public RedisDataSource getClient() {
+        return client;
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (client != null){
+            client.close();
+            client = null;
+        }
+    }
+
+    @Override
+    public void clear() {
+        //TODO:
     }
 
     ///////////////////////////////////////////Private Inner Classes////////////////////////////////////////////////////

@@ -51,7 +51,7 @@ public class LettuceDataSource implements RedisDataSource {
 
     @Override
     public void put(String key, Map<String, Object> stringObjectMap) {
-        put(key, stringObjectMap);
+        put(key, stringObjectMap, timeToLive);
     }
 
     @Override

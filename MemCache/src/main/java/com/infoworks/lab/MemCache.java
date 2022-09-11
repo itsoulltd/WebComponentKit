@@ -90,7 +90,7 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
         //Saving: Type
         String classFullName = entity.getClass().getName();
         data.put(CLASS_NAME_KEY, classFullName);
-        if (ttl > 0l) client.put(key, data, ttl);
+        client.put(key, data, ttl);
     }
 
     @Override

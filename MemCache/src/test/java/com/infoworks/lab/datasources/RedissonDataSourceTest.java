@@ -20,7 +20,7 @@ public class RedissonDataSourceTest {
     @Before
     public void setUp() throws Exception {
         String redisHost = "localhost";
-        String redisPort = "6379";
+        Integer redisPort = 6379;
         Config conf = new Config();
         conf.useSingleServer()
                 .setAddress(String.format("redis://%s:%s",redisHost, redisPort))
@@ -40,7 +40,7 @@ public class RedissonDataSourceTest {
     public void connectionTest() {
         long ttl = Duration.ofMillis(1000).toMillis();
         RedissonDataSource rdatasource = new RedissonDataSource(client, ttl);
-        Assert.assertTrue(client.isShutdown() == false);
+        Assert.assertTrue(rdatasource.isConnectionOpen() == true);
     }
 
     @Test

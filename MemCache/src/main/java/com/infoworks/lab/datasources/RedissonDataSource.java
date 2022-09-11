@@ -90,4 +90,11 @@ public class RedissonDataSource implements RedisDataSource {
             client = null;
         }
     }
+
+    @Override
+    public boolean isConnectionOpen() {
+        if (client != null) return client.isShutdown() == false;
+        return false;
+    }
+
 }

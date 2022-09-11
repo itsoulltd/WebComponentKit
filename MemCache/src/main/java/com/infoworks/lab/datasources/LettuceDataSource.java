@@ -8,7 +8,6 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -90,4 +89,11 @@ public class LettuceDataSource implements RedisDataSource {
             client = null;
         }
     }
+
+    @Override
+    public boolean isConnectionOpen() {
+        if (client != null && connection != null) return connection.isOpen();
+        return false;
+    }
+
 }

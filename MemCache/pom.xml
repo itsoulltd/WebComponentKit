@@ -56,8 +56,15 @@
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
+            <artifactId>netty-resolver-dns</artifactId>
             <version>4.1.80.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns-native-macos</artifactId>
+            <version>4.1.80.Final</version>
+            <classifier>osx-x86_64</classifier>
             <scope>test</scope>
         </dependency>
         <!-- -->

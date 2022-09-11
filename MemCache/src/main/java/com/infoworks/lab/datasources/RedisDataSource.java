@@ -8,4 +8,5 @@ public interface RedisDataSource extends DataSource<String, Map<String, Object>>
     void put(String key, Map<String, Object> entity, long ttl);
     void setTimeToLive(long ttl);
     long getTimeToLive();
+    boolean isConnectionOpen();
 }

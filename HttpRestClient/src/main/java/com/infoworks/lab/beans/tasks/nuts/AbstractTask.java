@@ -111,6 +111,7 @@ public abstract class AbstractTask<In extends Message, Out extends Message> impl
                 }
                 payload = Message.marshal(old);
                 getMessage().setPayload(payload);
+                return;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

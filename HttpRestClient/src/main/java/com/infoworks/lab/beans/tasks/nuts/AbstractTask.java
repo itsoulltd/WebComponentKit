@@ -99,4 +99,23 @@ public abstract class AbstractTask<In extends Message, Out extends Message> impl
         }
         throw new RuntimeException("AbstractTask: Invalid Property Access");
     }
+
+    protected void updateProperty(Property...properties) throws RuntimeException {
+        String payload = getMessage().getPayload();
+        if (Message.isValidJson(payload)){
+            if (payload.startsWith("[")) { throw new RuntimeException("AbstractTask: JsonArray is not supported."); }
+            try {
+                Map<String, Object> old = Message.unmarshal(new TypeReference<Map<String, Object>>() {}, payload);
+                for (Property property : properties) {
+                    old.put(property.getKey(), property.getValue());
+                }
+                payload = Message.marshal(old);
+                getMessage().setPayload(payload);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        throw new RuntimeException("AbstractTask: Invalid Property Access");
+    }
+
 }

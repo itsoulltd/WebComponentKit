@@ -97,6 +97,15 @@ public class TaskStackExceptionTest {
             throw new RuntimeException("Dirty Exception Happened IN @"+getClass().getName());
         }
 
+        //By Default: we don't have to override abort in case of ExecutableTask's sub-class,
+        //the default implementation of abort in ExecutableTask will do as below implementation.
+        /*@Override
+        public Response abort(Message message) throws RuntimeException {
+            Response response = new Response().setStatus(500).setError("Error@" + this.getClass().getName());
+            if (message != null) response.unmarshallingFromMap(message.marshallingToMap(true), true);
+            return response;
+        }*/
+
     }
 
 }

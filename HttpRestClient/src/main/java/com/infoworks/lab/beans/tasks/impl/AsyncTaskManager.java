@@ -55,8 +55,4 @@ public class AsyncTaskManager extends SyncTaskManager {
         }
     }
 
-    @Override
-    public void close() throws Exception {
-        terminateRunningTasks(0l, TimeUnit.SECONDS);
-    }
 }

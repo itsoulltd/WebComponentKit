@@ -89,6 +89,7 @@ public class SyncTaskManager implements TaskManager  {
     @Override
     public void close() throws Exception {
         terminateRunningTasks(0l, TimeUnit.SECONDS);
+        this.listener = null;
     }
 
 }

@@ -70,6 +70,7 @@ public class SyncQueueManager extends AbstractQueueManager {
     @Override
     public void close() throws Exception {
         terminateRunningTasks(0l, TimeUnit.SECONDS);
+        this.listener = null;
     }
 
 }

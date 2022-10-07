@@ -4,6 +4,7 @@ import com.infoworks.lab.beans.tasks.definition.*;
 import com.infoworks.lab.rest.models.Message;
 
 import java.util.Stack;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
@@ -20,10 +21,14 @@ public class TransactionStack implements TaskLifecycleListener, TaskStack {
         this(false);
     }
 
-    public TransactionStack(boolean synch) {
-        this.manager = (synch)
+    public TransactionStack(boolean sync) {
+        this(sync, null);
+    }
+
+    public TransactionStack(boolean sync, ExecutorService service) {
+        this.manager = (sync)
                 ? TaskManager.createSync(this)
-                : TaskManager.createAsync(this);
+                : TaskManager.createAsync(this, service);
         beanStack = new Stack<>();
         passedStack = new Stack<>();
     }

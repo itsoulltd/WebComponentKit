@@ -5,6 +5,7 @@ import com.infoworks.lab.rest.models.Message;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
 
 public class TransactionQueue implements TaskQueue, QueuedTaskLifecycleListener {
@@ -20,10 +21,14 @@ public class TransactionQueue implements TaskQueue, QueuedTaskLifecycleListener 
         this(false);
     }
 
-    public TransactionQueue(boolean synch) {
-        this.manager = (synch)
-                ? TaskManager.createSyncQ(this)
-                : TaskManager.createAsyncQ(this);
+    public TransactionQueue(boolean sync) {
+        this(sync, null);
+    }
+
+    public TransactionQueue(boolean sync, ExecutorService service) {
+        this.manager = (sync)
+                ? TaskManager.createSyncQ(this, service)
+                : TaskManager.createAsyncQ(this, service);
         beanQueue = new ConcurrentLinkedDeque<>();
         abortQueue = new ConcurrentLinkedDeque<>();
     }

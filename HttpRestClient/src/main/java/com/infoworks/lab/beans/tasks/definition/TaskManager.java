@@ -6,6 +6,7 @@ import com.infoworks.lab.beans.tasks.impl.SyncQueueManager;
 import com.infoworks.lab.beans.tasks.impl.SyncTaskManager;
 import com.infoworks.lab.rest.models.Message;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public interface TaskManager extends AutoCloseable{
@@ -15,20 +16,32 @@ public interface TaskManager extends AutoCloseable{
         Backward
     }
 
+    static TaskManager createSync(TaskLifecycleListener listener){
+        return new SyncTaskManager(listener);
+    }
+
     static TaskManager createAsync(TaskLifecycleListener listener){
         return new AsyncTaskManager(listener);
     }
 
-    static TaskManager createSync(TaskLifecycleListener listener){
-        return new SyncTaskManager(listener);
+    static TaskManager createAsync(TaskLifecycleListener listener, ExecutorService service){
+        return new AsyncTaskManager(listener, service);
     }
 
     static TaskManager createAsyncQ(QueuedTaskLifecycleListener listener){
         return new AsyncQueueManager(listener);
     }
 
+    static TaskManager createAsyncQ(QueuedTaskLifecycleListener listener, ExecutorService service){
+        return new AsyncQueueManager(listener, service);
+    }
+
     static TaskManager createSyncQ(QueuedTaskLifecycleListener listener){
         return new SyncQueueManager(listener);
+    }
+
+    static TaskManager createSyncQ(QueuedTaskLifecycleListener listener, ExecutorService service){
+        return new SyncQueueManager(listener, service);
     }
 
     void start(Task task, Message message);

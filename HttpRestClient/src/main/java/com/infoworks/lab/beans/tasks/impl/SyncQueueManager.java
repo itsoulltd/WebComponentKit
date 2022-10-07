@@ -20,6 +20,11 @@ public class SyncQueueManager extends AbstractQueueManager {
         this.listener = listener;
     }
 
+    public SyncQueueManager(QueuedTaskLifecycleListener listener, ExecutorService service) {
+        this(listener);
+        this.service = service;
+    }
+
     @Override
     public void start(Task task, Message message) {
         getService().submit(() -> super.start(task, message));
@@ -49,7 +54,7 @@ public class SyncQueueManager extends AbstractQueueManager {
         return service;
     }
 
-    @Override
+    @Override @SuppressWarnings("Duplicates")
     public void terminateRunningTasks(long timeout, TimeUnit unit) {
         if (service == null) return;
         try {

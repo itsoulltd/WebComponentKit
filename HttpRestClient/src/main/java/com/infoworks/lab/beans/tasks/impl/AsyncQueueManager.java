@@ -13,6 +13,10 @@ public class AsyncQueueManager extends SyncQueueManager {
         super(listener);
     }
 
+    public AsyncQueueManager(QueuedTaskLifecycleListener listener, ExecutorService service) {
+        super(listener, service);
+    }
+
     public ExecutorService getService() {
         if (service == null){
             synchronized (this){

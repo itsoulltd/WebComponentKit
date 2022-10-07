@@ -18,6 +18,11 @@ public class AsyncTaskManager extends SyncTaskManager {
         super(listener);
     }
 
+    public AsyncTaskManager(TaskLifecycleListener listener, ExecutorService service) {
+        this(listener);
+        this.service = service;
+    }
+
     public ExecutorService getService() {
         if (service == null){
              synchronized (this){
@@ -37,7 +42,7 @@ public class AsyncTaskManager extends SyncTaskManager {
         getService().submit(() -> super.stop(task, reason));
     }
 
-    @Override
+    @Override @SuppressWarnings("Duplicates")
     public void terminateRunningTasks(long timeout, TimeUnit unit) {
         if (service == null) return;
         try {

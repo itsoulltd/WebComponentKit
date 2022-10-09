@@ -65,4 +65,13 @@ public abstract class AbstractTaskQueue implements TaskQueue, QueuedTaskLifecycl
         } catch (Exception e) {}
     }
 
+    @Override
+    public void before(Task task, TaskManager.State state) {
+        /**/
+    }
+
+    @Override
+    public void after(Task task, TaskManager.State state) {
+        /**/
+    }
 }

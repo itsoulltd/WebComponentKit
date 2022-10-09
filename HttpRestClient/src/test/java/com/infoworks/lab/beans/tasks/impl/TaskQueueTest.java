@@ -7,8 +7,8 @@ import com.infoworks.lab.beans.task.AbortTask;
 import com.infoworks.lab.beans.task.SimpleTask;
 import com.infoworks.lab.beans.tasks.definition.QueuedTaskLifecycleListener;
 import com.infoworks.lab.beans.tasks.definition.Task;
-import com.infoworks.lab.beans.tasks.definition.TaskCompletionListener;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
+import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.rest.models.Message;
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 public class TaskQueueTest {
 
@@ -117,29 +118,37 @@ public class TaskQueueTest {
         } catch (InterruptedException e) {}
     }
 
+    /**
+     *
+     */
     public static class JmsQueue extends AbstractTaskQueue {
 
-        private final TaskQueue queue;
+        private final TaskQueue exeQueue;
+        private final QueueEventListener handler;
 
         public JmsQueue() {
-            this.queue = TaskQueue.createSync(false, Executors.newFixedThreadPool(5));
+            this.exeQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(5));
+            this.handler = new JmsQueueManager(this);
         }
 
         @Override
-        public void onTaskComplete(TaskCompletionListener taskCompletionListener) {
-            queue.onTaskComplete(taskCompletionListener);
+        public void onTaskComplete(BiConsumer<Message, TaskStack.State> biConsumer) {
+            /*super.onTaskComplete(biConsumer);*/
+            exeQueue.onTaskComplete(biConsumer);
         }
 
         @Override
         public void abort(Task task, Message error) {
             JmsMessage jmsMessage = convert(task, error);
-            //Do Nothing:
+            //put into abortQueue:
+            handler.abortListener(jmsMessage.toString());
         }
 
         @Override
         public TaskQueue add(Task task) {
             JmsMessage jmsMessage = convert(task);
-            queue.add(task);
+            exeQueue.add(task);
+            handler.startListener(jmsMessage.toString());
             return this;
         }
 
@@ -149,7 +158,10 @@ public class TaskQueueTest {
         }
     }
 
-    public static class JmsQueueManager extends AbstractTaskQueueManager {
+    /**
+     *
+     */
+    public static class JmsQueueManager extends AbstractTaskQueueManager implements QueueEventListener {
 
         public JmsQueueManager(QueuedTaskLifecycleListener listener) {
             super(listener);
@@ -163,6 +175,24 @@ public class TaskQueueTest {
             //Inject dependency into Task during MOM's task execution.
             return task;
         }
+
+        @Override
+        public void startListener(String msg) {
+            handleTextOnStart(msg);
+        }
+
+        @Override
+        public void abortListener(String msg) {
+            handleTextOnStop(msg);
+        }
+    }
+
+    /**
+     * Handle simulation for MOM/AMQP/RabbitMQ/ActiveMQ/Redis/Kafka
+     */
+    public interface QueueEventListener {
+        void startListener(String msg);
+        void abortListener(String msg);
     }
 
 }

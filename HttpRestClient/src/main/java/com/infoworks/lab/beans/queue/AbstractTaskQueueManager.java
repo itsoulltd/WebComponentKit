@@ -6,6 +6,7 @@ import com.infoworks.lab.beans.tasks.impl.AbstractQueueManager;
 import com.infoworks.lab.rest.models.Message;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractTaskQueueManager extends AbstractQueueManager {
@@ -23,10 +24,14 @@ public abstract class AbstractTaskQueueManager extends AbstractQueueManager {
     }
 
     protected Task createTask(String text)
-            throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
+            throws ClassNotFoundException, IOException, IllegalAccessException
+            , InstantiationException, NoSuchMethodException, InvocationTargetException {
         //Defined:JmsMessage Protocol
         JmsMessage jmsMessage = Message.unmarshal(JmsMessage.class, text);
-        Task task = (Task) Class.forName(jmsMessage.getTaskClassName()).newInstance();
+        //Task task = (Task) Class.forName(jmsMessage.getTaskClassName()).newInstance();
+        Class taskType = Class.forName(jmsMessage.getTaskClassName());
+        Task task = (Task) taskType.getDeclaredConstructor().newInstance();
+        //
         Class<? extends Message> messageClass = (Class<? extends Message>) Class.forName(jmsMessage.getMessageClassName());
         Message taskMessage = Message.unmarshal(messageClass, jmsMessage.getPayload());
         task.setMessage(taskMessage);
@@ -40,7 +45,8 @@ public abstract class AbstractTaskQueueManager extends AbstractQueueManager {
             return true;
         }catch (RuntimeException | IOException
                 | ClassNotFoundException
-                | IllegalAccessException | InstantiationException e){
+                | IllegalAccessException | InstantiationException
+                | NoSuchMethodException | InvocationTargetException e){
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -61,22 +67,28 @@ public abstract class AbstractTaskQueueManager extends AbstractQueueManager {
             return true;
         }catch (RuntimeException | IOException
                 | ClassNotFoundException
-                | IllegalAccessException | InstantiationException e){
+                | IllegalAccessException | InstantiationException
+                | NoSuchMethodException | InvocationTargetException e){
             throw new RuntimeException(e.getMessage());
         }
     }
 
+    /**
+     * Note:
+     * Send termination to jms-template for stopping current processing or abandon all active task from
+     * e.g. exeQueue, abortQueue, testQueue
+     * @param delay
+     * @param timeUnit
+     */
     @Override
-    public void terminateRunningTasks(long l, TimeUnit timeUnit) {
-        //TODO:
-        //send termination to jms-template for stopping current processing or abandon all active task from
-        // exeQueue:
+    public void terminateRunningTasks(long delay, TimeUnit timeUnit) {
+        /**/
     }
 
     @Override
     public void close() throws Exception {
-        //TODO:
-        //Clean of any resource:
+        terminateRunningTasks(0l, TimeUnit.SECONDS);
+        this.listener = null;
     }
 
 }

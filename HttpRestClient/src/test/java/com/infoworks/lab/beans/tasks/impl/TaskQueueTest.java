@@ -140,20 +140,24 @@ public class TaskQueueTest {
         @Override
         public void abort(Task task, Message error) {
             JmsMessage jmsMessage = convert(task, error);
-            //put into abortQueue:
+            //THIS IS FOR SIMULATION:
             handler.abortListener(jmsMessage.toString());
+            //
         }
 
         @Override
         public TaskQueue add(Task task) {
             JmsMessage jmsMessage = convert(task);
             exeQueue.add(task);
+            //THIS IS FOR SIMULATION:
             handler.startListener(jmsMessage.toString());
+            //
             return this;
         }
 
         @Override
         public TaskQueue cancel(Task task) {
+            exeQueue.cancel(task);
             return this;
         }
     }

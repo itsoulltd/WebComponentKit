@@ -32,8 +32,7 @@ public class CreateOrderTask extends ExecutableTask<Message, Response> {
             return new Response().setStatus(200).setMessage(msg);
         }
         else {
-            System.out.println(msg + "->" + "Commit-Failed: Order In DB");
-            throw new RuntimeException(msg);
+            throw new RuntimeException(msg + "->" + "Commit-Failed: Order In DB");
         }
     }
 }

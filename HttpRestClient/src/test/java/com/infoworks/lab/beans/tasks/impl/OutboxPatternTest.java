@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,19 +56,20 @@ public class OutboxPatternTest {
             }
         });
         //
-        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee"));
-
-        orderQueue.add(new OrderCreatingFailedTask(counter, "Order For Coffee"));
-
+        Random random = new Random();
+        //
         orderQueue.add(new CreateOrderTask(counter, "Order For Coffee"));
         orderQueue.add(new CreateOrderTask(counter, "Order For Coffee"));
 
-        orderQueue.add(new OrderCreatingFailedTask(counter, "Order For Coffee"));
-        orderQueue.add(new OrderCreatingFailedTask(counter, "Order For Coffee"));
-        orderQueue.add(new OrderCreatingFailedTask(counter, "Order For Coffee"));
+        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee", random.nextBoolean()));
+        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee", random.nextBoolean()));
 
-        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee"));
-        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee"));
+        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee", random.nextBoolean()));
+        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee", random.nextBoolean()));
+        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee", random.nextBoolean()));
+
+        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee", random.nextBoolean()));
+        orderQueue.add(new CreateOrderTask(counter, "Order For Coffee", random.nextBoolean()));
         //
         try {
             latch.await();
@@ -76,16 +78,32 @@ public class OutboxPatternTest {
 
     public static class CreateOrderTask extends ExecutableTask<Message, Response> {
 
+        public CreateOrderTask(AtomicInteger counter, String message, boolean nextRandom) {
+            super(new Property("message", message)
+                    , new Property("orderId", counter.incrementAndGet())
+                    , new Property("nextRandom", nextRandom));
+        }
+
         public CreateOrderTask(AtomicInteger counter, String message) {
-            super(new Property("message", message), new Property("orderId", counter.incrementAndGet()));
+            this(counter, message, true);
         }
 
         @Override
         public Response execute(Message message) throws RuntimeException {
             String orderId = getPropertyValue("orderId").toString();
             String msg = getPropertyValue("message").toString() + "[" + orderId + "]";
-            System.out.println(msg + "->" + "Commit: Order In DB");
-            return new Response().setStatus(200).setMessage(msg);
+            boolean nextRandom = (getPropertyValue("nextRandom") != null)
+                    ? Boolean.parseBoolean(getPropertyValue("nextRandom").toString())
+                    : true;
+            //True will be Success, failed other-wise:
+            if (nextRandom) {
+                System.out.println(msg + "->" + "Commit: Order In DB");
+                return new Response().setStatus(200).setMessage(msg);
+            }
+            else {
+                System.out.println(msg + "->" + "Commit-Failed: Order In DB");
+                throw new RuntimeException(msg);
+            }
         }
     }
 
@@ -100,21 +118,6 @@ public class OutboxPatternTest {
             String msg = getPropertyValue("message").toString();
             System.out.println(msg + "->" + "Dispatch: Order Delivery");
             return new Response().setStatus(200).setMessage(msg);
-        }
-    }
-
-    public static class OrderCreatingFailedTask extends ExecutableTask<Message, Response> {
-
-        public OrderCreatingFailedTask(AtomicInteger counter, String message) {
-            super(new Property("message", message), new Property("orderId", counter.incrementAndGet()));
-        }
-
-        @Override
-        public Response execute(Message message) throws RuntimeException {
-            String orderId = getPropertyValue("orderId").toString();
-            String msg = getPropertyValue("message").toString() + "[" + orderId + "]";
-            System.out.println(msg + "->" + "Commit-Failed: Order In DB");
-            throw new RuntimeException(msg);
         }
     }
 

@@ -47,7 +47,7 @@ public class OutboxPatternTest {
                 }
             } else {
                 //Handle Failed Task (if-needed)
-                //System.out.println(result.getPayload());
+                System.out.println(result.getPayload());
             }
             if (counter.get() > 1) {
                 counter.decrementAndGet();

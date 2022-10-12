@@ -44,9 +44,10 @@ public class OutboxPatternTest {
                 if (result instanceof Response){
                     String message = ((Response) result).getMessage();
                     deliveryQueue.add(new DispatchDeliveryTask(message));
-                } else {
-                    System.out.println(result.getPayload());
                 }
+            } else {
+                //Handle Failed Task (if-needed)
+                //System.out.println(result.getPayload());
             }
             if (counter.get() > 1) {
                 counter.decrementAndGet();

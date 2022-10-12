@@ -1,11 +1,10 @@
 package com.infoworks.lab.beans.tasks.impl;
 
+import com.infoworks.lab.beans.task.CreateOrderTask;
+import com.infoworks.lab.beans.task.DispatchDeliveryTask;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
-import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
-import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.Response;
-import com.it.soul.lab.sql.query.models.Property;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,51 +73,6 @@ public class OutboxPatternTest {
         try {
             latch.await();
         } catch (InterruptedException e) {}
-    }
-
-    public static class CreateOrderTask extends ExecutableTask<Message, Response> {
-
-        public CreateOrderTask(AtomicInteger counter, String message, boolean nextRandom) {
-            super(new Property("message", message)
-                    , new Property("orderId", counter.incrementAndGet())
-                    , new Property("nextRandom", nextRandom));
-        }
-
-        public CreateOrderTask(AtomicInteger counter, String message) {
-            this(counter, message, true);
-        }
-
-        @Override
-        public Response execute(Message message) throws RuntimeException {
-            String orderId = getPropertyValue("orderId").toString();
-            String msg = getPropertyValue("message").toString() + "[" + orderId + "]";
-            boolean nextRandom = (getPropertyValue("nextRandom") != null)
-                    ? Boolean.parseBoolean(getPropertyValue("nextRandom").toString())
-                    : true;
-            //True will be Success, failed other-wise:
-            if (nextRandom) {
-                System.out.println(msg + "->" + "Commit: Order In DB");
-                return new Response().setStatus(200).setMessage(msg);
-            }
-            else {
-                System.out.println(msg + "->" + "Commit-Failed: Order In DB");
-                throw new RuntimeException(msg);
-            }
-        }
-    }
-
-    public static class DispatchDeliveryTask extends ExecutableTask<Message, Response> {
-
-        public DispatchDeliveryTask(String message) {
-            super(new Property("message", message));
-        }
-
-        @Override
-        public Response execute(Message message) throws RuntimeException {
-            String msg = getPropertyValue("message").toString();
-            System.out.println(msg + "->" + "Dispatch: Order Delivery");
-            return new Response().setStatus(200).setMessage(msg);
-        }
     }
 
 }

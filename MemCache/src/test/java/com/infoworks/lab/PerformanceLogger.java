@@ -10,11 +10,11 @@ public class PerformanceLogger {
 
     public void printMillis(String tag) {
         if (tag == null) tag = "";
-        System.out.println("Time of execution in millis:" + tag + ": " + watch.elapsed(TimeUnit.MILLISECONDS));
+        System.out.println("Time of execution in " + tag + ": " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms");
     }
 
     public void printSeconds(String tag) {
         if (tag == null) tag = "";
-        System.out.println("Time of execution in seconds:" + tag + ": " + watch.elapsed(TimeUnit.SECONDS));
+        System.out.println("Time of execution in " + tag + ": " + watch.elapsed(TimeUnit.SECONDS) + "s");
     }
 }

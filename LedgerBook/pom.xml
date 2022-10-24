@@ -96,6 +96,13 @@
             <scope>provided</scope>
         </dependency>
         <!-- -->
+        <dependency>
+            <groupId>com.infoworks.lab</groupId>
+            <artifactId>http-rest-client</artifactId>
+            <version>1.10.7-RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- -->
     </dependencies>
 
     

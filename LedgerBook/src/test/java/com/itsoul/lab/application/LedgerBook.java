@@ -21,12 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This a thread-safe bean:
  */
 public class LedgerBook {
 
+    private static Logger LOG = Logger.getLogger(LedgerBook.class.getSimpleName());
     private SourceConnector connector;
     private String owner;
     private String password;
@@ -264,7 +267,7 @@ public class LedgerBook {
             List<Map<String, Object>> data = executor.convertToKeyValuePair(set);
             return data;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.log(Level.WARNING, e.getMessage());
         }
         return new ArrayList<>();
     }

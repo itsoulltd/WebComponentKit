@@ -229,15 +229,24 @@ public class LedgerBook {
         Predicate clause = new Where("tl.account_ref").isEqualTo(cash_account)
                 .and("tl.tenant_ref").isEqualTo(tenantID)
                 .and("tl.client_ref").isEqualTo(owner);
-        //TODO: Need to be full queryable:
-        if (query.get("from") != null){
-            clause.and("th.transaction_date").isGreaterThenOrEqual(query.get("from", String.class));
-        }
-        if (query.get("to") != null){
-            clause.and("th.transaction_date").isLessThenOrEqual(query.get("to", String.class));
-        }
+        //Queryable- by Type, From-Date, To-Date
         if (query.get("type") != null){
             clause.and("th.transaction_type").isLike("%"+ query.get("type", String.class)+"%");
+        }
+        if (query.get("from") != null && query.get("to") != null) {
+            //TODO: clause.between(query.get("from", String.class), query.get("to", String.class));
+        } else if (query.get("from") != null && query.get("till") != null) {
+            //TODO: clause.between(query.get("from", String.class), query.get("till", String.class));
+        } else {
+            if (query.get("from") != null) {
+                clause.and("th.transaction_date").isGreaterThenOrEqual(query.get("from", String.class));
+            }
+            if (query.get("to") != null) {
+                clause.and("th.transaction_date").isLessThenOrEqual(query.get("to", String.class));
+            }
+            if (query.get("till") != null) {
+                clause.and("th.transaction_date").isLessThen(query.get("till", String.class));
+            }
         }
         //
         SQLJoinQuery joins = new SQLQuery.Builder(QueryType.LEFT_JOIN)

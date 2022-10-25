@@ -1,17 +1,14 @@
 package com.itsoul.lab.application;
 
 import com.it.soul.lab.connect.DriverClass;
-import com.it.soul.lab.connect.JDBConnection;
-import com.it.soul.lab.connect.io.ScriptRunner;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.itsoul.lab.application.TheBank.executeScript;
 
 public class TheBankTest {
 
@@ -19,7 +16,7 @@ public class TheBankTest {
 
     @Test
     public void leanerTestWithH2AuthDB() throws Exception {
-        runnerTest("db/h2-schema.sql", DriverClass.H2_EMBEDDED);
+        executeScript("db/h2-schema.sql", DriverClass.H2_EMBEDDED);
         TheBank aBank = new SCBank(DriverClass.H2_EMBEDDED, "anatolia", "324123");
         singleThreadTest(aBank);
         aBank.close();
@@ -27,8 +24,8 @@ public class TheBankTest {
 
     @Test
     public void leanerTestWithMySQLAuthDB() throws Exception {
-        runnerTest("db/drop-all-tables.sql", DriverClass.MYSQL);
-        runnerTest("db/mysql-schema.sql", DriverClass.MYSQL);
+        executeScript("db/drop-all-tables.sql", DriverClass.MYSQL);
+        executeScript("db/mysql-schema.sql", DriverClass.MYSQL);
         TheBank aBank = new SCBank(DriverClass.MYSQL, "anatolia", "324123");
         singleThreadTest(aBank);
         aBank.close();
@@ -98,14 +95,6 @@ public class TheBankTest {
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, e.getMessage());
         }
-    }
-
-    public void runnerTest(String initSqlFileName, DriverClass driver) throws SQLException {
-        Connection connection = TheBank.createConnection(driver);
-        ScriptRunner runner = new ScriptRunner();
-        File file = new File(initSqlFileName);
-        String[] cmds = runner.commands(runner.createStream(file));
-        runner.execute(cmds, connection);
     }
 
 }

@@ -2,9 +2,11 @@ package com.itsoul.lab.application;
 
 import com.it.soul.lab.connect.DriverClass;
 import com.it.soul.lab.connect.JDBConnection;
+import com.it.soul.lab.connect.io.ScriptRunner;
 import com.itsoul.lab.ledgerbook.connector.SQLConnector;
 import com.itsoul.lab.ledgerbook.connector.SourceConnector;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -76,4 +78,13 @@ public interface TheBank extends AutoCloseable{
         }
         return connection;
     }
+
+    static void executeScript(String initSqlFileName, DriverClass driver) throws SQLException {
+        Connection connection = TheBank.createConnection(driver);
+        ScriptRunner runner = new ScriptRunner();
+        File file = new File(initSqlFileName);
+        String[] cmds = runner.commands(runner.createStream(file));
+        runner.execute(cmds, connection);
+    }
+
 }

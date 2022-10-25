@@ -13,10 +13,10 @@ services:
    mysql-db:
       image: mysql:8.0.13
       environment:
-          MYSQL_DATABASE: ledgerDB
+          MYSQL_DATABASE: testDB
           MYSQL_ROOT_PASSWORD: root@123
       ports:
-          - 3316:3306
+          - 3306:3306
       networks:
           - ledger-app-net
       volumes:

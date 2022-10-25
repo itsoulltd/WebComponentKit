@@ -1,5 +1,6 @@
 package com.itsoul.lab.ledgerbook.accounting.head;
 
+import com.it.soul.lab.connect.DriverClass;
 import com.it.soul.lab.sql.SQLExecutor;
 import com.it.soul.lab.sql.query.QueryType;
 import com.it.soul.lab.sql.query.SQLDeleteQuery;
@@ -23,7 +24,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
+
+import static com.itsoul.lab.application.TheBank.executeScript;
 
 public class LedgerTest {
 
@@ -34,16 +36,18 @@ public class LedgerTest {
 
     @Before
     public void setUp() throws Exception {
+        //Testing with MySQL-8.0.13
+        executeScript("db/drop-all-tables.sql", DriverClass.MYSQL);
         connector = new SQLConnector(SourceConfig.JDBC_MYSQL)
-                .url("jdbc:mysql://localhost:3316/ledgerDB")
+                .url("jdbc:mysql://localhost:3306/testDB")
                 .username("root")
                 .password("root@123")
                 .skipSchemaGeneration(false);
         //Testing with Embedded DB:
         /*connector = new SQLConnector(SourceConfig.EMBEDDED_H2)
-                .url("jdbc:h2:mem:ledgerDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=FALSE")
+                .url("jdbc:h2:mem:testDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=FALSE")
                 .username("sa")
-                .password("")
+                .password("sa")
                 .skipSchemaGeneration(false);*/
         cryptor = new AESCipher();
     }

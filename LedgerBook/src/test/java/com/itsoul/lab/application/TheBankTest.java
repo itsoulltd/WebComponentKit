@@ -15,7 +15,8 @@ public class TheBankTest {
     private static Logger LOGGER = Logger.getLogger(TheBankTest.class.getSimpleName());
 
     @Test
-    public void leanerTestWithH2AuthDB() throws Exception {
+    public void leanerTestWithH2DBAuthDB() throws Exception {
+        executeScript("db/drop-all-tables.sql", DriverClass.H2_EMBEDDED);
         executeScript("db/h2-schema.sql", DriverClass.H2_EMBEDDED);
         TheBank aBank = new SCBank(DriverClass.H2_EMBEDDED, "anatolia", "324123");
         singleThreadTest(aBank);
@@ -23,11 +24,20 @@ public class TheBankTest {
     }
 
     @Test
-    public void leanerTestWithMySQLAuthDB() throws Exception {
-        executeScript("db/drop-all-tables.sql", DriverClass.MYSQL);
-        executeScript("db/mysql-schema.sql", DriverClass.MYSQL);
-        TheBank aBank = new SCBank(DriverClass.MYSQL, "anatolia", "324123");
-        singleThreadTest(aBank);
+    public void concurrentTestWithH2DBAuthDB() throws Exception {
+        executeScript("db/drop-all-tables.sql", DriverClass.H2_EMBEDDED);
+        executeScript("db/h2-schema.sql", DriverClass.H2_EMBEDDED);
+        TheBank aBank = new SCBank(DriverClass.H2_EMBEDDED, "anatolia", "324123");
+        raceConditionTest(aBank);
+        aBank.close();
+    }
+
+    @Test
+    public void concurrentTestWithH2DBAuthDB_Fix() throws Exception {
+        executeScript("db/drop-all-tables.sql", DriverClass.H2_EMBEDDED);
+        executeScript("db/h2-schema.sql", DriverClass.H2_EMBEDDED);
+        TheFixBank aBank = new SCFixBank(DriverClass.H2_EMBEDDED, "anatolia", "324123");
+        raceConditionTest_Fix(aBank);
         aBank.close();
     }
 
@@ -53,8 +63,8 @@ public class TheBankTest {
         Assert.assertEquals(0L, aBank.getBalance("Alice-123"));
         Assert.assertEquals(10L, aBank.getBalance("Bob-456"));
         //
-        LOGGER.log(Level.INFO, "Alice's balance: {}", aBank.getBalance("Alice-123"));
-        LOGGER.log(Level.INFO, "Bob's balance: {}", aBank.getBalance("Bob-456"));
+        LOGGER.log(Level.INFO, String.format("Alice's balance: %s", aBank.getBalance("Alice-123")));
+        LOGGER.log(Level.INFO, String.format("Bob's balance: %s", aBank.getBalance("Bob-456")));
     }
 
     /**
@@ -85,8 +95,43 @@ public class TheBankTest {
         LOGGER.info("Main thread waits for all transfer threads to finish");
         awaitOnLatch(endLatch);
         //
-        LOGGER.log(Level.INFO, "Alice's balance: {}", aBank.getBalance("Alice-123"));
-        LOGGER.log(Level.INFO, "Bob's balance: {}", aBank.getBalance("Bob-456"));
+        LOGGER.log(Level.INFO, String.format("Alice's balance: %s", aBank.getBalance("Alice-123")));
+        LOGGER.log(Level.INFO, String.format("Bob's balance: %s", aBank.getBalance("Bob-456")));
+    }
+
+    private void raceConditionTest_Fix(TheFixBank aBank) {
+        aBank.newAccount("Alice-123", 10L);
+        aBank.newAccount("Bob-456", 0L);
+
+        Assert.assertEquals(10L, aBank.getBalance("Alice-123"));
+        Assert.assertEquals(0L, aBank.getBalance("Bob-456"));
+
+        int threadCount = 8;
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch endLatch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            new Thread(() -> {
+                awaitOnLatch(startLatch);
+                aBank.transfer("Alice-123", "Bob-456", 5l);
+                if (!(aBank instanceof TheFixBank)) endLatch.countDown();
+            }).start();
+        }
+
+        if (aBank instanceof TheFixBank) {
+            aBank.onTaskComplete((msg, state) -> {
+                if (msg != null) LOGGER.info(msg.toString());
+                endLatch.countDown();
+            });
+        }
+
+        LOGGER.info("Starting threads");
+        startLatch.countDown();
+        LOGGER.info("Main thread waits for all transfer threads to finish");
+        awaitOnLatch(endLatch);
+        //
+        LOGGER.log(Level.INFO, String.format("Alice's balance: %s", aBank.getBalance("Alice-123")));
+        LOGGER.log(Level.INFO, String.format("Bob's balance: %s", aBank.getBalance("Bob-456")));
     }
 
     private void awaitOnLatch(CountDownLatch latch) {

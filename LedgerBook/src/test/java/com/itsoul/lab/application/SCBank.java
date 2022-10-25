@@ -2,7 +2,6 @@ package com.itsoul.lab.application;
 
 import com.it.soul.lab.connect.DriverClass;
 import com.itsoul.lab.generalledger.entities.Money;
-import com.itsoul.lab.ledgerbook.connector.SQLConnector;
 import com.itsoul.lab.ledgerbook.connector.SourceConnector;
 
 import java.math.BigDecimal;
@@ -29,7 +28,7 @@ public class SCBank implements TheBank {
 
     protected final LedgerBook getLedgerBook() {
         if (ledgerBook == null){
-            SourceConnector connector = createSourceConnector(driverClass);
+            SourceConnector connector = TheBank.createSourceConnector(driverClass);
             LedgerBook ledgerBook = new LedgerBook(connector, user, password, "SCBank", "BDT");
             this.ledgerBook = ledgerBook;
         }
@@ -98,39 +97,6 @@ public class SCBank implements TheBank {
             LOG.log(Level.INFO, String.format("Transfer: %s -> %s : %s", fromIban, toIban, transferAmount));
         else
             LOG.log(Level.INFO, String.format("Insufficient Fund: %s : %s", fromIban, fromBalance));
-    }
-
-    private SourceConnector createSourceConnector(DriverClass driver) {
-        SourceConnector connection;
-        switch (driver) {
-            case MYSQL:
-                String url = driver.urlSchema() + "localhost:3306" + "/testDB" + "?autoReconnect=true&failOverReadOnly=false&maxReconnects=10";
-                connection = new SQLConnector(driver.toString())
-                        .url(url)
-                        .username("root")
-                        .password("root@123")
-                        .schema(driver.urlSchema())
-                        .skipSchemaGeneration(true);
-                break;
-            case OracleOCI9i:
-                url = driver.urlSchema() + "localhost:1521" + "/xe";
-                connection = new SQLConnector(driver.toString())
-                        .url(url)
-                        .username("system")
-                        .password("oracle")
-                        .schema(driver.urlSchema())
-                        .skipSchemaGeneration(true);
-                break;
-            default:
-                url = driver.urlSchema() + "testDB" + ";DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE";
-                connection = new SQLConnector(driver.toString())
-                        .url(url)
-                        .username("sa")
-                        .password("sa")
-                        .schema(driver.urlSchema())
-                        .skipSchemaGeneration(true);
-        }
-        return connection;
     }
 
 }

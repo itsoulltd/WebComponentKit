@@ -101,38 +101,11 @@ public class TheBankTest {
     }
 
     public void runnerTest(String initSqlFileName, DriverClass driver) throws SQLException {
-        Connection connection = createConnection(driver);
+        Connection connection = TheBank.createConnection(driver);
         ScriptRunner runner = new ScriptRunner();
         File file = new File(initSqlFileName);
         String[] cmds = runner.commands(runner.createStream(file));
         runner.execute(cmds, connection);
-    }
-
-    private Connection createConnection(DriverClass driver) throws SQLException {
-        Connection connection;
-        switch (driver) {
-            case MYSQL:
-                connection = new JDBConnection.Builder(DriverClass.MYSQL)
-                        .host("localhost", "3306")
-                        .database("testDB")
-                        .credential("root", "root@123")
-                        .build();
-                break;
-            case OracleOCI9i:
-                connection = new JDBConnection.Builder(DriverClass.OracleOCI9i)
-                        .host("localhost", "1521")
-                        .database("xe")
-                        .credential("system", "oracle")
-                        .build();
-                break;
-            default:
-                connection = new JDBConnection.Builder(driver)
-                        .database("testDB")
-                        .credential("sa", "sa")
-                        .query(";DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE")
-                        .build();
-        }
-        return connection;
     }
 
 }

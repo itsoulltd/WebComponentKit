@@ -29,7 +29,7 @@ services:
      ports:
        - 8081:80
      networks:
-       - web-app-net
+       - ledger-app-net
      depends_on:
        - mysql-db
      restart: on-failure

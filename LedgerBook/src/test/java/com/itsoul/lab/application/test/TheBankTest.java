@@ -1,6 +1,10 @@
-package com.itsoul.lab.application;
+package com.itsoul.lab.application.test;
 
 import com.it.soul.lab.connect.DriverClass;
+import com.itsoul.lab.application.bank.SCBank;
+import com.itsoul.lab.application.bank.SCFixBank;
+import com.itsoul.lab.application.bank.TheBank;
+import com.itsoul.lab.application.bank.TheFixBank;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,7 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.itsoul.lab.application.TheBank.executeScript;
+import static com.itsoul.lab.application.bank.TheBank.executeScript;
 
 public class TheBankTest {
 

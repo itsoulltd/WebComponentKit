@@ -1,4 +1,4 @@
-package com.itsoul.lab.application;
+package com.itsoul.lab.application.bank;
 
 import com.itsoul.lab.domain.models.TransactionSearchQuery;
 import com.it.soul.lab.sql.SQLExecutor;

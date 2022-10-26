@@ -1,4 +1,4 @@
-package com.itsoul.lab.application;
+package com.itsoul.lab.application.bank;
 
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;

@@ -1,4 +1,4 @@
-package com.itsoul.lab.application;
+package com.itsoul.lab.application.bank;
 
 import com.it.soul.lab.connect.DriverClass;
 import com.it.soul.lab.connect.JDBConnection;

@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static com.itsoul.lab.application.TheBank.executeScript;
+import static com.itsoul.lab.application.bank.TheBank.executeScript;
 
 public class LedgerTest {
 

@@ -1,0 +1,37 @@
+version: '3.5'
+
+networks:
+   ledger-app-net:
+     name: ledger-app-net
+     driver: bridge
+
+volumes:
+   mysql-ledger-storage:
+
+services:
+   mysql-db:
+     image: mysql:8.0.13
+     environment:
+       MYSQL_DATABASE: testDB
+       MYSQL_ROOT_PASSWORD: root@123
+     ports:
+       - 3306:3306
+     networks:
+       - ledger-app-net
+     volumes:
+       - mysql-ledger-storage:/var/lib/mysql
+
+   phpadmin:
+     image: phpmyadmin/phpmyadmin
+     environment:
+       PMA_HOST: mysql-db
+       PMA_PORT: 3306
+     ports:
+       - 8081:80
+     networks:
+       - web-app-net
+     depends_on:
+       - mysql-db
+     restart: on-failure
+
+##End of Scripts

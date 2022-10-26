@@ -1,0 +1,42 @@
+version: '3.5'
+
+networks:
+  ledger-app-net:
+    name: ledger-app-net
+    driver: bridge
+
+volumes:
+   oracle-db-storage:
+
+services:
+  oracle-db-target:
+    image: quay.io/maksymbilenko/oracle-12c
+    environment:
+      ORACLE_CHARACTERSET: AL32UTF8
+      INIT_SGA_SIZE: 2048
+      INIT_PGA_SIZE: 1024
+      #IMPORT_FROM_VOLUME: true
+    ports:
+      - 1521:1521
+      - 5500:5500
+      - 8096:8080
+    networks:
+      - ledger-app-net
+    volumes:
+      - oracle-db-storage:/u01/app/oracle
+      # persistent oracle database data.
+      #- /home/oracle/oradata:/opt/oracle/oradata
+      # init-scripts to initialize oracldb
+      #- ./oracl-dump:/docker-entrypoint-initdb.d
+
+##Default credential for image quay.io/maksymbilenko/oracle-12c
+#https://github.com/MaksymBilenko/docker-oracle-12c
+#hostname: localhost
+#port: 1521
+#sid: xe
+#service name: xe
+#username: system
+#password: oracle
+##
+
+##End of Scripts

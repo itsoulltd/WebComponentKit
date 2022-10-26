@@ -12,7 +12,7 @@ import static com.itsoul.lab.application.bank.TheBank.executeScript;
 public class TheBankTestOracle extends BaseBankTest{
 
     @Test
-    public void leanerTestWithH2DBAuthDB() throws Exception {
+    public void leanerTest() throws Exception {
         executeScript("db/drop-all-tables.sql", DriverClass.OracleOCI9i);
         executeScript("db/oracle-schema.sql", DriverClass.OracleOCI9i);
         TheBank aBank = new SCBank(DriverClass.OracleOCI9i, "anatolia", "324123");
@@ -21,7 +21,7 @@ public class TheBankTestOracle extends BaseBankTest{
     }
 
     @Test
-    public void concurrentTestWithH2DBAuthDB() throws Exception {
+    public void concurrentTest() throws Exception {
         executeScript("db/drop-all-tables.sql", DriverClass.OracleOCI9i);
         executeScript("db/oracle-schema.sql", DriverClass.OracleOCI9i);
         TheBank aBank = new SCBank(DriverClass.OracleOCI9i, "anatolia", "324123");
@@ -30,7 +30,7 @@ public class TheBankTestOracle extends BaseBankTest{
     }
 
     @Test
-    public void concurrentTestWithH2DBAuthDB_Fix() throws Exception {
+    public void concurrentTest_Fix() throws Exception {
         executeScript("db/drop-all-tables.sql", DriverClass.OracleOCI9i);
         executeScript("db/oracle-schema.sql", DriverClass.OracleOCI9i);
         TheFixBank aBank = new SCFixBank(DriverClass.OracleOCI9i, "anatolia", "324123");

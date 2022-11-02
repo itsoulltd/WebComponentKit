@@ -19,17 +19,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class DirectoryCleanupTask extends ExecutableTask<Message, Response> {
+public class CleanupDirTask extends ExecutableTask<Message, Response> {
 
-    private static Logger LOG = Logger.getLogger(DirectoryCleanupTask.class.getSimpleName());
+    private static Logger LOG = Logger.getLogger(CleanupDirTask.class.getSimpleName());
 
-    public DirectoryCleanupTask(String dirname) {
+    public CleanupDirTask(String dirname, Date tillDate) {
         SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.ASC);
         query.add("dirname").isEqualTo(dirname);
-        getMessage().setEvent(query);
-    }
-
-    public DirectoryCleanupTask(SearchQuery query) {
+        query.add("tillDate").isEqualTo(tillDate.getTime());
         getMessage().setEvent(query);
     }
 
@@ -41,7 +38,8 @@ public class DirectoryCleanupTask extends ExecutableTask<Message, Response> {
             try {
                 String dirname = query.get("dirname", String.class);
                 List<Path> res = findChildren(Paths.get(dirname), new ArrayList<>(), 3);
-                deleteFiles(res, new Date());
+                long tillDate = query.get("tillDate", Long.class);
+                deleteFiles(res, new Date(tillDate));
             } catch (IOException e) {
                 throw new RuntimeException(e.getMessage());
             }

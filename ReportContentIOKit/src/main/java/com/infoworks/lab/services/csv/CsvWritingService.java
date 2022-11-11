@@ -66,8 +66,8 @@ public class CsvWritingService implements WritingService {
         public void write(String sheetName, Map<Integer, List<String>> rows, boolean skipZeroIndex) {
             if (rows.isEmpty()) return;
             if (skipZeroIndex) {
-                Optional<Integer> maxIndex = rows.keySet().stream().min(Integer::compareTo);
-                rows.remove(maxIndex.get());
+                Optional<Integer> minIndex = rows.keySet().stream().min(Integer::compareTo);
+                rows.remove(minIndex.get());
             }
             rows.forEach((index, row) -> {
                 try {

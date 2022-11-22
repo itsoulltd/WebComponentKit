@@ -1,32 +1,31 @@
 package com.infoworks.lab.cache;
 
 import com.it.soul.lab.data.base.DataSource;
-import com.it.soul.lab.data.simple.SimpleDataSource;
 import com.it.soul.lab.sql.entity.Entity;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
  * Eviction Policy: Least Recently Used.
  * Concurrency: Multiple Thread Should Perform operation on the container.
  * @param <E>
  */
-public class LRUCache<E extends Entity> extends SimpleDataSource<String, E> {
+public class LRUCache<E extends Entity> implements DataSource<String, E> {
 
-    private final LinkedHashMap<String, E> cacheStorage = new LinkedHashMap(10, 0.75f, true);
-    private final Map<Integer, String> headMapper = new ConcurrentHashMap<>();
+    private final Deque<E> cacheStorage = new LinkedList<>();
+    private final Set<String> keySet = new HashSet<>();
+    private final int maxSize;
 
-    @Override
-    protected Map<String, E> getInMemoryStorage() {
+    public LRUCache(int maxSize) {
+        this.maxSize = maxSize;
+    }
+
+    protected Collection<E> getCacheStorage() {
         return cacheStorage;
     }
 
     public List<E> fetch(int offset, int page) {
-        if (page > getInMemoryStorage().size() || page <= 0) page = getInMemoryStorage().size();
+        if (page > getCacheStorage().size() || page <= 0) page = getCacheStorage().size();
         return readSyncAsList(offset, page);
     }
 
@@ -34,7 +33,7 @@ public class LRUCache<E extends Entity> extends SimpleDataSource<String, E> {
         int size = size();
         int maxItemCount = Math.abs(offset) + Math.abs(pageSize);
         if (maxItemCount <= size) {
-            List<E> values = new ArrayList<>(getInMemoryStorage().values());
+            List<E> values = new ArrayList<>(getCacheStorage());
             List<E> items = values.subList(Math.abs(offset), maxItemCount);
             return items;
         } else {
@@ -43,22 +42,25 @@ public class LRUCache<E extends Entity> extends SimpleDataSource<String, E> {
     }
 
     public void clear(){
-        if (getInMemoryStorage().size() > 0){
-            getInMemoryStorage().clear();
+        if (getCacheStorage().size() > 0){
+            getCacheStorage().clear();
         }
     }
 
     @Override
     public void put(String key, E e) {
         synchronized (cacheStorage) {
-            super.put(key, e);
+            //super.put(key, e);
+            //TODO:
         }
     }
 
     @Override
     public E remove(String key) {
         synchronized (cacheStorage) {
-            return super.remove(key);
+            //return super.remove(key);
+            //TODO:
+            return null;
         }
     }
 

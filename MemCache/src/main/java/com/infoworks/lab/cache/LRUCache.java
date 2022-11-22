@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Eviction Policy: Least Frequently Used.
+ * Eviction Policy: Least Recently Used.
  * Concurrency: Multiple Thread Should Perform operation on the container.
  * @param <E>
  */
-public class LFUCacheDatasource<E extends Entity> extends SimpleDataSource<String, E> {
+public class LRUCache<E extends Entity> extends SimpleDataSource<String, E> {
 
     private final LinkedHashMap<String, E> inMem = new LinkedHashMap(10, 0.75f, true);
 

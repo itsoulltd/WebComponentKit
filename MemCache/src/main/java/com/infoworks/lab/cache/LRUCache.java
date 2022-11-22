@@ -4,6 +4,7 @@ import com.it.soul.lab.data.base.DataSource;
 import com.it.soul.lab.sql.entity.Entity;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Eviction Policy: Least Recently Used.
@@ -12,20 +13,38 @@ import java.util.*;
  */
 public class LRUCache<E extends Entity> implements DataSource<String, E> {
 
-    private final Deque<E> cacheStorage = new LinkedList<>();
-    private final Set<String> keySet = new HashSet<>();
+    private final LinkedHashMap<String, E> cacheStorage;
     private final int maxSize;
 
     public LRUCache(int maxSize) {
         this.maxSize = maxSize;
+        /**
+         * By passing true to the accessOrder parameter in that constructor,
+         * you are saying you wish to iterate over the entries according to access order.
+         * Most recently accessed item will be the last-one.
+         */
+        this.cacheStorage = new LinkedHashMap<>(10, .75f, true);
     }
 
     protected Collection<E> getCacheStorage() {
-        return cacheStorage;
+        return cacheStorage.values();
+    }
+
+    @Override
+    public int size() {
+        return cacheStorage.size();
+    }
+
+    @Override
+    public void clear(){
+        if (size() > 0){
+            cacheStorage.clear();
+        }
     }
 
     public List<E> fetch(int offset, int page) {
-        if (page > getCacheStorage().size() || page <= 0) page = getCacheStorage().size();
+        int size = size();
+        if (page > size || page <= 0) page = size;
         return readSyncAsList(offset, page);
     }
 
@@ -41,9 +60,22 @@ public class LRUCache<E extends Entity> implements DataSource<String, E> {
         }
     }
 
-    public void clear(){
-        if (getCacheStorage().size() > 0){
-            getCacheStorage().clear();
+    @Override
+    public E read(String key) {
+        return cacheStorage.get(key);
+    }
+
+    @Override
+    public E[] readSync(int offset, int pageSize) {
+        List<E> values = fetch(offset, pageSize);
+        return (E[]) values.toArray();
+    }
+
+    @Override
+    public void readAsync(int offset, int pageSize, Consumer<E[]> consumer) {
+        if (consumer != null) {
+            List<E> values = fetch(offset, pageSize);
+            consumer.accept((E[]) values.toArray());
         }
     }
 

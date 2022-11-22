@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Eviction Policy: Least Recently Used.
@@ -16,11 +17,12 @@ import java.util.Map;
  */
 public class LRUCache<E extends Entity> extends SimpleDataSource<String, E> {
 
-    private final LinkedHashMap<String, E> inMem = new LinkedHashMap(10, 0.75f, true);
+    private final LinkedHashMap<String, E> cacheStorage = new LinkedHashMap(10, 0.75f, true);
+    private final Map<Integer, String> headMapper = new ConcurrentHashMap<>();
 
     @Override
     protected Map<String, E> getInMemoryStorage() {
-        return inMem;
+        return cacheStorage;
     }
 
     public List<E> fetch(int offset, int page) {
@@ -48,14 +50,14 @@ public class LRUCache<E extends Entity> extends SimpleDataSource<String, E> {
 
     @Override
     public void put(String key, E e) {
-        synchronized (inMem) {
+        synchronized (cacheStorage) {
             super.put(key, e);
         }
     }
 
     @Override
     public E remove(String key) {
-        synchronized (inMem) {
+        synchronized (cacheStorage) {
             return super.remove(key);
         }
     }

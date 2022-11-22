@@ -1,31 +1,21 @@
 package com.infoworks.lab.cache;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- * Ref: https://stackoverflow.com/questions/1391918/does-java-have-a-linkedconcurrenthashmap-data-structure
- * @param <K>
- * @param <V>
- */
-public class LinkedConcurrentHashMap<K, V> {
+public class ConcurrentLRUCache<K, V> {
 
-    private LinkedHashMap<K, V> linkedHashMap = null;
+    private LRUCache<K, V> linkedHashMap = null;
     private final int cacheSize;
     private ReadWriteLock readWriteLock = null;
 
-    public LinkedConcurrentHashMap(LinkedHashMap<K, V> psCacheMap, int size) {
-        this.linkedHashMap  = psCacheMap;
+    public ConcurrentLRUCache(int size) {
         cacheSize = size;
+        this.linkedHashMap  = new LRUCache<>(size);
         readWriteLock = new ReentrantReadWriteLock();
-    }
-
-    public LinkedConcurrentHashMap(int initCapacity, float loadFactor, boolean accessOrder, int size) {
-        this(new LinkedHashMap(initCapacity, loadFactor, accessOrder), size);
     }
 
     public void put(K key, V value) {

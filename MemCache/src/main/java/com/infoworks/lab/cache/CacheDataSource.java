@@ -12,6 +12,12 @@ import java.util.Map;
 /**
  * Eviction Policy: Least Recently Used.
  * Concurrency: Multiple Thread Should Perform operation on the container.
+ * Following has no impact on eviction or LRU-Policy based Key-Sorting:
+ * -fetch(...) OR -readSync(...) OR -readAsync(...)
+ * Cache eviction and LRU-Policy based Key-Sorting applied on following:
+ * -add(...) OR -put(...)
+ * -read(...)
+ * -replace(...) AND -remove(...) OR -delete(...)
  * @param <E>
  */
 public class CacheDataSource<E extends Entity> extends SimpleDataSource<String, E> {

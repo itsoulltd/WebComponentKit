@@ -1,17 +1,20 @@
 package com.infoworks.lab.cache;
 
 import com.it.soul.lab.data.base.DataSource;
+import com.it.soul.lab.data.simple.SimpleDataSource;
 import com.it.soul.lab.sql.entity.Entity;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Eviction Policy: Least Recently Used.
  * Concurrency: Multiple Thread Should Perform operation on the container.
  * @param <E>
  */
-public class CacheDataSource<E extends Entity> implements DataSource<String, E> {
+public class CacheDataSource<E extends Entity> extends SimpleDataSource<String, E> {
 
     private final LRUCache<String, E> cacheStorage;
 
@@ -21,6 +24,11 @@ public class CacheDataSource<E extends Entity> implements DataSource<String, E> 
 
     protected Collection<E> getCacheStorage() {
         return cacheStorage.values();
+    }
+
+    @Override
+    protected Map<String, E> getInMemoryStorage() {
+        return cacheStorage;
     }
 
     @Override
@@ -50,25 +58,6 @@ public class CacheDataSource<E extends Entity> implements DataSource<String, E> 
             return items;
         } else {
             return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public E read(String key) {
-        return cacheStorage.get(key);
-    }
-
-    @Override
-    public E[] readSync(int offset, int pageSize) {
-        List<E> values = fetch(offset, pageSize);
-        return (E[]) values.toArray();
-    }
-
-    @Override
-    public void readAsync(int offset, int pageSize, Consumer<E[]> consumer) {
-        if (consumer != null) {
-            List<E> values = fetch(offset, pageSize);
-            consumer.accept((E[]) values.toArray());
         }
     }
 

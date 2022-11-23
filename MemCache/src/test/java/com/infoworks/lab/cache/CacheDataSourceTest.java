@@ -1,15 +1,14 @@
 package com.infoworks.lab.cache;
 
 import com.infoworks.lab.cache.models.Person;
-import com.it.soul.lab.sql.entity.Entity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class CacheDataSourceTest {
 
-    CacheDataSource<Entity> dataSource;
-    CacheDataSource<Entity> intDataSource;
+    CacheDataSource<Object> dataSource;
+    CacheDataSource<Object> intDataSource;
 
     private void loadDataSource(){
         dataSource = new CacheDataSource<>(5);

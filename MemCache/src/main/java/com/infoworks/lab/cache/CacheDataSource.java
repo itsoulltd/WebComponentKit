@@ -2,7 +2,6 @@ package com.infoworks.lab.cache;
 
 import com.it.soul.lab.data.base.DataSource;
 import com.it.soul.lab.data.simple.SimpleDataSource;
-import com.it.soul.lab.sql.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +19,7 @@ import java.util.Map;
  * -replace(...) AND -remove(...) OR -delete(...)
  * @param <E>
  */
-public class CacheDataSource<E extends Entity> extends SimpleDataSource<String, E> {
+public class CacheDataSource<E> extends SimpleDataSource<String, E> {
 
     private final LRUCache<String, E> cacheStorage;
 

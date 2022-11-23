@@ -32,21 +32,16 @@ public class CacheDataSource<E extends Entity> extends SimpleDataSource<String, 
     }
 
     @Override
-    public int size() {
-        return cacheStorage.size();
-    }
-
-    @Override
     public void clear(){
         if (size() > 0){
             cacheStorage.clear();
         }
     }
 
-    public List<E> fetch(int offset, int page) {
+    public List<E> fetch(int offset, int pageSize) {
         int size = size();
-        if (page > size || page <= 0) page = size;
-        return readSyncAsList(offset, page);
+        if (pageSize > size || pageSize <= 0) pageSize = size;
+        return readSyncAsList(offset, pageSize);
     }
 
     private List<E> readSyncAsList(int offset, int pageSize) {

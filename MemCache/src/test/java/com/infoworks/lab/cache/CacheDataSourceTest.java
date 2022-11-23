@@ -1,11 +1,12 @@
 package com.infoworks.lab.cache;
 
 import com.infoworks.lab.cache.models.Person;
-import com.it.soul.lab.data.simple.SimpleDataSource;
 import com.it.soul.lab.sql.entity.Entity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -206,7 +207,7 @@ public class CacheDataSourceTest {
     public void additionFuncTest(){
 
         ////When String is Key:
-        SimpleDataSource<String, Person> dataSource = new SimpleDataSource<>();
+        CacheDataSource<Person> dataSource = new CacheDataSource<>(5);
 
         dataSource.put("p-1", new Person()
                 .setName("John")
@@ -250,7 +251,7 @@ public class CacheDataSourceTest {
 
     @Test
     public void addDeleteTests(){
-        SimpleDataSource<String, Person> dataSource = new SimpleDataSource<>();
+        CacheDataSource<Person> dataSource = new CacheDataSource<>(5);
 
         Person a = new Person()
                 .setName("John")
@@ -277,6 +278,130 @@ public class CacheDataSourceTest {
         if(dataSource.contains(a)) dataSource.delete(a);
         System.out.println("Size after delete: " + dataSource.size());
 
+    }
+
+    @Test
+    public void cacheEvictionTest() {
+
+        CacheDataSource<Person> dataSource = new CacheDataSource<>(3);
+
+        Person a = new Person()
+                .setName("Abraham-a")
+                .setEmail("Abraham@gmail.com")
+                .setAge(36)
+                .setGender("male");
+
+        Person b = new Person()
+                .setName("Abraham-b")
+                .setEmail("Abraham@gmail.com")
+                .setAge(45)
+                .setGender("male");
+
+        Person c = new Person()
+                .setName("Abraham-c")
+                .setEmail("Abraham@gmail.com")
+                .setAge(36)
+                .setGender("male");
+
+        Person d = new Person()
+                .setName("Abraham-d")
+                .setEmail("Abraham@gmail.com")
+                .setAge(45)
+                .setGender("male");
+
+        Person e = new Person()
+                .setName("Abraham-e")
+                .setEmail("Abraham@gmail.com")
+                .setAge(36)
+                .setGender("male");
+
+        Person f = new Person()
+                .setName("Abraham-f")
+                .setEmail("Abraham@gmail.com")
+                .setAge(45)
+                .setGender("male");
+
+        dataSource.add(a);
+        dataSource.add(c);
+        dataSource.add(b);
+        dataSource.fetch(0, 3).forEach(person -> System.out.println(person.getName()));
+        System.out.println("===================================");
+
+        dataSource.add(d);
+        dataSource.add(f);
+        dataSource.fetch(0, 3).forEach(person -> System.out.println(person.getName()));
+        System.out.println("===================================");
+
+        dataSource.add(a, e, c);
+        dataSource.fetch(0, 3).forEach(person -> System.out.println(person.getName()));
+        System.out.println("===================================");
+
+        //dataSource.read(String.valueOf(c.hashCode()));
+        dataSource.read(String.valueOf(a.hashCode()));
+        dataSource.fetch(0, 3).forEach(person -> System.out.println(person.getName()));
+    }
+
+    @Test
+    public void cacheAccessTest() {
+
+        CacheDataSource<Person> dataSource = new CacheDataSource<>(5);
+
+        Person a = new Person()
+                .setName("Abraham-a")
+                .setEmail("Abraham@gmail.com")
+                .setAge(36)
+                .setGender("male");
+
+        Person b = new Person()
+                .setName("Abraham-b")
+                .setEmail("Abraham@gmail.com")
+                .setAge(45)
+                .setGender("male");
+
+        Person c = new Person()
+                .setName("Abraham-c")
+                .setEmail("Abraham@gmail.com")
+                .setAge(36)
+                .setGender("male");
+
+        Person d = new Person()
+                .setName("Abraham-d")
+                .setEmail("Abraham@gmail.com")
+                .setAge(45)
+                .setGender("male");
+
+        Person e = new Person()
+                .setName("Abraham-e")
+                .setEmail("Abraham@gmail.com")
+                .setAge(36)
+                .setGender("male");
+
+        Person f = new Person()
+                .setName("Abraham-f")
+                .setEmail("Abraham@gmail.com")
+                .setAge(45)
+                .setGender("male");
+
+        dataSource.add(a,b,c,d,e);
+        dataSource.fetch(0, 5).forEach(person -> System.out.println(person.getName()));
+        System.out.println("===================================");
+
+        dataSource.read(String.valueOf(b.hashCode()));
+        dataSource.read(String.valueOf(a.hashCode()));
+        dataSource.fetch(0, 5).forEach(person -> System.out.println(person.getName()));
+        System.out.println("===================================");
+
+        dataSource.add(f);
+        dataSource.fetch(0, 5).forEach(person -> System.out.println(person.getName()));
+        System.out.println("===================================");
+
+        dataSource.readSync(1, 2);
+        dataSource.fetch(0, 5).forEach(person -> System.out.println(person.getName()));
+        System.out.println("===================================");
+
+        dataSource.replace(String.valueOf(a.hashCode()), new Person().setName("Abraham-g").setAge(45).setEmail("").setGender(""));
+        dataSource.fetch(0, 5).forEach(person -> System.out.println(person.getName()));
+        System.out.println("===================================");
     }
 
 }

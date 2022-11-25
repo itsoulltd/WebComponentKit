@@ -144,6 +144,31 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
         //TODO:
     }
 
+    @Override
+    public void add(Entity e) {
+        put(String.valueOf(e.hashCode()), e);
+    }
+
+    public DataSource<String, Entity> add(Entity...items){
+        for (Entity dh: items) add(dh);
+        return this;
+    }
+
+    @Override
+    public void delete(Entity e) {
+        remove(String.valueOf(e.hashCode()));
+    }
+
+    public DataSource<String, Entity> delete(Entity...items){
+        for (Entity dh: items) delete(dh);
+        return this;
+    }
+
+    @Override
+    public boolean contains(Entity e) {
+        return containsKey(String.valueOf(e.hashCode()));
+    }
+
     ///////////////////////////////////////////Private Inner Classes////////////////////////////////////////////////////
 
     private ItemCounter counter;

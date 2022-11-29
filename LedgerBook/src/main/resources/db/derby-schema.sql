@@ -28,6 +28,7 @@ CREATE TABLE transaction_leg (
 	tenant_ref VARCHAR(250) NOT NULL,
 	transaction_ref VARCHAR(20) NOT NULL,
 	account_ref VARCHAR(20) NOT NULL,
+	entry VARCHAR(2) NOT NULL,
 	amount DECIMAL(20,2) NOT NULL,
 	currency VARCHAR(3) NOT NULL,
 	balance DECIMAL(20,2) NOT NULL,

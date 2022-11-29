@@ -1,5 +1,6 @@
-package com.infoworks.lab.cache;
+package com.infoworks.lab.datasources;
 
+import com.infoworks.lab.cache.LRUCache;
 import com.it.soul.lab.data.base.DataSource;
 import com.it.soul.lab.data.simple.SimpleDataSource;
 

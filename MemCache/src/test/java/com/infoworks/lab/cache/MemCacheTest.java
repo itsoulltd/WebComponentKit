@@ -1,5 +1,6 @@
-package com.infoworks.lab;
+package com.infoworks.lab.cache;
 
+import com.infoworks.lab.PerformanceLogger;
 import com.infoworks.lab.datasources.LettuceDataSource;
 import com.it.soul.lab.sql.entity.Entity;
 import io.lettuce.core.RedisClient;
@@ -10,8 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.Duration;
-
-import static org.junit.Assert.*;
 
 public class MemCacheTest {
 

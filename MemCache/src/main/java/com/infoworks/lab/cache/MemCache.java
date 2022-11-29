@@ -1,4 +1,4 @@
-package com.infoworks.lab;
+package com.infoworks.lab.cache;
 
 import com.infoworks.lab.datasources.RedisDataSource;
 import com.it.soul.lab.data.base.DataSource;

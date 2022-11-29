@@ -1,4 +1,4 @@
-package com.infoworks.lab.cache;
+package com.infoworks.lab.datasources;
 
 import com.infoworks.lab.cache.models.Person;
 import org.junit.After;

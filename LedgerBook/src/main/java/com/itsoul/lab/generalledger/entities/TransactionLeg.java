@@ -25,7 +25,7 @@ public final class TransactionLeg extends LedgerEntity {
 
     private final Money amount;
 
-    public TransactionLeg(String accountRef, Money amount) {
+    public TransactionLeg(String accountRef, Money amount, String entry) {
         if (accountRef == null) {
             throw new TransferValidationException("accountRef is null");
         }
@@ -34,6 +34,7 @@ public final class TransactionLeg extends LedgerEntity {
         }
         this.accountRef = accountRef;
         this.amount = amount;
+        this.entry = entry;
     }
 
     public Money getAmount() {
@@ -141,6 +142,16 @@ public final class TransactionLeg extends LedgerEntity {
 
     public BigDecimal getBalance() {
         return balance;
+    }
+
+    private String entry;
+
+    public String getEntry() {
+        return entry;
+    }
+
+    public void setEntry(String entry) {
+        this.entry = entry;
     }
 }
 

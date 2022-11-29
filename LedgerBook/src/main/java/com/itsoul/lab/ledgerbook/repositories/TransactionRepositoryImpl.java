@@ -56,6 +56,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .add("tenant_ref")
                 .add("transaction_ref")
                 .add("account_ref")
+                .add("entry")
                 .add("amount")
                 .add("currency")
                 .add("balance")
@@ -72,6 +73,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                     .add("tenant_ref", getClientRef().getTenantRef())
                     .add("transaction_ref", transactionRef)
                     .add("account_ref", leg.getAccountRef())
+                    .add("entry", leg.getEntry())
                     .add("amount", leg.getAmount().getAmount().doubleValue())
                     .add("currency", leg.getAmount().getCurrency().getCurrencyCode())
                     .add("balance", leg.getBalance().doubleValue())
@@ -172,7 +174,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .and("transaction_ref").isEqualTo(transactionRef);
         //
         SQLSelectQuery query = new SQLQuery.Builder(QueryType.SELECT)
-                .columns("account_ref", "amount", "currency", "balance", "eventTimestamp", "signature")
+                .columns("account_ref", "entry", "amount", "currency", "balance", "eventTimestamp", "signature")
                 .from("transaction_leg")
                 .where(searchFor)
                 .build();
@@ -220,10 +222,11 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         @Override
         public TransactionLeg mapRow(ResultSet rs, int rowNum, int columnCount) throws SQLException {
             String accountRef = rs.getString("account_ref");
+            String entry = rs.getString("entry");
             BigDecimal amount = new BigDecimal(rs.getString("amount"));
             Currency currency = Currency.getInstance(rs.getString("currency"));
             Money transferredFunds = new Money(amount, currency);
-            TransactionLeg leg = new TransactionLeg(accountRef, transferredFunds);
+            TransactionLeg leg = new TransactionLeg(accountRef, transferredFunds, entry);
             leg.setBalance(new BigDecimal(rs.getString("balance")));
             leg.setEventTimestamp(rs.getString("eventTimestamp"));
             leg.setSignature(rs.getString("signature"));

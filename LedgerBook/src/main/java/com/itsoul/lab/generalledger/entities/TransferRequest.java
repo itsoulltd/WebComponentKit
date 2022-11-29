@@ -139,7 +139,7 @@ public final class TransferRequest extends LedgerEntity {
 
     @Override
     public BuildStep amount(Money money) {
-      request.legs.add(new TransactionLeg(accountRef, money));
+      request.legs.add(new TransactionLeg(accountRef, money, "dr"));
       accountRef = null;
       return this;
     }
@@ -147,7 +147,7 @@ public final class TransferRequest extends LedgerEntity {
     @Override
     public BuildStep debit(String amount, String currency) {
       String debitAmount = acType.sign() + amount;
-      request.legs.add(new TransactionLeg(accountRef, Money.toMoney(debitAmount, currency)));
+      request.legs.add(new TransactionLeg(accountRef, Money.toMoney(debitAmount, currency), "dr"));
       accountRef = null;
       return this;
     }
@@ -155,7 +155,7 @@ public final class TransferRequest extends LedgerEntity {
     @Override
     public BuildStep credit(String amount, String currency) {
       String creditAmount = acType.reverseSign() + amount;
-      request.legs.add(new TransactionLeg(accountRef, Money.toMoney(creditAmount, currency)));
+      request.legs.add(new TransactionLeg(accountRef, Money.toMoney(creditAmount, currency), "cr"));
       accountRef = null;
       return this;
     }

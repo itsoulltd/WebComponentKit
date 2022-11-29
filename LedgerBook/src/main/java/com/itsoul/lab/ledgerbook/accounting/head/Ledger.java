@@ -151,15 +151,16 @@ public class Ledger extends AbstractAccountingConcept {
                     .findTransactionsByAccountRef(account.getAccountRef());
             if (!transactions.isEmpty()) {
                 sb.append(
-                        "\n\n" + String.format("%20s %20s %15s %4s %10s %10s %15s %5s %10s %10s", "Account", "|",
-                                "Transaction Leg Ref", "|", "Amount", "|", "Currency", "|", "Balance", "|"));
+                        "\n\n" + String.format("%20s %20s %15s %11s %12s %8s %10s %10s %15s %5s %10s %10s"
+                                , "Account", "|", "Transaction Leg Ref", "|", "Entry", "|", "Amount", "|", "Currency", "|", "Balance", "|"));
                 sb.append(String.format("%s",
-                        "\n-------------------------------------------------------------------------------------------------------------------------"));
+                        "\n------------------------------------------------------------------------------------------------------------------------------------------------------------------"));
                 transactions.forEach(transaction ->
                         transaction.getLegs().forEach(leg -> sb.append("\n" + String
-                                .format("%20s %20s %10s %10s %10s %10s %10s %10s %10s %10s",
+                                .format("%20s %20s %20s %10s %10s %10s %10s %10s %10s %10s %10s %10s",
                                         account.getAccountRef(), "|",
                                         leg.getAccountRef(), "|",
+                                        leg.getEntry(), "|",
                                         leg.getAmount().getAmount(), "|",
                                         leg.getAmount().getCurrency(), "|",
                                         leg.getBalance(), "|"))));

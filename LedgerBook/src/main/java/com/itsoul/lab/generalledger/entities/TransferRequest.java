@@ -60,7 +60,19 @@ public final class TransferRequest extends LedgerEntity {
      * @param transactionType the transaction type for grouping transactions or other purposes
      * @return the next build step
      */
-    AccountStep type(String transactionType);
+    default AccountStep type(String transactionType) {
+      return type(transactionType, AccountingType.Liability);
+    }
+
+    /**
+     * Universal Accounting Type:-
+     * Asset, Income, Contingent-Asset : Debit (+)
+     * Liability, Expense, Contingent-Liability : Debit (-)
+     * @param transactionType
+     * @param acType
+     * @return
+     */
+    AccountStep type(String transactionType, AccountingType acType);
   }
 
   @FunctionalInterface
@@ -99,6 +111,7 @@ public final class TransferRequest extends LedgerEntity {
     private final TransferRequest request = new TransferRequest();
 
     private String accountRef;
+    private AccountingType acType;
 
     @Override
     public TypeStep reference(String transactionRef) {
@@ -108,7 +121,13 @@ public final class TransferRequest extends LedgerEntity {
 
     @Override
     public AccountStep type(String transactionType) {
+      return type(transactionType, AccountingType.Liability);
+    }
+
+    @Override
+    public AccountStep type(String transactionType, AccountingType acType) {
       request.transactionType = transactionType;
+      this.acType = acType;
       return this;
     }
 
@@ -127,7 +146,7 @@ public final class TransferRequest extends LedgerEntity {
 
     @Override
     public BuildStep debit(String amount, String currency) {
-      String debitAmount = "-" + amount;
+      String debitAmount = acType.sign() + amount;
       request.legs.add(new TransactionLeg(accountRef, Money.toMoney(debitAmount, currency)));
       accountRef = null;
       return this;
@@ -135,7 +154,8 @@ public final class TransferRequest extends LedgerEntity {
 
     @Override
     public BuildStep credit(String amount, String currency) {
-      request.legs.add(new TransactionLeg(accountRef, Money.toMoney(amount, currency)));
+      String creditAmount = acType.reverseSign() + amount;
+      request.legs.add(new TransactionLeg(accountRef, Money.toMoney(creditAmount, currency)));
       accountRef = null;
       return this;
     }

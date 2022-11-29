@@ -8,6 +8,7 @@ import com.it.soul.lab.sql.query.SQLQuery;
 import com.it.soul.lab.sql.query.SQLSelectQuery;
 import com.it.soul.lab.sql.query.models.Predicate;
 import com.it.soul.lab.sql.query.models.Where;
+import com.itsoul.lab.generalledger.entities.AccountingType;
 import com.itsoul.lab.generalledger.entities.Transaction;
 import com.itsoul.lab.generalledger.entities.TransferRequest;
 import com.itsoul.lab.generalledger.services.Cryptor;
@@ -89,7 +90,7 @@ public class LedgerTest {
         String transactionRef = "T:1:" + (new Random().nextInt(9)+1);
         TransferRequest transferRequest1 = book.createTransferRequest()
                 .reference(transactionRef)
-                .type("testing1")
+                .type("profit")
                 .account("CASH_ACCOUNT_1").debit("5.00", "EUR")
                 .account("REVENUE_ACCOUNT_1").credit("5.00", "EUR")
                 .build();
@@ -114,7 +115,7 @@ public class LedgerTest {
         String transactionRef2 = "T:1:" + (new Random().nextInt(9)+1);
         TransferRequest transferRequest2 = book.createTransferRequest()
                 .reference(transactionRef2)
-                .type("testing2")
+                .type("BuyingHome", AccountingType.Asset)
                 .account("CASH_ACCOUNT_1").credit("15.00", "EUR")
                 .account("CASH_ACCOUNT_2").debit("15.00", "EUR")
                 .build();

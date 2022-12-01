@@ -3,10 +3,12 @@ package com.infoworks.lab.microstream;
 import com.it.soul.lab.data.base.DataStorage;
 import com.it.soul.lab.data.simple.SimpleDataSource;
 import one.microstream.reference.Lazy;
+import one.microstream.reference.LazyReferenceManager;
 import one.microstream.storage.embedded.types.EmbeddedStorage;
 import one.microstream.storage.embedded.types.EmbeddedStorageManager;
 
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,13 +25,21 @@ public class MicroDataStore<Key, Value> extends SimpleDataSource<Key, Value> imp
     private ExecutorService executors;
     private final boolean enableLazyLoad;
 
-    public MicroDataStore(String location, boolean enableLazyLoad) {
+    public MicroDataStore(String location, boolean enableLazyLoad, Duration lazyEvictTimeout) {
         this.location = location;
         this.enableLazyLoad = enableLazyLoad;
+        if (enableLazyLoad && !lazyEvictTimeout.isZero() && !lazyEvictTimeout.isNegative()) {
+            LazyRootObject.setLazyRefManager(lazyEvictTimeout);
+            LOG.info("Setting up custom LazyReferenceManager was successful.");
+        }
         this.storage   = EmbeddedStorage.start(Paths.get(location));
         boolean restored = retrieve();
         if (restored) LOG.info("Storage Restore Successful: @" + location);
         else LOG.info("Storage Initialization Successful: @" + location);
+    }
+
+    public MicroDataStore(String location, boolean enableLazyLoad) {
+        this(location, enableLazyLoad, Duration.ofMinutes(0));
     }
 
     public MicroDataStore(String location) { this(location, false); }
@@ -121,6 +131,12 @@ public class MicroDataStore<Key, Value> extends SimpleDataSource<Key, Value> imp
 
         public Map<Key, Value> getMemStorage() {
             return Lazy.get(memStorage);
+        }
+
+        public static void setLazyRefManager(Duration lazyEvictTimeout) {
+            LazyReferenceManager.set(LazyReferenceManager.New(
+                    Lazy.Checker(lazyEvictTimeout.toMillis(), 0.75)
+            ));
         }
     }
 

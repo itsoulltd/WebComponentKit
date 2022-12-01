@@ -8,6 +8,7 @@ import one.microstream.storage.embedded.types.EmbeddedStorageManager;
 
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,6 +62,7 @@ public class MicroDataStore<Key, Value> extends SimpleDataSource<Key, Value> imp
 
     @Override
     public boolean retrieve() {
+        if (Objects.nonNull(rootObject)) return false;
         if (storage.root() == null) {
             rootObject = enableLazyLoad ? new LazyRootObject(getLocation()) : new RootObject<>(getLocation());
             storage.setRoot(rootObject);

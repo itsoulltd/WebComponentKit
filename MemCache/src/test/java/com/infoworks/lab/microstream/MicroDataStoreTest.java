@@ -5,10 +5,7 @@ import one.microstream.storage.exceptions.StorageExceptionInitialization;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.nio.file.Paths;
 import java.time.Duration;
-
-import static org.junit.Assert.*;
 
 public class MicroDataStoreTest {
 
@@ -70,7 +67,7 @@ public class MicroDataStoreTest {
         MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "\\SimpleStore");
         mData.put("james", new Person().setName("james").setEmail("james@gmail.com").setAge(29));
         //mData.save(false);
-        mData.close(); //close also do save before shutdown.
+        mData.close(); //close() -> also do save(...) then shutdown().
         //
         //After closing a running db, we can re-open and access any data:
         //

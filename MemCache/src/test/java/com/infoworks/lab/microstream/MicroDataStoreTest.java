@@ -13,21 +13,27 @@ import static org.junit.Assert.*;
 public class MicroDataStoreTest {
 
     @Test
-    public void initTest() {
+    public void initTest() throws Exception {
         //String storagePath = "/Users/Public/MicroStream/MicroDataStoreTest";
         String storagePath = "C:\\Users\\Public\\MicroStream\\MicroDataStoreTest";
         //Single Cons:
         MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "\\One");
+        mData.close();
         //Double Cons: [Will Not Set]
         MicroDataStore<String, Person> mData2 = new MicroDataStore<>(storagePath + "\\Two", true);
+        mData2.close();
         //Three Cons: [Will Not Set]
         MicroDataStore<String, Person> mData3 = new MicroDataStore<>(storagePath + "\\Three", true, Duration.ofMinutes(0));
+        mData3.close();
         //Same: [Will Not Set]
         MicroDataStore<String, Person> mData4 = new MicroDataStore<>(storagePath + "\\Four", true, Duration.ofMinutes(-1));
+        mData4.close();
         //Same: [Will Not Set]
         MicroDataStore<String, Person> mData5 = new MicroDataStore<>(storagePath + "\\Five", false, Duration.ofMinutes(20));
+        mData5.close();
         //Three Cons: [Will Be Set]
         MicroDataStore<String, Person> mData6 = new MicroDataStore<>(storagePath + "\\Six", true, Duration.ofMinutes(1));
+        mData6.close();
     }
 
     /**

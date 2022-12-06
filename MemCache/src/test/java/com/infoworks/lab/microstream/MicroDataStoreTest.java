@@ -12,24 +12,23 @@ public class MicroDataStoreTest {
     @Test
     public void initTest() throws Exception {
         String storagePath = "target/MicroStream/MicroDataStoreTest";
-        //String storagePath = "C:\\Users\\Public\\MicroStream\\MicroDataStoreTest";
         //Single Cons:
-        MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "\\One");
+        MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "/One");
         mData.close();
         //Double Cons: [Will Not Set]
-        MicroDataStore<String, Person> mData2 = new MicroDataStore<>(storagePath + "\\Two", true);
+        MicroDataStore<String, Person> mData2 = new MicroDataStore<>(storagePath + "/Two", true);
         mData2.close();
         //Three Cons: [Will Not Set]
-        MicroDataStore<String, Person> mData3 = new MicroDataStore<>(storagePath + "\\Three", true, Duration.ofMinutes(0));
+        MicroDataStore<String, Person> mData3 = new MicroDataStore<>(storagePath + "/Three", true, Duration.ofMinutes(0));
         mData3.close();
         //Same: [Will Not Set]
-        MicroDataStore<String, Person> mData4 = new MicroDataStore<>(storagePath + "\\Four", true, Duration.ofMinutes(-1));
+        MicroDataStore<String, Person> mData4 = new MicroDataStore<>(storagePath + "/Four", true, Duration.ofMinutes(-1));
         mData4.close();
         //Same: [Will Not Set]
-        MicroDataStore<String, Person> mData5 = new MicroDataStore<>(storagePath + "\\Five", false, Duration.ofMinutes(20));
+        MicroDataStore<String, Person> mData5 = new MicroDataStore<>(storagePath + "/Five", false, Duration.ofMinutes(20));
         mData5.close();
         //Three Cons: [Will Be Set]
-        MicroDataStore<String, Person> mData6 = new MicroDataStore<>(storagePath + "\\Six", true, Duration.ofMinutes(1));
+        MicroDataStore<String, Person> mData6 = new MicroDataStore<>(storagePath + "/Six", true, Duration.ofMinutes(1));
         mData6.close();
     }
 
@@ -49,11 +48,11 @@ public class MicroDataStoreTest {
     public void TwoInstanceToSameStore() {
         String storagePath = "target/MicroStream/MicroDataStoreTest";
         //
-        MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "\\TwoInstance");
+        MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "/TwoInstance");
         mData.put("james", new Person().setName("james").setAge(29));
         mData.save(false);
         //
-        MicroDataStore<String, Person> mData2 = new MicroDataStore<>(storagePath + "\\TwoInstance");
+        MicroDataStore<String, Person> mData2 = new MicroDataStore<>(storagePath + "/TwoInstance");
         Person person = mData2.read("james");
         Assert.assertNotNull(person);
     }
@@ -62,14 +61,14 @@ public class MicroDataStoreTest {
     public void simpleStoreTest() throws Exception {
         String storagePath = "target/MicroStream/MicroDataStoreTest";
         //
-        MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "\\SimpleStore");
+        MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "/SimpleStore");
         mData.put("james", new Person().setName("james").setEmail("james@gmail.com").setAge(29));
         //mData.save(false);
         mData.close(); //close() -> also do save(...) then shutdown().
         //
         //After closing a running db, we can re-open and access any data:
         //
-        MicroDataStore<String, Person> mData2 = new MicroDataStore<>(storagePath + "\\SimpleStore");
+        MicroDataStore<String, Person> mData2 = new MicroDataStore<>(storagePath + "/SimpleStore");
         Person person = mData2.read("james");
         Assert.assertNotNull(person);
         System.out.println(person.getName());

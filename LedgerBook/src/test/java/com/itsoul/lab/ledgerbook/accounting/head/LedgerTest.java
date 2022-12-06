@@ -40,7 +40,7 @@ public class LedgerTest {
     @Before
     public void setUp() throws Exception {
         //Testing with MySQL-8.0.13
-        /*executeScript("db/drop-all-tables.sql", DriverClass.MYSQL);
+        /*executeScript("db/drop-all-tables.sql");
         connector = new SQLConnector(SourceConfig.JDBC_MYSQL)
                 .url("jdbc:mysql://localhost:3306/testDB")
                 .username("root")
@@ -55,7 +55,7 @@ public class LedgerTest {
         cryptor = new AESCipher();
     }
 
-    private void executeScript(String initSqlFileName, DriverClass driver) throws SQLException {
+    private void executeScript(String initSqlFileName) throws SQLException {
         Connection connection = new JDBConnection.Builder(DriverClass.MYSQL)
                 .host("localhost", "3306")
                 .database("testDB")

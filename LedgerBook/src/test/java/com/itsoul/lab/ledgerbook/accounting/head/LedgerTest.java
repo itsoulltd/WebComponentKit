@@ -1,6 +1,8 @@
 package com.itsoul.lab.ledgerbook.accounting.head;
 
 import com.it.soul.lab.connect.DriverClass;
+import com.it.soul.lab.connect.JDBConnection;
+import com.it.soul.lab.connect.io.ScriptRunner;
 import com.it.soul.lab.sql.SQLExecutor;
 import com.it.soul.lab.sql.query.QueryType;
 import com.it.soul.lab.sql.query.SQLDeleteQuery;
@@ -21,12 +23,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
-import static com.itsoul.lab.application.bank.TheBank.executeScript;
 
 public class LedgerTest {
 
@@ -38,19 +40,31 @@ public class LedgerTest {
     @Before
     public void setUp() throws Exception {
         //Testing with MySQL-8.0.13
-        executeScript("db/drop-all-tables.sql", DriverClass.MYSQL);
+        /*executeScript("db/drop-all-tables.sql", DriverClass.MYSQL);
         connector = new SQLConnector(SourceConfig.JDBC_MYSQL)
                 .url("jdbc:mysql://localhost:3306/testDB")
                 .username("root")
                 .password("root@123")
-                .skipSchemaGeneration(false);
+                .skipSchemaGeneration(false);*/
         //Testing with Embedded DB:
-        /*connector = new SQLConnector(SourceConfig.EMBEDDED_H2)
-                .url("jdbc:h2:mem:testDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=FALSE")
+        connector = new SQLConnector(SourceConfig.EMBEDDED_H2)
+                .url("jdbc:h2:mem:testDB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE")
                 .username("sa")
                 .password("sa")
-                .skipSchemaGeneration(false);*/
+                .skipSchemaGeneration(false);
         cryptor = new AESCipher();
+    }
+
+    private void executeScript(String initSqlFileName, DriverClass driver) throws SQLException {
+        Connection connection = new JDBConnection.Builder(DriverClass.MYSQL)
+                .host("localhost", "3306")
+                .database("testDB")
+                .credential("root", "root@123")
+                .build();
+        ScriptRunner runner = new ScriptRunner();
+        File file = new File(initSqlFileName);
+        String[] cmds = runner.commands(runner.createStream(file));
+        runner.execute(cmds, connection);
     }
 
     @After

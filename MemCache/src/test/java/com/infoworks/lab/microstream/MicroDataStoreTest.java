@@ -11,8 +11,8 @@ public class MicroDataStoreTest {
 
     @Test
     public void initTest() throws Exception {
-        //String storagePath = "/Users/Public/MicroStream/MicroDataStoreTest";
-        String storagePath = "C:\\Users\\Public\\MicroStream\\MicroDataStoreTest";
+        String storagePath = "target/MicroStream/MicroDataStoreTest";
+        //String storagePath = "C:\\Users\\Public\\MicroStream\\MicroDataStoreTest";
         //Single Cons:
         MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "\\One");
         mData.close();
@@ -47,8 +47,7 @@ public class MicroDataStoreTest {
      */
     @Test(expected = StorageExceptionInitialization.class)
     public void TwoInstanceToSameStore() {
-        //String storagePath = "/Users/Public/MicroStream/MicroDataStoreTest";
-        String storagePath = "C:\\Users\\Public\\MicroStream\\MicroDataStoreTest";
+        String storagePath = "target/MicroStream/MicroDataStoreTest";
         //
         MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "\\TwoInstance");
         mData.put("james", new Person().setName("james").setAge(29));
@@ -61,8 +60,7 @@ public class MicroDataStoreTest {
 
     @Test
     public void simpleStoreTest() throws Exception {
-        //String storagePath = "/Users/Public/MicroStream/MicroDataStoreTest";
-        String storagePath = "C:\\Users\\Public\\MicroStream\\MicroDataStoreTest";
+        String storagePath = "target/MicroStream/MicroDataStoreTest";
         //
         MicroDataStore<String, Person> mData = new MicroDataStore<>(storagePath + "\\SimpleStore");
         mData.put("james", new Person().setName("james").setEmail("james@gmail.com").setAge(29));

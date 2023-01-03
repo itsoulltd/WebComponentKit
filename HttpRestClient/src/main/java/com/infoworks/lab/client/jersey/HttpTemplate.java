@@ -315,7 +315,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         });
     }
 
-    protected <T extends Object> Response execute(EntityInterface consume, Invocation.Method method, T...params) throws MalformedURLException, HttpInvocationException {
+    public <T extends Object> Response execute(EntityInterface consume, Invocation.Method method, T...params) throws MalformedURLException, HttpInvocationException {
         if (params != null){
             if (params instanceof String[]){
                 setTarget(initializeTarget((String[]) params));

@@ -48,4 +48,6 @@ public interface Template<RequestBuilder extends Object
         return null;
     }
     Property[] getProperties();
+    <T extends Object> Response execute(EntityInterface consume, Invocation.Method method, T...params)
+            throws MalformedURLException, HttpInvocationException;
 }

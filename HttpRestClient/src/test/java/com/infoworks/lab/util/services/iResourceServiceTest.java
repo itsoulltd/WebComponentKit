@@ -6,14 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class iResourceServiceTest {
 
@@ -36,17 +33,46 @@ public class iResourceServiceTest {
     }
 
     @Test
-    public void imageAsString() throws URISyntaxException, IOException {
+    public void imageAsString() throws IOException {
 
         iResourceService manager = iResourceService.create();
-        File imfFile = new File("data/final-architecture.png");
-        InputStream ios = manager.createStream(imfFile);
+        InputStream ios = createFileInputStreamV2(manager, "/data/final-architecture.png");
         //
         BufferedImage bufferedImage = manager.readAsImage(ios, BufferedImage.TYPE_INT_RGB);
+        ios.close();
         String base64Image = manager.readImageAsBase64(bufferedImage, iResourceService.Format.PNG);
         System.out.println("Message: " + base64Image);
         //
         BufferedImage decryptedImg = manager.readImageFromBase64(base64Image);
-        System.out.println("");
+        Assert.assertNotNull(decryptedImg);
+    }
+
+    private InputStream createFileInputStreamV2(iResourceService manager, String fileName) {
+        File imfFile = new File(fileName);
+        InputStream ios = manager.createStream(imfFile);
+        return ios;
+    }
+
+    @Test
+    public void imageAsStringWithAlternativeFileReading() throws IOException {
+
+        InputStream ios = createFileInputStream("/data/final-architecture.png");
+        Assert.assertTrue(ios.available() > 0);
+        //
+        iResourceService manager = iResourceService.create();
+        BufferedImage bufferedImage = manager.readAsImage(ios, BufferedImage.TYPE_INT_RGB);
+        ios.close();
+        String base64Image = manager.readImageAsBase64(bufferedImage, iResourceService.Format.PNG);
+        System.out.println("Message: " + base64Image);
+        //
+        BufferedImage decryptedImg = manager.readImageFromBase64(base64Image);
+        Assert.assertNotNull(decryptedImg);
+    }
+
+    private InputStream createFileInputStream(String fileName) throws FileNotFoundException {
+        Path path = Paths.get("src","test","resources");
+        File imfFile = new File(path.toFile().getAbsolutePath() + fileName);
+        InputStream ios = new FileInputStream(imfFile);
+        return ios;
     }
 }

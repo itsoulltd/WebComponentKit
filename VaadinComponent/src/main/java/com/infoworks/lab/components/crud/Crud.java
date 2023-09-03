@@ -34,9 +34,13 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
         configurator.getDataSource().setGrid(grid);
         getGrid().setSelectionMode(configurator.getSelectionMode());
         if (!configurator.isHideSearchBar()) {
-            SearchBarConfigurator sConfig = new SearchBarConfigurator()
-                    .setHideAddNewButton(configurator.isEmbedded() ? true : false);
-            this.searchBar = new SearchBar(configurator.getBeanType(), sConfig);
+            if (configurator.getSearchBar() != null) {
+                this.searchBar = configurator.getSearchBar();
+            } else {
+                SearchBarConfigurator sConfig = new SearchBarConfigurator()
+                        .setHideAddNewButton(configurator.isEmbedded() ? true : false);
+                this.searchBar = new SearchBar(configurator.getBeanType(), sConfig);
+            }
         }
         this.parentLayout = prepareParentLayout();
         getContent().add(this.parentLayout);

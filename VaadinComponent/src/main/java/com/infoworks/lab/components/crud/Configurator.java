@@ -7,7 +7,9 @@ import com.infoworks.lab.components.crud.components.editor.ModalBeanEditor;
 import com.infoworks.lab.components.crud.components.datasource.GridDataSource;
 import com.infoworks.lab.components.crud.components.utils.EditorDisplayType;
 import com.it.soul.lab.sql.entity.EntityInterface;
+import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -22,6 +24,7 @@ public class Configurator {
     private BeanDialog dialog;
     private int pageSize = 10;
     private boolean hideSearchBar; //By Default False
+    private Composite<Div> searchBar;
 
     public Configurator(Class<? extends EntityInterface> beanType) {
         this.beanType = beanType;
@@ -145,5 +148,13 @@ public class Configurator {
     public Configurator setHideSearchBar(boolean hideSearchBar) {
         this.hideSearchBar = hideSearchBar;
         return this;
+    }
+
+    public Composite<Div> getSearchBar() {
+        return searchBar;
+    }
+
+    public void setSearchBar(Composite<Div> searchBar) {
+        this.searchBar = searchBar;
     }
 }

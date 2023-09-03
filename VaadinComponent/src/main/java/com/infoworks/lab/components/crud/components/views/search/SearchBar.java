@@ -1,5 +1,8 @@
-package com.infoworks.lab.components.crud.components.views;
+package com.infoworks.lab.components.crud.components.views.search;
 
+import com.infoworks.lab.components.crud.Configurator;
+import com.infoworks.lab.components.crud.components.editor.AbstractBeanEditor;
+import com.infoworks.lab.components.crud.components.editor.BeanDialog;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -10,7 +13,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
-public class SearchBar<T extends EntityInterface> extends Composite<Div> {
+public class SearchBar<T extends EntityInterface> extends Composite<Div> implements ISearchBar<T> {
 
     private Class<T> beanType;
     private TextField searchField;
@@ -21,7 +24,10 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> {
         this(beanType, configurator, (event)->{}, (event)->{});
     }
 
-    public SearchBar(Class<T> beanType, SearchBarConfigurator configurator, HasValue.ValueChangeListener changeListener, ComponentEventListener clickEvent) {
+    public SearchBar(Class<T> beanType
+            , SearchBarConfigurator configurator
+            , HasValue.ValueChangeListener changeListener
+            , ComponentEventListener clickEvent) {
         this.beanType = beanType;
         this.configurator = configurator;
 
@@ -51,7 +57,7 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> {
         getContent().add(layout);
     }
 
-    public void addValueChangeListener(HasValue.ValueChangeListener listener){
+    public void addValueChangeListener(HasValue.ValueChangeListener listener) {
         searchField.addValueChangeListener(listener);
     }
 
@@ -59,17 +65,22 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> {
         newButton.addClickListener(listener);
     }
 
-    public static class SearchBarConfigurator{
-        private boolean hideAddNewButton;
-
-        public boolean isHideAddNewButton() {
-            return hideAddNewButton;
-        }
-
-        public SearchBarConfigurator setHideAddNewButton(boolean hideAddNewButton) {
-            this.hideAddNewButton = hideAddNewButton;
-            return this;
-        }
+    @Override
+    public void configureDefaultEvents(Configurator configurator, BeanDialog dialog) {
+        //Action on AddNew Button on SearchBar:
+        addClickListener((event) -> {
+            try {
+                EntityInterface ei = configurator.getBeanType().newInstance();
+                dialog.open((T) ei, AbstractBeanEditor.Operation.ADD);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+        //Action on value-changed event on Search Field:
+        addValueChangeListener((event) ->
+                configurator.getDataSource().addSearchFilter(event.getValue().toString())
+        );
     }
-
 }

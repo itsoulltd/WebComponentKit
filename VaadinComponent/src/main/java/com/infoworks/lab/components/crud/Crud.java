@@ -1,7 +1,11 @@
 package com.infoworks.lab.components.crud;
 
-import com.infoworks.lab.components.crud.components.editor.*;
-import com.infoworks.lab.components.crud.components.views.SearchBar;
+import com.infoworks.lab.components.crud.components.editor.AbstractBeanEditor;
+import com.infoworks.lab.components.crud.components.editor.BeanDialog;
+import com.infoworks.lab.components.crud.components.editor.BeanEditor;
+import com.infoworks.lab.components.crud.components.views.search.ISearchBar;
+import com.infoworks.lab.components.crud.components.views.search.SearchBar;
+import com.infoworks.lab.components.crud.components.views.search.SearchBarConfigurator;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
@@ -12,7 +16,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class Crud<T extends EntityInterface> extends Composite<Div> {
 
-    private SearchBar searchBar;
+    private Composite<Div> searchBar;
     private Configurator configurator;
     private BeanEditor editor;
     private BeanDialog dialog;
@@ -30,7 +34,9 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
         configurator.getDataSource().setGrid(grid);
         getGrid().setSelectionMode(configurator.getSelectionMode());
         if (!configurator.isHideSearchBar()) {
-            this.searchBar = new SearchBar(configurator.getBeanType(), createSearchBarConfigurator());
+            SearchBarConfigurator sConfig = new SearchBarConfigurator()
+                    .setHideAddNewButton(configurator.isEmbedded() ? true : false);
+            this.searchBar = new SearchBar(configurator.getBeanType(), sConfig);
         }
         this.parentLayout = prepareParentLayout();
         getContent().add(this.parentLayout);
@@ -39,8 +45,8 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
     protected Component prepareParentLayout(){
         VerticalLayout parent = new VerticalLayout();
         parent.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.STRETCH);
-        if (searchBar != null) {
-            parent.add(searchBar);
+        if (this.searchBar != null) {
+            parent.add(this.searchBar);
         }
         parent.add(configurator.getDataSource().getGrid());
         //
@@ -96,12 +102,10 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
             });
             //
             this.editor.addDeleteClickListener((item) -> {
-
                 System.out.println(((T)item).marshallingToMap(false));
                 configurator.getDataSource().delete((T)item);
                 configurator.getDataSource().reloadGrid();
                 try {
-                    //
                     EntityInterface ein = configurator.getBeanType().newInstance();
                     editor.prepare((T) ein, AbstractBeanEditor.Operation.ADD);
                 } catch (InstantiationException | IllegalAccessException e) {
@@ -121,7 +125,6 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
         configureSearchBarEvents();
         //
         this.dialog.addSaveClickListener((item, event) -> {
-
             System.out.println(((T)item).marshallingToMap(false));
             configurator.getDataSource().save((T)item);
             this.dialog.close();
@@ -131,26 +134,9 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
 
     private void configureSearchBarEvents() {
         if (searchBar == null) return;
-        //Action on AddNew Button on SearchBar:
-        searchBar.addClickListener((event) -> {
-            try {
-                EntityInterface ei = configurator.getBeanType().newInstance();
-                this.dialog.open((T) ei, AbstractBeanEditor.Operation.ADD);
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        });
-        //Action on value-changed event on Search Field:
-        searchBar.addValueChangeListener((event) ->
-                configurator.getDataSource().addSearchFilter(event.getValue().toString())
-        );
-    }
-
-    private SearchBar.SearchBarConfigurator createSearchBarConfigurator(){
-        return new SearchBar.SearchBarConfigurator()
-                .setHideAddNewButton(configurator.isEmbedded() ? true : false);
+        if (searchBar instanceof ISearchBar) {
+            ((ISearchBar<?>) searchBar).configureDefaultEvents(configurator, dialog);
+        }
     }
 
     public Grid<T> getGrid() {

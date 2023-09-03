@@ -81,7 +81,7 @@ public abstract class AbstractGridDataSource<E extends EntityInterface> implemen
     }
 
     @Override
-    public GridDataSource registerMultiSelecttCallback(Consumer<Set<E>> consumer) {
+    public GridDataSource registerMultiSelectCallback(Consumer<Set<E>> consumer) {
         getGrid().asMultiSelect().addValueChangeListener(event -> {
             Set<E> selectedElements = (Set<E>) event.getValue();
             if (consumer != null)

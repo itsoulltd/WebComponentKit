@@ -23,5 +23,5 @@ public interface GridDataSource<T> {
     GridDataSource save(T item);
     GridDataSource delete(T item);
     GridDataSource registerSingleSelectCallback(Consumer<T> consumer);
-    GridDataSource registerMultiSelecttCallback(Consumer<Set<T>> consumer);
+    GridDataSource registerMultiSelectCallback(Consumer<Set<T>> consumer);
 }

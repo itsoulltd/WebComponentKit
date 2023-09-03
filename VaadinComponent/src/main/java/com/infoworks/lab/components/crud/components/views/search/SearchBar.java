@@ -21,40 +21,40 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> impleme
     private SearchBarConfigurator configurator;
 
     public SearchBar(Class<T> beanType, SearchBarConfigurator configurator){
-        this(beanType, configurator, (event)->{}, (event)->{});
-    }
-
-    public SearchBar(Class<T> beanType
-            , SearchBarConfigurator configurator
-            , HasValue.ValueChangeListener changeListener
-            , ComponentEventListener clickEvent) {
         this.beanType = beanType;
         this.configurator = configurator;
+        //
+        //getContent().setSizeUndefined();
+        Component barLayout = prepareSearchView(configurator);
+        getContent().add(barLayout);
+    }
 
+    @Override
+    public Component prepareSearchView(SearchBarConfigurator configurator) {
         HorizontalLayout layout = new HorizontalLayout();
-        //layout.setSpacing(true);
-        //layout.setPadding(false);
-        //layout.setWidth("100%");
 
         searchField = new TextField();
         searchField.setLabel("");
         searchField.setPlaceholder("Search By Any...");
         searchField.setPrefixComponent(new Icon("lumo", "search"));
-        searchField.addValueChangeListener(changeListener);
+        searchField.addValueChangeListener((event)->{
+            System.out.println("SearchTextField: ValueChangeListener Did not set.");
+        });
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.addFocusShortcut(Key.KEY_F, KeyModifier.CONTROL);
         layout.add(searchField);
 
         newButton = new Button("Add New", new Icon("lumo", "plus"));
         newButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        newButton.addClickListener(clickEvent);
+        newButton.addClickListener((event)->{
+            System.out.println("Add New Button: onClickListener did not set.");
+        });
         newButton.addClickShortcut(Key.of("+"));
 
         if (!configurator.isHideAddNewButton())
             layout.add(newButton);
 
-        //getContent().setSizeUndefined();
-        getContent().add(layout);
+        return layout;
     }
 
     public void addValueChangeListener(HasValue.ValueChangeListener listener) {

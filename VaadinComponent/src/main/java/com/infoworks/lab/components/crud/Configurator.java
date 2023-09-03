@@ -154,7 +154,8 @@ public class Configurator {
         return searchBar;
     }
 
-    public void setSearchBar(Composite<Div> searchBar) {
+    public Configurator setSearchBar(Composite<Div> searchBar) {
         this.searchBar = searchBar;
+        return this;
     }
 }

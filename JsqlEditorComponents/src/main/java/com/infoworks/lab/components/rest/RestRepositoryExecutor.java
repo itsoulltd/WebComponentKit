@@ -97,7 +97,7 @@ public class RestRepositoryExecutor extends AbstractRestExecutor{
     @Override
     public <T> List<T> executeSelect(SQLSelectQuery sqlSelectQuery, Class<T> aClass, Map<String, String> map) throws SQLException, IllegalArgumentException, IllegalAccessException, InstantiationException {
         try {
-            int limit = sqlSelectQuery.getLimit();
+            int limit = sqlSelectQuery.getLimit() <= 0 ? 10 : sqlSelectQuery.getLimit();
             int offset = sqlSelectQuery.getOffset();
             int page = offset / limit;
             if (offset > maxCount) return new ArrayList();

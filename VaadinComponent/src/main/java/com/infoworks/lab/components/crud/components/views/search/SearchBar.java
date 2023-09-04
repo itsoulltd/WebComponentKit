@@ -16,9 +16,9 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 public class SearchBar<T extends EntityInterface> extends Composite<Div> implements ISearchBar<T> {
 
     private Class<T> beanType;
+    private SearchBarConfigurator configurator;
     private TextField searchField;
     private Button newButton;
-    private SearchBarConfigurator configurator;
 
     public SearchBar(Class<T> beanType, SearchBarConfigurator configurator){
         this.beanType = beanType;
@@ -82,5 +82,13 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> impleme
         addValueChangeListener((event) ->
                 configurator.getDataSource().addSearchFilter(event.getValue().toString())
         );
+    }
+
+    public Class<T> getBeanType() {
+        return beanType;
+    }
+
+    public SearchBarConfigurator getConfigurator() {
+        return configurator;
     }
 }

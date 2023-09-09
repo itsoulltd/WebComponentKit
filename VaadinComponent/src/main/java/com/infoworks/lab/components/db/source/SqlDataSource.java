@@ -7,9 +7,13 @@ import com.it.soul.lab.sql.query.SQLQuery;
 import com.it.soul.lab.sql.query.SQLScalarQuery;
 import com.it.soul.lab.sql.query.SQLSelectQuery;
 import com.it.soul.lab.sql.query.models.Predicate;
+import com.it.soul.lab.sql.query.models.Property;
+import com.it.soul.lab.sql.query.models.Where;
 import com.vaadin.flow.data.provider.Query;
 
 import java.sql.SQLException;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
 
@@ -28,6 +32,39 @@ public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
         SQLSelectQuery sqlquery = getSearchQuery(query);
         executeQuery(sqlquery);
         reloadGrid();
+        return this;
+    }
+
+    @Override
+    public GridDataSource addSearchFilters(int limit, int offset, Property... filters) {
+        if (filters.length == 0) return this;
+        //TODO:
+        Predicate clause = null;
+        if (filters.length > 1) {
+            for (Property searchProperty : filters) {
+                if (Objects.isNull(searchProperty.getValue()))
+                    continue;
+                if (clause == null)
+                    clause = new Where(searchProperty.getKey()).isEqualTo(searchProperty.getValue().toString());
+                else
+                    clause.or(searchProperty.getKey()).isEqualTo(searchProperty.getValue().toString());
+            }
+        } else {
+            Property searchProperty = filters[0];
+            if (Objects.isNull(searchProperty.getValue())) throw new RuntimeException("Filter Value Must Not Be Null!");
+            clause = new Where(searchProperty.getKey()).isLike("%" + searchProperty.getValue().toString() + "%");
+        }
+        if (clause != null){
+            SQLSelectQuery selectQuery = new SQLQuery.Builder(QueryType.SELECT)
+                    .columns()
+                    .from(E.tableName(getBeanType()))
+                    .where(clause)
+                    .addLimit(limit, offset)
+                    .build();
+            //Finally Execute the search:
+            executeQuery(selectQuery);
+            reloadGrid();
+        }
         return this;
     }
 

@@ -1,5 +1,6 @@
 package com.infoworks.lab.components.crud.components.datasource;
 
+import com.it.soul.lab.sql.query.models.Property;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.provider.DataProvider;
 
@@ -20,6 +21,7 @@ public interface GridDataSource<T> {
     DataProvider getProvider();
     GridDataSource setProvider(DataProvider provider);
     GridDataSource addSearchFilter(String filter);
+    GridDataSource addSearchFilters(int limit, int offset, Property...filters);
     GridDataSource save(T item);
     GridDataSource delete(T item);
     GridDataSource registerSingleSelectCallback(Consumer<T> consumer);

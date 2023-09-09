@@ -1,6 +1,7 @@
 package com.infoworks.lab.components.crud.components.datasource;
 
 import com.it.soul.lab.sql.entity.Entity;
+import com.it.soul.lab.sql.query.models.Property;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -71,7 +72,14 @@ public class DefaultDataSource<E extends Entity> extends AbstractGridDataSource<
                 });
             }
         }
-        return null;
+        return this;
+    }
+
+    @Override
+    public GridDataSource addSearchFilters(int limit, int offset, Property... filters) {
+        if (filters.length == 0) return this;
+        if (Objects.isNull(filters[0].getValue())) throw new RuntimeException("Filter Value Must Not Be Null!");
+        return addSearchFilter(filters[0].getValue().toString());
     }
 
     private Class<E> beanType;

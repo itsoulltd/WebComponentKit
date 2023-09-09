@@ -1,16 +1,21 @@
 package com.infoworks.lab.components.rest;
 
 import com.infoworks.lab.rest.models.ItemCount;
+import com.infoworks.lab.rest.models.SearchQuery;
+import com.infoworks.lab.rest.models.pagination.Pagination;
+import com.infoworks.lab.rest.models.pagination.SortOrder;
 import com.infoworks.lab.rest.repository.RestRepository;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.query.*;
 import com.it.soul.lab.sql.query.builder.AbstractQueryBuilder;
+import com.it.soul.lab.sql.query.models.Property;
 import com.it.soul.lab.sql.query.models.Row;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class RestRepositoryExecutor extends AbstractRestExecutor{
@@ -102,8 +107,31 @@ public class RestRepositoryExecutor extends AbstractRestExecutor{
             int page = offset / limit;
             if (offset > maxCount) return new ArrayList();
             LOG.info(String.format("Offset:%s, Limit:%s, Page:%s", offset, limit, page));
-            List returned = getRepository().fetch(page, limit);
-            return returned;
+            if (sqlSelectQuery.getWhereExpression() == null) {
+                List returned = getRepository().fetch(page, limit);
+                return returned;
+            } else {
+                List<Property> searchProps = sqlSelectQuery.getWhereProperties().getProperties();
+                SearchQuery query = Pagination.createQuery(SearchQuery.class, limit, SortOrder.DESC);
+                query.setPage(page);
+                //Iterate Over Search-Properties:
+                if (searchProps.size() > 1) {
+                    for (Property prop : searchProps) {
+                        if (Objects.isNull(prop.getValue())) continue;
+                        query.getPredicate()
+                                .or(prop.getKey()).isEqualTo(prop.getValue().toString());
+                    }
+                } else {
+                    Property prop = searchProps.get(0);
+                    if (Objects.nonNull(prop.getValue())) {
+                        //In SqlDataSource.java, we already add '%' around like term.
+                        query.add(prop.getKey()).isLike(prop.getValue());
+                    }
+                }
+                //
+                List returned = getRepository().search(query);
+                return returned;
+            }
         } catch (RuntimeException e) {
             throw new SQLException(e.fillInStackTrace());
         }

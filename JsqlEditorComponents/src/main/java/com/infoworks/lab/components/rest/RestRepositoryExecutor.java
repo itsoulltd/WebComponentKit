@@ -115,17 +115,12 @@ public class RestRepositoryExecutor extends AbstractRestExecutor{
                 SearchQuery query = Pagination.createQuery(SearchQuery.class, limit, SortOrder.DESC);
                 query.setPage(page);
                 //Iterate Over Search-Properties:
-                if (searchProps.size() > 1) {
+                if (searchProps.size() > 0) {
                     for (Property prop : searchProps) {
                         if (Objects.isNull(prop.getValue())) continue;
-                        query.getPredicate()
-                                .or(prop.getKey()).isEqualTo(prop.getValue().toString());
-                    }
-                } else {
-                    Property prop = searchProps.get(0);
-                    if (Objects.nonNull(prop.getValue())) {
                         //In SqlDataSource.java, we already add '%' around like term.
-                        query.add(prop.getKey()).isLike(prop.getValue());
+                        query.getPredicate()
+                                .or(prop.getKey()).isLike(prop.getValue().toString());
                     }
                 }
                 //

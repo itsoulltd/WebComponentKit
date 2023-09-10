@@ -44,14 +44,17 @@ public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
                 if (Objects.isNull(searchProperty.getValue()))
                     continue;
                 if (clause == null)
-                    clause = new Where(searchProperty.getKey()).isEqualTo(searchProperty.getValue().toString());
+                    clause = new Where(searchProperty.getKey())
+                            .isLike("%" + searchProperty.getValue().toString() + "%");
                 else
-                    clause.or(searchProperty.getKey()).isEqualTo(searchProperty.getValue().toString());
+                    clause.or(searchProperty.getKey())
+                            .isLike("%" + searchProperty.getValue().toString() + "%");
             }
         } else {
             Property searchProperty = filters[0];
             if (Objects.isNull(searchProperty.getValue())) throw new RuntimeException("Filter Value Must Not Be Null!");
-            clause = new Where(searchProperty.getKey()).isLike("%" + searchProperty.getValue().toString() + "%");
+            clause = new Where(searchProperty.getKey())
+                    .isLike("%" + searchProperty.getValue().toString() + "%");
         }
         if (clause != null){
             SQLSelectQuery selectQuery = new SQLQuery.Builder(QueryType.SELECT)

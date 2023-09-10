@@ -38,7 +38,6 @@ public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
     @Override
     public GridDataSource addSearchFilters(int limit, int offset, Property... filters) {
         if (filters.length == 0) return this;
-        //TODO:
         Predicate clause = null;
         if (filters.length > 1) {
             for (Property searchProperty : filters) {

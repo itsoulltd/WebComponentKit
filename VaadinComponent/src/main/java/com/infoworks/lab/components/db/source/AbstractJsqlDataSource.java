@@ -161,7 +161,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         super.reloadGrid();
     };
 
-    private void reloadSelectQuery(Query next) {
+    protected void reloadSelectQuery(Query next) {
         //Fetch data from persistence data Source and load into storage:
         SQLSelectQuery query = getSelectQuery(next);
         executeQuery(query);
@@ -175,7 +175,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         super.reloadGrid();
     }
 
-    protected final void executeQuery(SQLSelectQuery query) {
+    protected void executeQuery(SQLSelectQuery query) {
         if (Objects.isNull(query)) return;
         try {
             List<E> items = getExecutor().executeSelect(query

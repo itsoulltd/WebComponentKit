@@ -13,7 +13,6 @@ import com.vaadin.flow.data.provider.Query;
 
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
 

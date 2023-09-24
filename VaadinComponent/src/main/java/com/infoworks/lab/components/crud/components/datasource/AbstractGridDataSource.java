@@ -41,11 +41,11 @@ public abstract class AbstractGridDataSource<E extends EntityInterface> implemen
         return this;
     }
 
-    private synchronized void addItems(E...items){
+    protected synchronized void addItems(E...items){
         Arrays.stream(items).forEach(e -> getMemStorage().put(e.hashCode(), e));
     }
 
-    private synchronized void updateItems(E...items){
+    protected synchronized void updateItems(E...items){
         Arrays.stream(items).forEach(item -> {
             E element = getMemStorage().get(item.hashCode());
             if (Objects.nonNull(element)) {
@@ -65,7 +65,7 @@ public abstract class AbstractGridDataSource<E extends EntityInterface> implemen
         return this;
     }
 
-    private synchronized void removeItems(E...items){
+    protected synchronized void removeItems(E...items){
         Arrays.stream(items).forEach(e -> getMemStorage().remove(e.hashCode()));
     }
 

@@ -143,6 +143,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
     }
 
     protected void updateCellFooter(Grid<E> grid) {
+        if (grid.getColumns().isEmpty()) return;
         Grid.Column cell = grid.getColumns().get(0);
         cell.setFooter("Total: " + ((getMaxOffsetQuery(false) != null)
                 ? getMaxOffsetQuery(false).getOffset()

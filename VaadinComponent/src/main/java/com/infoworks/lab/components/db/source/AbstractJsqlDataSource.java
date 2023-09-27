@@ -134,6 +134,17 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
     public GridDataSource prepareGridUI(Grid<E> grid) {
         super.prepareGridUI(grid);
         updateCellFooter(grid);
+        return this;
+    }
+
+    protected void updateCellFooter(Grid<E> grid) {
+        if (grid.getColumns().isEmpty()) return;
+        //
+        Grid.Column cell = grid.getColumns().get(0);
+        cell.setFooter("Total: " + ((getMaxOffsetQuery(false) != null)
+                ? getMaxOffsetQuery(false).getOffset()
+                : getMemStorage().size()));
+        //
         int length = grid.getColumns().size();
         Grid.Column last = grid.getColumns().get(length - 1);
         HorizontalLayout buttonCell = new HorizontalLayout(new Button(" < ", previousAction)
@@ -143,15 +154,17 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         buttonCell.setSizeFull();
         buttonCell.setAlignItems(FlexComponent.Alignment.CENTER);
         last.setFooter(buttonCell);
-        return this;
     }
 
-    protected void updateCellFooter(Grid<E> grid) {
+    protected void updateCellFooterAfterSearch(Grid<E> grid) {
         if (grid.getColumns().isEmpty()) return;
-        Grid.Column cell = grid.getColumns().get(0);
-        cell.setFooter("Total: " + ((getMaxOffsetQuery(false) != null)
-                ? getMaxOffsetQuery(false).getOffset()
-                : getMemStorage().size()));
+        //
+        Grid.Column first = grid.getColumns().get(0);
+        first.setFooter("Search Result: " + getMemStorage().size());
+        //
+        int length = grid.getColumns().size();
+        Grid.Column last = grid.getColumns().get(length - 1);
+        last.setFooter("");
     }
 
     private ComponentEventListener<ClickEvent<Button>> previousAction = (event) -> {
@@ -270,6 +283,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         SQLSelectQuery sqlquery = getSearchQuery(query);
         executeQuery(sqlquery);
         super.reloadGrid();
+        updateCellFooterAfterSearch(getGrid());
         return this;
     }
 
@@ -304,6 +318,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
             //Finally Execute the search:
             executeQuery(selectQuery);
             super.reloadGrid();
+            updateCellFooterAfterSearch(getGrid());
         }
         return this;
     }

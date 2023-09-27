@@ -50,6 +50,7 @@ public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
 
     @Override
     public void reloadGrid() {
+        reloadSelectQuery(getQuery());
         super.reloadGrid();
     }
 

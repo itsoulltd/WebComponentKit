@@ -269,7 +269,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         Query query = copyWith(getQuery(), filter);
         SQLSelectQuery sqlquery = getSearchQuery(query);
         executeQuery(sqlquery);
-        reloadGrid();
+        super.reloadGrid();
         return this;
     }
 
@@ -303,7 +303,7 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
                     .build();
             //Finally Execute the search:
             executeQuery(selectQuery);
-            reloadGrid();
+            super.reloadGrid();
         }
         return this;
     }

@@ -1,10 +1,12 @@
 package com.infoworks.lab.components.db.source;
 
+import com.infoworks.lab.components.crud.components.datasource.GridDataSource;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.query.QueryType;
 import com.it.soul.lab.sql.query.SQLQuery;
 import com.it.soul.lab.sql.query.SQLSelectQuery;
 import com.it.soul.lab.sql.query.models.Predicate;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.provider.Query;
 
 import java.sql.SQLException;
@@ -48,7 +50,12 @@ public class SqlDataSource<E extends Entity> extends AbstractJsqlDataSource<E> {
 
     @Override
     public void reloadGrid() {
-        reloadSelectQuery(getQuery());
         super.reloadGrid();
+    }
+
+    @Override
+    public GridDataSource prepareGridUI(Grid<E> grid) {
+        reloadSelectQuery(getQuery());
+        return super.prepareGridUI(grid);
     }
 }

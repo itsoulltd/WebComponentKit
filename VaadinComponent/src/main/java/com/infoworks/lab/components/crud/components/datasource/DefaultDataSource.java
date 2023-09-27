@@ -33,7 +33,7 @@ public class DefaultDataSource<E extends Entity> extends AbstractGridDataSource<
 
     @Override
     public GridDataSource prepareGridUI(Grid<E> grid) {
-        reloadGrid();
+        super.reloadGrid();
         return this;
     }
 

@@ -24,7 +24,7 @@ public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
     private Button newButton;
     private Property searchProperty;
     private Button searchButton;
-    ComboBox<Property> propKeyBox;
+    private ComboBox<Property> propertyComboBox;
 
     public PropertySearchBar(Class<T> beanType, SearchBarConfigurator configurator) {
         super(beanType, configurator);
@@ -34,11 +34,11 @@ public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
     public Component prepareSearchView(SearchBarConfigurator configurator) {
         HorizontalLayout layout = new HorizontalLayout();
 
-        propKeyBox = new ComboBox<>();
+        propertyComboBox = new ComboBox<>();
         String[] skipProps = configurator.getSkipProperties();
-        propKeyBox.setItems(configurator.getProperties(getBeanType(), skipProps));
-        propKeyBox.setItemLabelGenerator(Property::getKey);
-        layout.add(propKeyBox);
+        propertyComboBox.setItems(configurator.getProperties(getBeanType(), skipProps));
+        propertyComboBox.setItemLabelGenerator(Property::getKey);
+        layout.add(propertyComboBox);
 
         searchField = new TextField();
         searchField.setLabel("");
@@ -86,7 +86,7 @@ public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
             }));
         }
         //Action setting up change event:
-        propKeyBox.addValueChangeListener((event) -> {
+        propertyComboBox.addValueChangeListener((event) -> {
             //System.out.println(event.getValue().getKey());
             searchProperty = event.getValue();
             alterButton(searchButton, SEARCH_BUTTON_TITLE, new Icon("lumo", "search"));
@@ -104,7 +104,7 @@ public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
             if (event.getSource().getText().equalsIgnoreCase(CLEAR_BUTTON_TITLE)) {
                 //Clear the grid & related buttons:
                 searchField.clear();
-                propKeyBox.clear();
+                propertyComboBox.clear();
                 configurator.getDataSource().reloadGrid();
             } else {
                 //Does not update grid when result comes from rest-api.

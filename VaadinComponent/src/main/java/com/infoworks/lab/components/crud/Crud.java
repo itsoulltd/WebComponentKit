@@ -14,8 +14,12 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Crud<T extends EntityInterface> extends Composite<Div> {
 
+    protected static final Logger LOG = Logger.getLogger(Crud.class.getSimpleName());
     private Composite<Div> searchBar;
     private Configurator configurator;
     private BeanEditor editor;
@@ -75,7 +79,7 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
             configurator.getDataSource().setDefaultColumns(columns);
             configurator.getDataSource().prepareGridUI(grid);
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            LOG.log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -87,13 +91,12 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
             parent.add((Component) editor);
             //
             configurator.getDataSource().registerSingleSelectCallback(item -> {
-
                 editor.prepare((T) item, AbstractBeanEditor.Operation.EDIT);
             });
             //
             this.editor.addSaveClickListener((item, event) -> {
-
-                System.out.println(((T)item).marshallingToMap(false));
+                //System.out.println(((T)item).marshallingToMap(false));
+                LOG.log(Level.INFO, "AddSaveClick: Start");
                 configurator.getDataSource().save((T)item);
                 configurator.getDataSource().reloadGrid();
                 try {
@@ -101,26 +104,29 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
                     EntityInterface ein = configurator.getBeanType().newInstance();
                     editor.prepare((T) ein, AbstractBeanEditor.Operation.ADD);
                 } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    LOG.log(Level.WARNING, e.getMessage(), e);
                 }
+                LOG.log(Level.INFO, "AddSaveClick: End");
             });
             //
             this.editor.addDeleteClickListener((item) -> {
-                System.out.println(((T)item).marshallingToMap(false));
+                //System.out.println(((T)item).marshallingToMap(false));
+                LOG.log(Level.INFO, "AddDeleteClick: Start");
                 configurator.getDataSource().delete((T)item);
                 configurator.getDataSource().reloadGrid();
                 try {
                     EntityInterface ein = configurator.getBeanType().newInstance();
                     editor.prepare((T) ein, AbstractBeanEditor.Operation.ADD);
                 } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    LOG.log(Level.WARNING, e.getMessage(), e);
                 }
+                LOG.log(Level.INFO, "AddDeleteClick: End");
             });
             //
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            LOG.log(Level.WARNING, e.getMessage(), e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            LOG.log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -129,10 +135,12 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
         configureSearchBarEvents();
         //
         this.dialog.addSaveClickListener((item, event) -> {
-            System.out.println(((T)item).marshallingToMap(false));
+            //System.out.println(((T)item).marshallingToMap(false));
+            LOG.log(Level.INFO, "AddSaveClick: Start");
             configurator.getDataSource().save((T)item);
             this.dialog.close();
             configurator.getDataSource().reloadGrid();
+            LOG.log(Level.INFO, "AddSaveClick: End");
         });
     }
 

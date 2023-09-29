@@ -19,12 +19,18 @@ import java.util.logging.Logger;
 
 public class Crud<T extends EntityInterface> extends Composite<Div> {
 
+    public interface EventListener<T> {
+        void onSaveSuccess(T savedItem, Object event);
+        void onDeleteSuccess(T deletedItem);
+    }
+
     protected static final Logger LOG = Logger.getLogger(Crud.class.getSimpleName());
     private Composite<Div> searchBar;
     private Configurator configurator;
     private BeanEditor editor;
     private BeanDialog dialog;
     private Component parentLayout;
+    private EventListener eventListener;
 
     public Component getParentLayout() {
         return parentLayout;
@@ -106,6 +112,8 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
                 } catch (InstantiationException | IllegalAccessException e) {
                     LOG.log(Level.WARNING, e.getMessage(), e);
                 }
+                if (eventListener != null)
+                    eventListener.onSaveSuccess(item, event);
                 LOG.log(Level.INFO, "AddSaveClick: End");
             });
             //
@@ -120,6 +128,8 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
                 } catch (InstantiationException | IllegalAccessException e) {
                     LOG.log(Level.WARNING, e.getMessage(), e);
                 }
+                if (eventListener != null)
+                    eventListener.onDeleteSuccess(item);
                 LOG.log(Level.INFO, "AddDeleteClick: End");
             });
             //
@@ -140,6 +150,8 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
             configurator.getDataSource().save((T)item);
             this.dialog.close();
             configurator.getDataSource().reloadGrid();
+            if (eventListener != null)
+                eventListener.onSaveSuccess(item, event);
             LOG.log(Level.INFO, "AddSaveClick: End");
         });
     }
@@ -161,5 +173,10 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
     }
 
     public Configurator getConfigurator(){return configurator;}
+
+    public Crud addEventListener(EventListener eventListener) {
+        this.eventListener = eventListener;
+        return this;
+    }
 
 }

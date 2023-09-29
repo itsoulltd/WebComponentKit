@@ -91,4 +91,9 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> impleme
     public SearchBarConfigurator getConfigurator() {
         return configurator;
     }
+
+    @Override
+    public void clearSearchBarView() {
+        //TODO:
+    }
 }

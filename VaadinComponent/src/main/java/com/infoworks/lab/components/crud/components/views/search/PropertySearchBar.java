@@ -103,8 +103,7 @@ public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
         searchButton.addClickListener((event) -> {
             if (event.getSource().getText().equalsIgnoreCase(CLEAR_BUTTON_TITLE)) {
                 //Clear the grid & related buttons:
-                searchField.clear();
-                propertyComboBox.clear();
+                clearSearchBarView();
                 configurator.getDataSource().reloadGrid();
             } else {
                 //Does not update grid when result comes from rest-api.
@@ -122,4 +121,13 @@ public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
         });
     }
 
+    @Override
+    public void clearSearchBarView() {
+        super.clearSearchBarView();
+        searchField.clear();
+        //Since searchField clear will trigger the valueChange listener, which will alter the text.
+        //So need following line:
+        //alterButton(searchButton, SEARCH_BUTTON_TITLE, new Icon("lumo", "search"));
+        propertyComboBox.clear();
+    }
 }

@@ -74,6 +74,7 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
             configureDialogForm(parent);
             configureEmbeddedForm(parent);
         }
+        configureSearchBarEvents();
         prepareGridUI(configurator.getDataSource().getGrid());
         return parent;
     }
@@ -142,7 +143,6 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
 
     private void configureDialogForm(VerticalLayout parent){
         this.dialog = configurator.getDialog();
-        configureSearchBarEvents();
         //
         this.dialog.addSaveClickListener((item, event) -> {
             //System.out.println(((T)item).marshallingToMap(false));

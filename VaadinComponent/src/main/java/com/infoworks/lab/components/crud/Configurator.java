@@ -23,7 +23,7 @@ public class Configurator {
     private BeanEditor editor;
     private BeanDialog dialog;
     private int pageSize = 10;
-    private boolean hideSearchBar; //By Default False
+    private boolean hideSearchBar = true; //By default SearchBar should be hidden.
     private Composite<Div> searchBar;
 
     public Configurator(Class<? extends EntityInterface> beanType) {
@@ -156,6 +156,7 @@ public class Configurator {
 
     public Configurator setSearchBar(Composite<Div> searchBar) {
         this.searchBar = searchBar;
+        setHideSearchBar(this.searchBar != null);
         return this;
     }
 }

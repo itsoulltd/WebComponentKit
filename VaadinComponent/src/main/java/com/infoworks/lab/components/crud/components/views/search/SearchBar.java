@@ -37,22 +37,16 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> impleme
         searchField.setLabel("");
         searchField.setPlaceholder("Search By Any...");
         searchField.setPrefixComponent(new Icon("lumo", "search"));
-        searchField.addValueChangeListener((event)->{
-            System.out.println("SearchTextField: ValueChangeListener Did not set.");
-        });
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.addFocusShortcut(Key.KEY_F, KeyModifier.CONTROL);
         layout.add(searchField);
 
-        newButton = new Button("Add New", new Icon("lumo", "plus"));
-        newButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        newButton.addClickListener((event)->{
-            System.out.println("Add New Button: onClickListener did not set.");
-        });
-        newButton.addClickShortcut(Key.of("+"));
-
-        if (!configurator.isHideAddNewButton())
+        if (!configurator.isHideAddNewButton()) {
+            newButton = new Button("Add New", new Icon("lumo", "plus"));
+            newButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            newButton.addClickShortcut(Key.NEW);
             layout.add(newButton);
+        }
 
         return layout;
     }

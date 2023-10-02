@@ -6,15 +6,13 @@ import com.infoworks.lab.components.crud.components.editor.BeanDialog;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.it.soul.lab.sql.query.models.Property;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
 
 public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
 
@@ -32,33 +30,20 @@ public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
 
     @Override
     public Component prepareSearchView(SearchBarConfigurator configurator) {
-        HorizontalLayout layout = new HorizontalLayout();
+        Component layout = super.prepareSearchView(configurator);
 
         propertyComboBox = new ComboBox<>();
         String[] skipProps = configurator.getSkipProperties();
         propertyComboBox.setItems(configurator.getProperties(getBeanType(), skipProps));
         propertyComboBox.setItemLabelGenerator(Property::getKey);
-        layout.add(propertyComboBox);
-
-        searchField = new TextField();
-        searchField.setLabel("");
-        searchField.setPlaceholder("Search By Any...");
-        searchField.setPrefixComponent(new Icon("lumo", "search"));
-        searchField.setValueChangeMode(ValueChangeMode.EAGER);
-        searchField.addFocusShortcut(Key.KEY_F, KeyModifier.CONTROL);
-        layout.add(searchField);
+        if(HasComponents.class.isAssignableFrom(layout.getClass()))
+            ((HasComponents) layout).add(propertyComboBox);
 
         searchButton = new Button(SEARCH_BUTTON_TITLE, new Icon("lumo", "search"));
         searchButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         searchButton.addClickShortcut(Key.ENTER);
-        layout.add(searchButton);
-
-        if (!configurator.isHideAddNewButton()) {
-            newButton = new Button("Add New", new Icon("lumo", "plus"));
-            newButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-            newButton.addClickShortcut(Key.NEW);
-            layout.add(newButton);
-        }
+        if(HasComponents.class.isAssignableFrom(layout.getClass()))
+            ((HasComponents) layout).add(searchButton);
 
         return layout;
     }

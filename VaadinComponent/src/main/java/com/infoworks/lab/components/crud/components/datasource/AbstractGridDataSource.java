@@ -18,14 +18,10 @@ public abstract class AbstractGridDataSource<E extends EntityInterface> implemen
     public void reloadGrid() {
         //Reload Provider
         getGrid().getDataProvider().refreshAll();
-        //Updating UI
-        if (Objects.isNull(getProvider())) {
-            //Setting storage's values as a container to the ListDataProvider,
-            //which will take care of adding and removing from Grid in respect to,
-            //item removing from storage:
-            setProvider(DataProvider.ofCollection(getMemStorage().values()));
-            getGrid().setDataProvider(getProvider());
-        }
+        //Updating UI: Setting storage's values as a container to the ListDataProvider,
+        //which will take care of adding and removing from Grid in respect to, item removing from storage:
+        setProvider(DataProvider.ofCollection(getMemStorage().values()));
+        getGrid().setDataProvider(getProvider());
     }
 
     @Override

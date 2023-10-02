@@ -11,6 +11,7 @@ import java.util.function.BiConsumer;
 public class EventQueue extends AbstractTaskQueue {
 
     private final TaskQueue exeQueue;
+    private final TaskQueue abortQueue;
     private final EventQueueListener handler;
 
     public EventQueue(int numberOfThreads) {
@@ -18,6 +19,7 @@ public class EventQueue extends AbstractTaskQueue {
                 ? (Runtime.getRuntime().availableProcessors() / 2)
                 : numberOfThreads;
         this.exeQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
+        this.abortQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
         this.handler = new EventQueueManager(this);
     }
 
@@ -33,17 +35,18 @@ public class EventQueue extends AbstractTaskQueue {
 
     @Override
     public void abort(Task task, Message error) {
+        abortQueue.add(task);
+        //THIS IS FOR SIMULATION for MOM/AMQP/RabbitMQ/ActiveMQ/Redis/Kafka:
         JmsMessage jmsMessage = convert(task, error);
-        //THIS IS FOR SIMULATION:
         handler.abortListener(jmsMessage.toString());
         //
     }
 
     @Override
     public TaskQueue add(Task task) {
-        JmsMessage jmsMessage = convert(task);
         exeQueue.add(task);
-        //THIS IS FOR SIMULATION:
+        //THIS IS FOR SIMULATION for MOM/AMQP/RabbitMQ/ActiveMQ/Redis/Kafka:
+        JmsMessage jmsMessage = convert(task);
         handler.startListener(jmsMessage.toString());
         //
         return this;

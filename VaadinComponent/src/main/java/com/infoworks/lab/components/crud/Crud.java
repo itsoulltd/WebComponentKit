@@ -59,13 +59,12 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
     protected Component prepareParentLayout(){
         VerticalLayout parent = new VerticalLayout();
         parent.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.STRETCH);
-        //
+        //Config SearchBar:
         if (!configurator.isHideSearchBar()
                 && this.searchBar != null) {
             parent.add(this.searchBar);
-            configureSearchBarEvents();
         }
-        //
+        //Config Dialog & Editors:
         parent.add(configurator.getDataSource().getGrid());
         if (configurator.isDialog()) {
             configureDialogForm(parent);
@@ -77,6 +76,12 @@ public class Crud<T extends EntityInterface> extends Composite<Div> {
             configureDialogForm(parent);
             configureEmbeddedForm(parent);
         }
+        //Config SearchBar:
+        if(!configurator.isHideSearchBar()
+                && this.searchBar != null) {
+            configureSearchBarEvents();
+        }
+        //Finalize UI:
         prepareGridUI(configurator.getDataSource().getGrid());
         return parent;
     }

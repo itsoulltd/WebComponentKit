@@ -126,9 +126,16 @@ public class TaskQueueTest {
         private final TaskQueue exeQueue;
         private final QueueEventListener handler;
 
-        public JmsQueue() {
-            this.exeQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(5));
+        public JmsQueue(int numberOfThreads) {
+            numberOfThreads = numberOfThreads <= 0
+                    ? (Runtime.getRuntime().availableProcessors() / 2)
+                    : numberOfThreads;
+            this.exeQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
             this.handler = new JmsQueueManager(this);
+        }
+
+        public JmsQueue() {
+            this(0);
         }
 
         @Override

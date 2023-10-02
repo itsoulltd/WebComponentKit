@@ -1,10 +1,10 @@
 package com.infoworks.lab.components.crud;
 
+import com.infoworks.lab.components.crud.components.datasource.GridDataSource;
 import com.infoworks.lab.components.crud.components.editor.BeanDialog;
 import com.infoworks.lab.components.crud.components.editor.BeanEditor;
 import com.infoworks.lab.components.crud.components.editor.EmbeddedBeanEditor;
 import com.infoworks.lab.components.crud.components.editor.ModalBeanEditor;
-import com.infoworks.lab.components.crud.components.datasource.GridDataSource;
 import com.infoworks.lab.components.crud.components.utils.EditorDisplayType;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.vaadin.flow.component.Composite;
@@ -23,7 +23,8 @@ public class Configurator {
     private BeanEditor editor;
     private BeanDialog dialog;
     private int pageSize = 10;
-    private boolean hideSearchBar = true; //By default SearchBar should be hidden.
+    //By default SearchBar should be hidden.
+    private boolean hideSearchBar = true;
     private Composite<Div> searchBar;
 
     public Configurator(Class<? extends EntityInterface> beanType) {
@@ -156,7 +157,6 @@ public class Configurator {
 
     public Configurator setSearchBar(Composite<Div> searchBar) {
         this.searchBar = searchBar;
-        setHideSearchBar(this.searchBar != null);
         return this;
     }
 }

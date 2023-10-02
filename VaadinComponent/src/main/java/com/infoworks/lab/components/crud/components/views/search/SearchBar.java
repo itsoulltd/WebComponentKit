@@ -29,7 +29,7 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> impleme
         getContent().add(barLayout);
     }
 
-    @Override
+    @Override @SuppressWarnings("Duplicates")
     public Component prepareSearchView(SearchBarConfigurator configurator) {
         HorizontalLayout layout = new HorizontalLayout();
 

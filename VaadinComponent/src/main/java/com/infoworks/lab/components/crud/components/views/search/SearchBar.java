@@ -56,7 +56,9 @@ public class SearchBar<T extends EntityInterface> extends Composite<Div> impleme
     }
 
     public void addClickListener(ComponentEventListener listener){
-        newButton.addClickListener(listener);
+        if (!getConfigurator().isHideAddNewButton()) {
+            newButton.addClickListener(listener);
+        }
     }
 
     @Override

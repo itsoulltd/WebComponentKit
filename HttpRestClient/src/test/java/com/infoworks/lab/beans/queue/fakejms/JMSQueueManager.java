@@ -1,14 +1,15 @@
-package com.infoworks.lab.beans.queue;
+package com.infoworks.lab.beans.queue.fakejms;
 
+import com.infoworks.lab.beans.queue.AbstractTaskQueueManager;
 import com.infoworks.lab.beans.tasks.definition.QueuedTaskLifecycleListener;
 import com.infoworks.lab.beans.tasks.definition.Task;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-public class EventQueueManager extends AbstractTaskQueueManager implements EventQueueListener {
+public class JMSQueueManager extends AbstractTaskQueueManager implements JMSQueueListener {
 
-    public EventQueueManager(QueuedTaskLifecycleListener listener) {
+    public JMSQueueManager(QueuedTaskLifecycleListener listener) {
         super(listener);
     }
 

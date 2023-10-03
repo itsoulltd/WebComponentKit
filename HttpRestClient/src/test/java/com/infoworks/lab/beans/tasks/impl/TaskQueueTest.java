@@ -1,6 +1,7 @@
 package com.infoworks.lab.beans.tasks.impl;
 
-import com.infoworks.lab.beans.queue.EventQueue;
+import com.infoworks.lab.beans.queue.event.EventQueue;
+import com.infoworks.lab.beans.queue.fakejms.JMSQueue;
 import com.infoworks.lab.beans.task.AbortTask;
 import com.infoworks.lab.beans.task.SimpleTask;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
@@ -82,12 +83,39 @@ public class TaskQueueTest {
     }
 
     @Test
-    public void jmsQueueTest() {
+    public void eventQueueTest() {
         //Initialize:
         CountDownLatch latch = new CountDownLatch(1);
         AtomicInteger counter = new AtomicInteger(4);
         //
         EventQueue queue = new EventQueue();
+        queue.onTaskComplete((message, state) -> {
+            System.out.println("State: " + state.name());
+            System.out.println(message.toString());
+            if (counter.get() > 1) {
+                counter.decrementAndGet();
+            } else {
+                latch.countDown();
+            }
+        });
+        //Adding Into Queue:
+        queue.add(new SimpleTask("Wow bro! I am Adams"));
+        queue.add(new SimpleTask("Hello bro! I am Hayes"));
+        queue.add(new SimpleTask("Hi there! I am Cris"));
+        queue.add(new SimpleTask("Let's bro! I am James"));
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void jmsQueueTest() {
+        //Initialize:
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicInteger counter = new AtomicInteger(4);
+        //
+        JMSQueue queue = new JMSQueue();
         queue.onTaskComplete((message, state) -> {
             System.out.println("State: " + state.name());
             System.out.println(message.toString());

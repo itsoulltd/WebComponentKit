@@ -1,6 +1,8 @@
-package com.infoworks.lab.beans.queue;
+package com.infoworks.lab.beans.queue.event;
 
+import com.infoworks.lab.beans.queue.AbstractTaskQueue;
 import com.infoworks.lab.beans.tasks.definition.Task;
+import com.infoworks.lab.beans.tasks.definition.TaskManager;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.rest.models.Message;
@@ -12,7 +14,7 @@ public class EventQueue extends AbstractTaskQueue {
 
     private final TaskQueue exeQueue;
     private final TaskQueue abortQueue;
-    private final EventQueueListener handler;
+    private final TaskManager taskManager;
 
     public EventQueue(int numberOfThreads) {
         numberOfThreads = numberOfThreads <= 0
@@ -20,7 +22,7 @@ public class EventQueue extends AbstractTaskQueue {
                 : numberOfThreads;
         this.exeQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
         this.abortQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
-        this.handler = new EventQueueManager(this);
+        this.taskManager = new EventQueueManager(this);
     }
 
     public EventQueue() {
@@ -36,19 +38,11 @@ public class EventQueue extends AbstractTaskQueue {
     @Override
     public void abort(Task task, Message error) {
         abortQueue.add(task);
-        //THIS IS FOR SIMULATION for MOM/AMQP/RabbitMQ/ActiveMQ/Redis/Kafka:
-        JmsMessage jmsMessage = convert(task, error);
-        handler.abortListener(jmsMessage.toString());
-        //
     }
 
     @Override
     public TaskQueue add(Task task) {
         exeQueue.add(task);
-        //THIS IS FOR SIMULATION for MOM/AMQP/RabbitMQ/ActiveMQ/Redis/Kafka:
-        JmsMessage jmsMessage = convert(task);
-        handler.startListener(jmsMessage.toString());
-        //
         return this;
     }
 

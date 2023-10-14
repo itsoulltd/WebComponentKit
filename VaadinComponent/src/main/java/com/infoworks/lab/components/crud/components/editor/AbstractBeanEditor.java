@@ -410,7 +410,7 @@ public abstract class AbstractBeanEditor<T extends EntityInterface>
         try {
             Field[] fields = item.getDeclaredFields(false);
             for (Field field: fields) {
-                if (skipField(field)) {
+                if (!skipField(field)) {
                     field.setAccessible(true);
                     String actualKey = field.getName();
                     Object value = field.get(item);
@@ -437,6 +437,6 @@ public abstract class AbstractBeanEditor<T extends EntityInterface>
                 && (field.getAnnotation(PrimaryKey.class)).auto();
         boolean shouldIgnored = field.isAnnotationPresent(Ignore.class);
         boolean isGeneratedPresent = field.isAnnotationPresent(GeneratedValue.class);
-        return (!isPrimaryWithAuto && !shouldIgnored && !isGeneratedPresent);
+        return isPrimaryWithAuto || shouldIgnored || isGeneratedPresent;
     }
 }

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractRestExecutor implements QueryExecutor<SQLSelectQuery
+public abstract class AbstractQueryExecutor implements QueryExecutor<SQLSelectQuery
         , SQLInsertQuery
         , SQLUpdateQuery
         , SQLDeleteQuery

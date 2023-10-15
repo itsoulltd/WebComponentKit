@@ -1,6 +1,6 @@
 package com.infoworks.lab.jsql;
 
-import com.infoworks.lab.components.rest.RestExecutor;
+import com.infoworks.lab.components.rest.RestApiExecutor;
 import com.it.soul.lab.connect.DriverClass;
 import com.it.soul.lab.connect.JDBConnectionPool;
 import com.it.soul.lab.jpql.service.JPQLExecutor;
@@ -63,7 +63,7 @@ public class JsqlConfig {
             ORMController controller = new ORMController(key);
             return new JPQLExecutor(controller.getEntityManager());
         }else if (type == ExecutorType.REST){
-            return new RestExecutor(container);
+            return new RestApiExecutor(container);
         }
         return null;
     }

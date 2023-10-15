@@ -21,16 +21,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RestExecutor extends AbstractRestExecutor {
+public class RestApiExecutor extends AbstractQueryExecutor {
 
     private DataSourceKey sourceKey;
     private String payloadClassName;
 
-    public RestExecutor(DataSourceKey sourceKey) {
+    public RestApiExecutor(DataSourceKey sourceKey) {
         this(Payload.class, sourceKey);
     }
 
-    public RestExecutor(Class<? extends EntityInterface> type, DataSourceKey sourceKey) {
+    public RestApiExecutor(Class<? extends EntityInterface> type, DataSourceKey sourceKey) {
         this.sourceKey = sourceKey;
         this.payloadClassName = type.getName();
     }

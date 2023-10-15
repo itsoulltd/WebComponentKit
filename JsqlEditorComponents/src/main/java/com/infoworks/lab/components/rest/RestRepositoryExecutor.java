@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-public class RestRepositoryExecutor extends AbstractRestExecutor{
+public class RestRepositoryExecutor extends AbstractQueryExecutor {
 
     private final RestRepository repository;
     private int maxCount;

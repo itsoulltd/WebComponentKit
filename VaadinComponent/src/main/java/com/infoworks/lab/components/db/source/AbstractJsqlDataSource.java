@@ -15,6 +15,8 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.Query;
@@ -147,8 +149,8 @@ public abstract class AbstractJsqlDataSource<E extends Entity> extends DefaultDa
         //
         int length = grid.getColumns().size();
         Grid.Column last = grid.getColumns().get(length - 1);
-        HorizontalLayout buttonCell = new HorizontalLayout(new Button(" < ", previousAction)
-                , new Button(" > ", nextAction));
+        HorizontalLayout buttonCell = new HorizontalLayout(new Button(new Icon(VaadinIcon.ARROW_LEFT), previousAction)
+                , new Button(new Icon(VaadinIcon.ARROW_RIGHT), nextAction));
         buttonCell.setPadding(false);
         buttonCell.setSpacing(true);
         buttonCell.setSizeFull();

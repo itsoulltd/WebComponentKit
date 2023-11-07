@@ -1,10 +1,6 @@
 package com.infoworks.lab.microstream.statemachine;
 
 import com.infoworks.lab.microstream.MicroDataStore;
-import com.infoworks.lab.microstream.statemachine.orders.states.BurningOnOven;
-import com.infoworks.lab.microstream.statemachine.orders.states.Confirmed;
-import com.infoworks.lab.microstream.statemachine.orders.states.Placed;
-import com.infoworks.lab.microstream.statemachine.orders.states.ReadyToServe;
 import com.infoworks.lab.microstream.statemachine.pizzas.CheeseCrustPizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.Pizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.ThickCrustPizza;
@@ -16,32 +12,29 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Optional;
-
 public class InMemoryStatemachineTest {
 
     String location = "target/MicroStream/InMemoryStatemachineTest";
-    PizzaRecipeRepository repository;
+    PizzaService service;
 
     @Before
     public void before() {
-        repository = new PizzaRecipeRepository(location);
+        service = new PizzaService(location);
         //Adding Recipes:
-        repository.save(new PizzaRecipe("1", "12.00", ThinCrustPizza.class.getName(), "Thin Crust Pizza"));
-        repository.save(new PizzaRecipe("2", "15.00", ThickCrustPizza.class.getName(), "Thick Crust Pizza"));
-        repository.save(new PizzaRecipe("3", "20.20", CheeseCrustPizza.class.getName(), "Cheese Crust Pizza"));
+        service.getRepository().save(new PizzaRecipe("1", "12.00", ThinCrustPizza.class.getName(), "Thin Crust Pizza"));
+        service.getRepository().save(new PizzaRecipe("2", "15.00", ThickCrustPizza.class.getName(), "Thick Crust Pizza"));
+        service.getRepository().save(new PizzaRecipe("3", "20.20", CheeseCrustPizza.class.getName(), "Cheese Crust Pizza"));
         //
-        repository.save(new PizzaRecipe("4", "1.00", Cheese.class.getName(), "Cheese"));
-        repository.save(new PizzaRecipe("5", "2.00", Mushroom.class.getName(), "Mushroom"));
-        repository.save(new PizzaRecipe("6", "1.50", Pepperoni.class.getName(), "Pepperoni"));
-        repository.save(new PizzaRecipe("7", "2.70", Sausage.class.getName(), "Sausage"));
+        service.getRepository().save(new PizzaRecipe("4", "1.00", Cheese.class.getName(), "Cheese"));
+        service.getRepository().save(new PizzaRecipe("5", "2.00", Mushroom.class.getName(), "Mushroom"));
+        service.getRepository().save(new PizzaRecipe("6", "1.50", Pepperoni.class.getName(), "Pepperoni"));
+        service.getRepository().save(new PizzaRecipe("7", "2.70", Sausage.class.getName(), "Sausage"));
         //
     }
 
     @After
     public void after() {
-        repository.clear();
+        service.getRepository().clear();
     }
 
     @Test
@@ -50,120 +43,6 @@ public class InMemoryStatemachineTest {
         SimpleDataSource<String, Pizza> pizzas = new MicroDataStore<>(location + "/pizza");
         SimpleDataSource<String, StateMachine> machines = new MicroDataStore<>(location + "/statemachine");
         //TODO
-    }
-
-    private Pizza addToppings(Order order, Class<? extends Toppings> topping, SimpleDataSource<String, Pizza> pizzas) throws RuntimeException {
-        if (order.getOrderId() == null) throw new RuntimeException("OrderId is null!");
-        Pizza pizza = pizzas.read(order.getOrderId());
-        if (pizza == null){
-            pizza = createPizza(order.getPizzaClassName()
-                    , repository
-                    , order.getToppingClassNames().toArray(new String[0]));
-        }
-        //
-        if (topping != null){
-            try {
-                //Configuring Order and Toppings with Pizza:
-                Toppings toppings = topping.getDeclaredConstructor().newInstance();
-                //Now Check for Recipe of a Topping:
-                Optional<PizzaRecipe> optRecipe = repository.findByClassName(topping.getName());
-                if (optRecipe.isPresent()){
-                    toppings.setRecipe(optRecipe.get());
-                }
-                //
-                toppings.setPizza(pizza);
-                pizza = toppings;
-                order.getToppingClassNames().add(topping.getName());
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
-            }
-        }
-        pizzas.put(order.getOrderId(), pizza);
-        order.setPrice(pizza.printedCost());
-        order.setDescription(pizza.getDescription());
-        return pizza;
-    }
-
-    private Pizza createPizza(String type, PizzaRecipeRepository repository, String...toppings) throws RuntimeException{
-        Pizza pizza = createPizza(type, repository);
-        //After recreating Pizza from name lets add those toppings:
-        if (toppings != null && toppings.length > 0){
-            for (String savedToppingClassName : toppings){
-                try {
-                    Class<? extends Toppings> savedToppingClass = (Class<Toppings>) Class.forName(savedToppingClassName);
-                    Toppings savedTopping = savedToppingClass.getDeclaredConstructor().newInstance();
-                    //Now Check for Recipe of a saved Topping:
-                    Optional<PizzaRecipe> optRecipe = repository.findByClassName(savedToppingClassName);
-                    if (optRecipe.isPresent()){
-                        savedTopping.setRecipe(optRecipe.get());
-                    }
-                    //
-                    savedTopping.setPizza(pizza);
-                    pizza = savedTopping;
-                } catch (Exception e) {
-                    throw new RuntimeException(e.getMessage());
-                }
-            }
-        }
-        return pizza;
-    }
-
-    private Pizza createPizza(String type, PizzaRecipeRepository repository) {
-        if (type != null && !type.isEmpty() ){
-            try {
-                Class aClass = Class.forName(type);
-                Pizza pizza = (Pizza) aClass.getDeclaredConstructor().newInstance();
-                //Now Check for Recipe:
-                Optional<PizzaRecipe> optRecipe = repository.findByClassName(type);
-                if (optRecipe.isPresent()){
-                    pizza.setRecipe(optRecipe.get());
-                }
-                return pizza;
-            } catch (ClassNotFoundException | IllegalAccessException
-                    | InstantiationException | NoSuchMethodException
-                    | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
-        return new ThinCrustPizza();
-    }
-
-    private Order changeState(Order order, SimpleDataSource<String, StateMachine> machines) {
-        if (order.getOrderId() == null) return order;
-        StateMachine machine = machines.read(order.getOrderId());
-        if (machine == null){
-            machine = createMachine(order.getStateClassName());
-            machines.put(order.getOrderId(), machine);
-        }
-        machine.moveNext();
-        order.setStateClassName(machine.currentState().getClass().getName());
-        //If-Order-Reached-To-ReadyToServe: remove from all in-mem-store
-        if (machine.isCurrentState(ReadyToServe.class)) {
-            machines.remove(order.getOrderId());
-        }
-        return order;
-    }
-
-    private boolean canAddToppings(Order order, SimpleDataSource<String, StateMachine> machines) {
-        if (order.getOrderId() == null) return false;
-        StateMachine machine = machines.read(order.getOrderId());
-        return machine.isCurrentState(Placed.class);
-    }
-
-    private StateMachine createMachine(String lastKnownState) {
-        StateMachine machine = new StateMachine(Placed.class
-                , Confirmed.class
-                , BurningOnOven.class
-                , ReadyToServe.class);
-        //
-        if (lastKnownState != null && !lastKnownState.isEmpty()){
-            //After re-create statemachine lets move to last saved state:
-            do{
-                machine.moveNext();
-            } while (!machine.currentState().getClass()
-                    .getName().equalsIgnoreCase(lastKnownState));
-        }
-        return machine;
     }
 
     private Class<? extends Pizza> whichCrust(String crustName) {

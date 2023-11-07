@@ -13,9 +13,12 @@ import com.it.soul.lab.data.simple.SimpleDataSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class PizzaService {
+public class PizzaService implements AutoCloseable{
 
+    private static Logger LOG = Logger.getLogger("PizzaService");
     private final PizzaRecipeRepository repository;
     private SimpleDataSource<String, StateMachine> machines;
     private SimpleDataSource<String, Pizza> pizzas;
@@ -161,4 +164,24 @@ public class PizzaService {
         return machine;
     }
 
+    @Override
+    public void close() throws Exception {
+        repository.close();
+        if (pizzas instanceof MicroDataStore){
+            try {
+                ((MicroDataStore<String, Pizza>) pizzas).close();
+                LOG.info("InMem-Pizzas Storage Save Successful");
+            } catch (Exception e) {
+                LOG.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+        if (machines instanceof MicroDataStore){
+            try {
+                ((MicroDataStore<String, StateMachine>) machines).close();
+                LOG.info("InMem-Statemachine Storage Save Successful");
+            } catch (Exception e) {
+                LOG.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+    }
 }

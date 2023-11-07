@@ -1,13 +1,10 @@
 package com.infoworks.lab.microstream.statemachine;
 
-import com.infoworks.lab.microstream.MicroDataStore;
 import com.infoworks.lab.microstream.statemachine.pizzas.CheeseCrustPizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.Pizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.ThickCrustPizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.ThinCrustPizza;
 import com.infoworks.lab.microstream.statemachine.toppings.*;
-import com.infoworks.lab.util.states.StateMachine;
-import com.it.soul.lab.data.simple.SimpleDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,15 +30,16 @@ public class InMemoryStatemachineTest {
     }
 
     @After
-    public void after() {
+    public void after() throws Exception {
         service.getRepository().clear();
+        service.close();
     }
 
     @Test
     public void statemachineTest() {
         //
-        SimpleDataSource<String, Pizza> pizzas = new MicroDataStore<>(location + "/pizza");
-        SimpleDataSource<String, StateMachine> machines = new MicroDataStore<>(location + "/statemachine");
+        //SimpleDataSource<String, Pizza> pizzas = new MicroDataStore<>(location + "/pizza");
+        //SimpleDataSource<String, StateMachine> machines = new MicroDataStore<>(location + "/statemachine");
         //TODO
     }
 

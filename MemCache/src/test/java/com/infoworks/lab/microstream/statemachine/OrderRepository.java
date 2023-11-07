@@ -4,9 +4,12 @@ import com.infoworks.lab.microstream.MicroDataStore;
 import com.it.soul.lab.data.simple.SimpleDataSource;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class OrderRepository {
+public class OrderRepository implements AutoCloseable {
 
+    private static Logger LOG = Logger.getLogger("OrderRepository");
     private final SimpleDataSource<String, Order> storage;
 
     public OrderRepository(String location) {
@@ -35,4 +38,15 @@ public class OrderRepository {
         return storage.remove(order.getOrderId());
     }
 
+    @Override
+    public void close() throws Exception {
+        if (storage instanceof MicroDataStore){
+            try {
+                ((MicroDataStore<String, Order>) storage).close();
+                LOG.info("InMem-Order Storage Save Successful");
+            } catch (Exception e) {
+                LOG.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+    }
 }

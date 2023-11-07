@@ -26,7 +26,17 @@ public class InMemoryStatemachineTest {
 
     @Before
     public void before() {
-        repository = new PizzaRecipeRepository();
+        repository = new PizzaRecipeRepository(location);
+        //Adding Recipes:
+        repository.save(new PizzaRecipe("1", "12.00", ThinCrustPizza.class.getName(), "Thin Crust Pizza"));
+        repository.save(new PizzaRecipe("2", "15.00", ThickCrustPizza.class.getName(), "Thick Crust Pizza"));
+        repository.save(new PizzaRecipe("3", "20.20", CheeseCrustPizza.class.getName(), "Cheese Crust Pizza"));
+        //
+        repository.save(new PizzaRecipe("4", "1.00", Cheese.class.getName(), "Cheese"));
+        repository.save(new PizzaRecipe("5", "2.00", Mushroom.class.getName(), "Mushroom"));
+        repository.save(new PizzaRecipe("6", "1.50", Pepperoni.class.getName(), "Pepperoni"));
+        repository.save(new PizzaRecipe("7", "2.70", Sausage.class.getName(), "Sausage"));
+        //
     }
 
     @After

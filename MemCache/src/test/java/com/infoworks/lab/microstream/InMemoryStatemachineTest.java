@@ -1,5 +1,7 @@
-package com.infoworks.lab.microstream.statemachine;
+package com.infoworks.lab.microstream;
 
+import com.infoworks.lab.microstream.statemachine.PizzaRecipe;
+import com.infoworks.lab.microstream.statemachine.PizzaService;
 import com.infoworks.lab.microstream.statemachine.pizzas.CheeseCrustPizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.Pizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.ThickCrustPizza;

@@ -142,7 +142,7 @@ public class PizzaService implements AutoCloseable{
         return changeState(order);
     }
 
-    public boolean canAddToppings(Order order, SimpleDataSource<String, StateMachine> machines) {
+    public boolean canAddToppings(Order order) {
         if (order.getOrderId() == null) return false;
         StateMachine machine = machines.read(order.getOrderId());
         return machine.isCurrentState(Placed.class);

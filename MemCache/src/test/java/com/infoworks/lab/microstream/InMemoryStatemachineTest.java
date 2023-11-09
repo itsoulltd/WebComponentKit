@@ -60,7 +60,7 @@ public class InMemoryStatemachineTest {
         Assert.assertEquals(Placed.class.getName(), newOrder.getStateClassName());
         System.out.println("State: " + newOrder.getStateClassName());
         //Add topping:
-        System.out.println(String.format("Can we add toppings now? "
+        System.out.println(String.format("Can we add toppings now? %s"
                 , (service.canAddToppings(newOrder) ? "YES" : "NO")));
         if (service.canAddToppings(newOrder)) {
             service.addToppings(newOrder, whichToppings("Sausage"));
@@ -74,7 +74,7 @@ public class InMemoryStatemachineTest {
         Assert.assertEquals(Confirmed.class.getName(), newOrder.getStateClassName());
         System.out.println("State: " + newOrder.getStateClassName());
         //Add topping:
-        System.out.println(String.format("Can we add toppings now? "
+        System.out.println(String.format("Can we add toppings now? %s"
                 , (service.canAddToppings(newOrder) ? "YES" : "NO")));
         if (service.canAddToppings(newOrder)) {
             service.addToppings(newOrder, whichToppings("Pepperoni"));
@@ -92,8 +92,9 @@ public class InMemoryStatemachineTest {
         System.out.println("State: " + newOrder.getStateClassName());
         //
         StateMachine forThisOrder = service.getMachineByOrderId(newOrder.getOrderId());
-        System.out.println(String.format("Is it last state? "
-                , (forThisOrder != null && forThisOrder.isCurrentState(ReadyToServe.class) ? "YES" : "NO")));
+        System.out.println(String.format("Is it the last state? %s"
+                , (forThisOrder == null || forThisOrder.isCurrentState(ReadyToServe.class)
+                        ? "YES" : "NO")));
     }
 
     private Class<? extends Pizza> whichCrust(String crustName) {

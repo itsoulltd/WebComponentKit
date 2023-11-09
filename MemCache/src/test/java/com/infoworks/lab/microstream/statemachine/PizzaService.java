@@ -24,9 +24,9 @@ public class PizzaService implements AutoCloseable{
     private SimpleDataSource<String, Pizza> pizzas;
 
     public PizzaService(String location) {
-        this.repository = new PizzaRecipeRepository(location);
-        this.machines = new MicroDataStore<>(location + "/statemachine");
-        this.pizzas = new MicroDataStore<>(location + "/pizza");
+        this(location
+                , new MicroDataStore<>(location + "/statemachine")
+                , new MicroDataStore<>(location + "/pizza"));
     }
 
     public PizzaService(String location

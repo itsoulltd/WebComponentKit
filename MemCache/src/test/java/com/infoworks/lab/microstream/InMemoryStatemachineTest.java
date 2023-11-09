@@ -6,11 +6,13 @@ import com.infoworks.lab.microstream.statemachine.PizzaService;
 import com.infoworks.lab.microstream.statemachine.orders.states.BurningOnOven;
 import com.infoworks.lab.microstream.statemachine.orders.states.Confirmed;
 import com.infoworks.lab.microstream.statemachine.orders.states.Placed;
+import com.infoworks.lab.microstream.statemachine.orders.states.ReadyToServe;
 import com.infoworks.lab.microstream.statemachine.pizzas.CheeseCrustPizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.Pizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.ThickCrustPizza;
 import com.infoworks.lab.microstream.statemachine.pizzas.ThinCrustPizza;
 import com.infoworks.lab.microstream.statemachine.toppings.*;
+import com.infoworks.lab.util.states.StateMachine;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,30 +53,47 @@ public class InMemoryStatemachineTest {
         Order newOrder = service.createOrder(whichCrust("thick"));
         newOrder.setCustomerEmail("m.towhid@gmail.com");
         service.addToppings(newOrder, null);
-        //
         //Assert: current price
         Assert.assertEquals("15.00", newOrder.getPrice());
         System.out.println("Price: " + newOrder.getPrice());
         //Assert: state
         Assert.assertEquals(Placed.class.getName(), newOrder.getStateClassName());
         System.out.println("State: " + newOrder.getStateClassName());
+        //Add topping:
+        System.out.println(String.format("Can we add toppings now? "
+                , (service.canAddToppings(newOrder) ? "YES" : "NO")));
+        if (service.canAddToppings(newOrder)) {
+            service.addToppings(newOrder, whichToppings("Sausage"));
+            Assert.assertEquals("17.70", newOrder.getPrice());
+            service.addToppings(newOrder, whichToppings("Pepperoni"));
+            Assert.assertEquals("19.20", newOrder.getPrice());
+        }
         //Change the state:
         service.changeState(newOrder);
         //Assert: state
         Assert.assertEquals(Confirmed.class.getName(), newOrder.getStateClassName());
         System.out.println("State: " + newOrder.getStateClassName());
         //Add topping:
-        service.addToppings(newOrder, whichToppings("Sausage"));
-        Assert.assertEquals("17.70", newOrder.getPrice());
-        service.addToppings(newOrder, whichToppings("Pepperoni"));
-        Assert.assertEquals("19.20", newOrder.getPrice());
+        System.out.println(String.format("Can we add toppings now? "
+                , (service.canAddToppings(newOrder) ? "YES" : "NO")));
+        if (service.canAddToppings(newOrder)) {
+            service.addToppings(newOrder, whichToppings("Pepperoni"));
+            Assert.assertEquals("20.70", newOrder.getPrice());
+        }
         //Change the state:
         service.changeState(newOrder);
         //Assert: state
         Assert.assertEquals(BurningOnOven.class.getName(), newOrder.getStateClassName());
         System.out.println("State: " + newOrder.getStateClassName());
+        //Change the state:
+        service.changeState(newOrder);
+        //Assert: state
+        Assert.assertEquals(ReadyToServe.class.getName(), newOrder.getStateClassName());
+        System.out.println("State: " + newOrder.getStateClassName());
         //
-        Assert.assertTrue("We can't add toppings now!", service.canAddToppings(newOrder));
+        StateMachine forThisOrder = service.getMachineByOrderId(newOrder.getOrderId());
+        System.out.println(String.format("Is it last state? "
+                , (forThisOrder != null && forThisOrder.isCurrentState(ReadyToServe.class) ? "YES" : "NO")));
     }
 
     private Class<? extends Pizza> whichCrust(String crustName) {

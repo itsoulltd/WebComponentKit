@@ -65,8 +65,15 @@ public class InMemoryStatemachineTest {
         if (service.canAddToppings(newOrder)) {
             service.addToppings(newOrder, whichToppings("Sausage"));
             Assert.assertEquals("17.70", newOrder.getPrice());
+            System.out.println(String.format("Price %s for %s"
+                    , newOrder.getPrice()
+                    , newOrder.getDescription()));
+
             service.addToppings(newOrder, whichToppings("Pepperoni"));
             Assert.assertEquals("19.20", newOrder.getPrice());
+            System.out.println(String.format("Price %s for %s"
+                    , newOrder.getPrice()
+                    , newOrder.getDescription()));
         }
         //Change the state:
         service.changeState(newOrder);
@@ -95,6 +102,9 @@ public class InMemoryStatemachineTest {
         System.out.println(String.format("Is it the last state? %s"
                 , (forThisOrder == null || forThisOrder.isCurrentState(ReadyToServe.class)
                         ? "YES" : "NO")));
+        System.out.println(String.format("Delivered with Price %s for %s"
+                , newOrder.getPrice()
+                , newOrder.getDescription()));
     }
 
     private Class<? extends Pizza> whichCrust(String crustName) {

@@ -129,4 +129,19 @@ public class InMemoryStatemachineTest {
         }
     }
 
+    public StateMachine HowToCreateMachine(String lastKnownState) {
+        StateMachine machine = new StateMachine(Placed.class
+                , Confirmed.class
+                , BurningOnOven.class
+                , ReadyToServe.class);
+        //After re-create statemachine lets move to last saved state:
+        if (lastKnownState != null && !lastKnownState.isEmpty()){
+            do{
+                machine.moveNext();
+            } while (!machine.currentState().getClass()
+                    .getName().equalsIgnoreCase(lastKnownState));
+        }
+        return machine;
+    }
+
 }

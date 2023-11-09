@@ -46,7 +46,7 @@ public class PizzaService implements AutoCloseable{
     }
 
     public Pizza createPizza(String type, String...toppings) throws RuntimeException{
-        Pizza pizza = createPizza(type, repository);
+        Pizza pizza = createPizza(type);
         //After recreating Pizza from name lets add those toppings:
         if (toppings != null && toppings.length > 0){
             for (String savedToppingClassName : toppings){
@@ -69,7 +69,7 @@ public class PizzaService implements AutoCloseable{
         return pizza;
     }
 
-    private Pizza createPizza(String type, PizzaRecipeRepository repository) {
+    private Pizza createPizza(String type) {
         if (type != null && !type.isEmpty() ){
             try {
                 Class aClass = Class.forName(type);

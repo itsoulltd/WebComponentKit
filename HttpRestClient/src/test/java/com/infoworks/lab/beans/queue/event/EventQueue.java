@@ -12,14 +12,12 @@ import java.util.function.BiConsumer;
 public class EventQueue extends AbstractTaskQueue {
 
     private final TaskQueue exeQueue;
-    private final TaskQueue abortQueue;
 
     public EventQueue(int numberOfThreads) {
         numberOfThreads = numberOfThreads <= 0
                 ? (Runtime.getRuntime().availableProcessors() / 2)
                 : numberOfThreads;
         this.exeQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
-        this.abortQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
     }
 
     public EventQueue() {
@@ -33,7 +31,8 @@ public class EventQueue extends AbstractTaskQueue {
 
     @Override
     public void abort(Task task, Message error) {
-        abortQueue.add(task);
+        task.setMessage(error);
+        exeQueue.add(task);
     }
 
     @Override

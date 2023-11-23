@@ -48,12 +48,12 @@ public class SimpleTask extends AbstractTask {
             Thread.sleep(rand * 1000);
             response.setStatus(200);
             if (message == null || message.getPayload() == null){
-                MSGEvent msg = new MSGEvent();
+                MessageEvent msg = new MessageEvent();
                 msg.setStatus(200 + rand);
                 msg.setMessage("Working!");
                 response.setEvent(msg);
             }else{
-                response.setEvent(message.getEvent(MSGEvent.class));
+                response.setEvent(message.getEvent(MessageEvent.class));
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -73,7 +73,7 @@ public class SimpleTask extends AbstractTask {
             if (message == null || message.getPayload() == null){
                 response.setError("Not Sure why! May be Covid-19");
             }else {
-                response.setEvent(message.getEvent(MSGEvent.class));
+                response.setEvent(message.getEvent(MessageEvent.class));
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

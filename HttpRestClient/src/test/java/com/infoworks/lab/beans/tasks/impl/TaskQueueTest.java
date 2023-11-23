@@ -3,6 +3,7 @@ package com.infoworks.lab.beans.tasks.impl;
 import com.infoworks.lab.beans.queue.event.EventQueue;
 import com.infoworks.lab.beans.queue.fakejms.JMSQueue;
 import com.infoworks.lab.beans.task.AbortTask;
+import com.infoworks.lab.beans.task.ExampleTask;
 import com.infoworks.lab.beans.task.SimpleTask;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import org.junit.After;
@@ -126,10 +127,10 @@ public class TaskQueueTest {
             }
         });
         //Adding Into Queue:
-        queue.add(new SimpleTask("Wow bro! I am Adams"));
-        queue.add(new SimpleTask("Hello bro! I am Hayes"));
-        queue.add(new SimpleTask("Hi there! I am Cris"));
-        queue.add(new SimpleTask("Let's bro! I am James"));
+        queue.add(new ExampleTask("Wow bro! I am Adams"));
+        queue.add(new ExampleTask("Hello bro! I am Hayes"));
+        queue.add(new ExampleTask("Hi there! I am Cris"));
+        queue.add(new ExampleTask("Let's bro! I am James"));
         //
         try {
             latch.await();

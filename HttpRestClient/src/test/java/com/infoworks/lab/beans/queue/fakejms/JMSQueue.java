@@ -7,22 +7,14 @@ import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.rest.models.Message;
 
-import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
 public class JMSQueue extends AbstractTaskQueue {
 
-    private final TaskQueue exeQueue;
-    private final TaskQueue abortQueue;
-    private final JMSQueueListener handler;
+    private final JMSBrokerTemplate jmsTemplate;
 
     public JMSQueue(int numberOfThreads) {
-        numberOfThreads = numberOfThreads <= 0
-                ? (Runtime.getRuntime().availableProcessors() / 2)
-                : numberOfThreads;
-        this.exeQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
-        this.abortQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
-        this.handler = new JMSQueueManager(this);
+        this.jmsTemplate = new JMSBrokerTemplate(this, numberOfThreads);
     }
 
     public JMSQueue() {
@@ -31,32 +23,26 @@ public class JMSQueue extends AbstractTaskQueue {
 
     @Override
     public void onTaskComplete(BiConsumer<Message, TaskStack.State> biConsumer) {
-        /*super.onTaskComplete(biConsumer);*/
-        exeQueue.onTaskComplete(biConsumer);
-    }
-
-    @Override
-    public void abort(Task task, Message error) {
-        abortQueue.add(task);
-        //THIS IS FOR SIMULATION for MOM/AMQP/RabbitMQ/ActiveMQ/Redis/Kafka:
-        JmsMessage jmsMessage = convert(task, error);
-        handler.abortListener(jmsMessage.toString());
-        //
+        super.onTaskComplete(biConsumer);
     }
 
     @Override
     public TaskQueue add(Task task) {
-        exeQueue.add(task);
-        //THIS IS FOR SIMULATION for MOM/AMQP/RabbitMQ/ActiveMQ/Redis/Kafka:
         JmsMessage jmsMessage = convert(task);
-        handler.startListener(jmsMessage.toString());
-        //
+        //THIS IS FOR SIMULATION for MOM/AMQP/RabbitMQ/ActiveMQ/Redis/Kafka:
+        jmsTemplate.convertAndSend(jmsMessage.toString());
         return this;
     }
 
     @Override
+    public void abort(Task task, Message error) {
+        JmsMessage jmsMessage = convert(task, error);
+        //THIS IS FOR SIMULATION for MOM/AMQP/RabbitMQ/ActiveMQ/Redis/Kafka:
+        jmsTemplate.send(jmsMessage.toString());
+    }
+
+    @Override
     public TaskQueue cancel(Task task) {
-        //exeQueue.cancel(task);
         return this;
     }
 }

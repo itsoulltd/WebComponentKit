@@ -6,11 +6,21 @@ import com.infoworks.lab.beans.tasks.definition.Task;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class JMSQueueManager extends AbstractTaskQueueManager implements JMSQueueListener {
+public class JMSQueueManager extends AbstractTaskQueueManager implements JMSBrokerListener {
 
-    public JMSQueueManager(QueuedTaskLifecycleListener listener) {
+    private final ExecutorService exeQueue;
+    private final ExecutorService abortQueue;
+
+    public JMSQueueManager(QueuedTaskLifecycleListener listener, int numberOfThreads) {
         super(listener);
+        numberOfThreads = numberOfThreads <= 0
+                ? (Runtime.getRuntime().availableProcessors() / 2)
+                : numberOfThreads;
+        this.exeQueue = Executors.newFixedThreadPool(numberOfThreads);
+        this.abortQueue = Executors.newFixedThreadPool(numberOfThreads);
     }
 
     @Override
@@ -24,11 +34,11 @@ public class JMSQueueManager extends AbstractTaskQueueManager implements JMSQueu
 
     @Override
     public void startListener(String msg) {
-        handleTextOnStart(msg);
+        exeQueue.submit(() -> handleTextOnStart(msg));
     }
 
     @Override
     public void abortListener(String msg) {
-        handleTextOnStop(msg);
+        abortQueue.submit(() -> handleTextOnStop(msg));
     }
 }

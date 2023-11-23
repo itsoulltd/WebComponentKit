@@ -2,7 +2,6 @@ package com.infoworks.lab.beans.queue.event;
 
 import com.infoworks.lab.beans.queue.AbstractTaskQueue;
 import com.infoworks.lab.beans.tasks.definition.Task;
-import com.infoworks.lab.beans.tasks.definition.TaskManager;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.rest.models.Message;
@@ -14,7 +13,6 @@ public class EventQueue extends AbstractTaskQueue {
 
     private final TaskQueue exeQueue;
     private final TaskQueue abortQueue;
-    private final TaskManager taskManager;
 
     public EventQueue(int numberOfThreads) {
         numberOfThreads = numberOfThreads <= 0
@@ -22,7 +20,6 @@ public class EventQueue extends AbstractTaskQueue {
                 : numberOfThreads;
         this.exeQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
         this.abortQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
-        this.taskManager = new EventQueueManager(this);
     }
 
     public EventQueue() {
@@ -31,7 +28,6 @@ public class EventQueue extends AbstractTaskQueue {
 
     @Override
     public void onTaskComplete(BiConsumer<Message, TaskStack.State> biConsumer) {
-        /*super.onTaskComplete(biConsumer);*/
         exeQueue.onTaskComplete(biConsumer);
     }
 

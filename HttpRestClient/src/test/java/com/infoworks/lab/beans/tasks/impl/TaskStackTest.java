@@ -30,7 +30,7 @@ public class TaskStackTest {
         //
         //EXE: 4
         stack.push(new SimpleTask("Hello bro! I am Hayes", (message) -> {
-            MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
+            MessageEvent event = (MessageEvent) message.getEvent(MessageEvent.class);
             System.out.println(event.toString());
             return message;
         }));
@@ -38,7 +38,7 @@ public class TaskStackTest {
         stack.push(new SimpleTask("Wow bro! I am Adams"));
         //EXE: 2
         stack.push(new SimpleTask("Hi there! I am Cris", (message) -> {
-            MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
+            MessageEvent event = (MessageEvent) message.getEvent(MessageEvent.class);
             event.setMessage("Converted Message");
             event.setStatus(201);
             message.setEvent(event);
@@ -65,7 +65,7 @@ public class TaskStackTest {
         //
         //EXE: 4
         stack.push(new SimpleTask("Hello bro! I am Hayes", (message) -> {
-            MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
+            MessageEvent event = (MessageEvent) message.getEvent(MessageEvent.class);
             System.out.println(event.toString());
             return message;
         }));
@@ -73,7 +73,7 @@ public class TaskStackTest {
         stack.push(new SimpleTask("Wow bro! I am Adams"));
         //EXE: 2
         stack.push(new SimpleTask("Hi there! I am Cris", (message) -> {
-            MSGEvent event = (MSGEvent) message.getEvent(MSGEvent.class);
+            MessageEvent event = (MessageEvent) message.getEvent(MessageEvent.class);
             event.setMessage("Converted Message");
             event.setStatus(201);
             message.setEvent(event);

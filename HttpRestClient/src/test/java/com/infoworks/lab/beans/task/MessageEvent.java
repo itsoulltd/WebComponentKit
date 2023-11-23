@@ -2,7 +2,8 @@ package com.infoworks.lab.beans.task;
 
 import com.infoworks.lab.rest.models.events.Event;
 
-public class MSGEvent  extends Event {
+public class MessageEvent extends Event {
+
     private String message;
     private int status;
     private String error;

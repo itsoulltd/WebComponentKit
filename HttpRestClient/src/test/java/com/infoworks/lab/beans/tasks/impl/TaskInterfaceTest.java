@@ -1,5 +1,6 @@
 package com.infoworks.lab.beans.tasks.impl;
 
+import com.infoworks.lab.beans.queue.fakejms.JMSQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.beans.tasks.nuts.AbstractTask;
@@ -18,17 +19,20 @@ public class TaskInterfaceTest {
 
     private TaskStack stack;
     private TaskQueue queue;
+    private TaskQueue jmsQueue;
 
     @Before
     public void before(){
         stack = TaskStack.createSync(false);
         queue = TaskQueue.createSync(false);
+        jmsQueue = new JMSQueue();
     }
 
     @After
     public void after(){
         stack = null;
         queue = null;
+        jmsQueue = null;
     }
 
     @Test
@@ -66,10 +70,37 @@ public class TaskInterfaceTest {
                 latch.countDown();
             }
         });
+        //Only 4 - Item should be there!
         queue.add(new BasicTask());
         queue.add(new BasicExecutableTask());
         queue.add(new TaskWithCustomConstructor("James", 29));
         queue.add(new ExeTaskWithCustomConstructor("Sohana", 23));
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void taskSubclassTestInJMSQueue() {
+        //Initialize:
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicInteger counter = new AtomicInteger(4);
+        //
+        jmsQueue.onTaskComplete((message, state) -> {
+            System.out.println("State: " + state.name());
+            System.out.println(message.toString());
+            if (counter.get() > 1) {
+                counter.decrementAndGet();
+            } else {
+                latch.countDown();
+            }
+        });
+        //Only 4 - Item should be there!
+        jmsQueue.add(new BasicTask());
+        jmsQueue.add(new BasicExecutableTask());
+        jmsQueue.add(new JMSTaskWithCustomConstructor("James", 29)); //Always need Zero param constructor
+        jmsQueue.add(new JMSExeTaskWithCustomConstructor("Sohana", 23)); //Always need Zero param constructor
         //
         try {
             latch.await();
@@ -127,6 +158,50 @@ public class TaskInterfaceTest {
     public static class ExeTaskWithCustomConstructor extends ExecutableTask<Message, Response> {
 
         public ExeTaskWithCustomConstructor(String name, int age) {
+            super(new Property("name", name), new Property("age", age));
+        }
+
+        @Override
+        public Response execute(Message message) throws RuntimeException {
+            String name = getPropertyValue("name").toString();
+            int age = Integer.valueOf(getPropertyValue("age").toString());
+            System.out.println(String.format("%s: Success! %s, %s"
+                    , ExeTaskWithCustomConstructor.class.getSimpleName(), name, age));
+            return new Response().setStatus(200).setMessage(String.format("Success! %s, %s", name, age));
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    public static class JMSTaskWithCustomConstructor extends AbstractTask<Message, Response> {
+
+        public JMSTaskWithCustomConstructor() {}
+
+        public JMSTaskWithCustomConstructor(String name, int age) {
+            super(new Property("name", name), new Property("age", age));
+        }
+
+        @Override
+        public Response execute(Message message) throws RuntimeException {
+            String name = getPropertyValue("name").toString();
+            int age = Integer.valueOf(getPropertyValue("age").toString());
+            System.out.println(String.format("%s: Success! %s, %s"
+                    , TaskWithCustomConstructor.class.getSimpleName(), name, age));
+            return new Response().setStatus(200).setMessage(String.format("Success! %s, %s", name, age));
+        }
+
+        @Override
+        public Response abort(Message message) throws RuntimeException {
+            System.out.println(String.format("%s: %s", TaskWithCustomConstructor.class.getSimpleName(), "Error!"));
+            return new Response().setStatus(500).setMessage("Error!");
+        }
+    }
+
+    public static class JMSExeTaskWithCustomConstructor extends ExecutableTask<Message, Response> {
+
+        public JMSExeTaskWithCustomConstructor() {}
+
+        public JMSExeTaskWithCustomConstructor(String name, int age) {
             super(new Property("name", name), new Property("age", age));
         }
 

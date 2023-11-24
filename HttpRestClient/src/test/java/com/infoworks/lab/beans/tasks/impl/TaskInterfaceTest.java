@@ -1,5 +1,6 @@
 package com.infoworks.lab.beans.tasks.impl;
 
+import com.infoworks.lab.beans.queue.event.EventQueue;
 import com.infoworks.lab.beans.queue.fakejms.JMSQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
@@ -20,12 +21,14 @@ public class TaskInterfaceTest {
     private TaskStack stack;
     private TaskQueue queue;
     private TaskQueue jmsQueue;
+    private TaskQueue eventQueue;
 
     @Before
     public void before(){
         stack = TaskStack.createSync(false);
         queue = TaskQueue.createSync(false);
         jmsQueue = new JMSQueue();
+        eventQueue = new EventQueue();
     }
 
     @After
@@ -33,6 +36,7 @@ public class TaskInterfaceTest {
         stack = null;
         queue = null;
         jmsQueue = null;
+        eventQueue = null;
     }
 
     @Test
@@ -75,6 +79,34 @@ public class TaskInterfaceTest {
         queue.add(new BasicExecutableTask());
         queue.add(new TaskWithCustomConstructor("James", 29));
         queue.add(new ExeTaskWithCustomConstructor("Sohana", 23));
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void taskSubclassTestInEventQueue() {
+        //Initialize:
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicInteger counter = new AtomicInteger(6);
+        //
+        eventQueue.onTaskComplete((message, state) -> {
+            System.out.println("State: " + state.name());
+            System.out.println(message.toString());
+            if (counter.get() > 1) {
+                counter.decrementAndGet();
+            } else {
+                latch.countDown();
+            }
+        });
+        //Only 6 - Item should be there!
+        eventQueue.add(new BasicTask());
+        eventQueue.add(new BasicExecutableTask());
+        eventQueue.add(new TaskWithCustomConstructor("James", 29));
+        eventQueue.add(new ExeTaskWithCustomConstructor("Sohana", 23));
+        eventQueue.add(new JMSTaskWithCustomConstructor("James", 29));
+        eventQueue.add(new JMSExeTaskWithCustomConstructor("Sohana", 23));
         //
         try {
             latch.await();
@@ -186,13 +218,13 @@ public class TaskInterfaceTest {
             String name = getPropertyValue("name").toString();
             int age = Integer.valueOf(getPropertyValue("age").toString());
             System.out.println(String.format("%s: Success! %s, %s"
-                    , TaskWithCustomConstructor.class.getSimpleName(), name, age));
+                    , JMSTaskWithCustomConstructor.class.getSimpleName(), name, age));
             return new Response().setStatus(200).setMessage(String.format("Success! %s, %s", name, age));
         }
 
         @Override
         public Response abort(Message message) throws RuntimeException {
-            System.out.println(String.format("%s: %s", TaskWithCustomConstructor.class.getSimpleName(), "Error!"));
+            System.out.println(String.format("%s: %s", JMSTaskWithCustomConstructor.class.getSimpleName(), "Error!"));
             return new Response().setStatus(500).setMessage("Error!");
         }
     }
@@ -210,7 +242,7 @@ public class TaskInterfaceTest {
             String name = getPropertyValue("name").toString();
             int age = Integer.valueOf(getPropertyValue("age").toString());
             System.out.println(String.format("%s: Success! %s, %s"
-                    , ExeTaskWithCustomConstructor.class.getSimpleName(), name, age));
+                    , JMSExeTaskWithCustomConstructor.class.getSimpleName(), name, age));
             return new Response().setStatus(200).setMessage(String.format("Success! %s, %s", name, age));
         }
     }

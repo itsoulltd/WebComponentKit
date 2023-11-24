@@ -208,9 +208,7 @@ public class TaskInterfaceTest {
     public static class JMSTaskWithCustomConstructor extends AbstractTask<Message, Response> {
 
         //Must need Zero param constructor in Case of JMSTask
-        public JMSTaskWithCustomConstructor() {
-            this("", 0);
-        }
+        public JMSTaskWithCustomConstructor() {}
 
         public JMSTaskWithCustomConstructor(String name, int age) {
             super(new Property("name", name), new Property("age", age));
@@ -235,9 +233,7 @@ public class TaskInterfaceTest {
     public static class JMSExeTaskWithCustomConstructor extends ExecutableTask<Message, Response> {
 
         //Must need Zero param constructor in Case of JMSTask
-        public JMSExeTaskWithCustomConstructor() {
-            this("", 0);
-        }
+        public JMSExeTaskWithCustomConstructor() {}
 
         public JMSExeTaskWithCustomConstructor(String name, int age) {
             super(new Property("name", name), new Property("age", age));

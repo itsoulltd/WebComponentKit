@@ -96,7 +96,7 @@ public class HttpTemplateTest {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private String urlencodedQueryParam(QueryParam...params){
         if (params == null) return "";
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         //Separate Paths:
         List<String> pathsBag = new ArrayList<>();
         for (QueryParam query : params) {

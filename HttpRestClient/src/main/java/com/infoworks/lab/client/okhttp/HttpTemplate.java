@@ -115,36 +115,6 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         return routeTo;
     }
 
-    protected String urlencodedQueryParam(QueryParam...params){
-        if (params == null) return "";
-        StringBuffer buffer = new StringBuffer();
-        //Separate Paths:
-        List<String> pathsBag = new ArrayList<>();
-        for (QueryParam query : params) {
-            if (query.getValue() != null && !query.getValue().isEmpty()) {
-                continue;
-            }
-            pathsBag.add(query.getKey());
-        }
-        buffer.append(validatePaths(pathsBag.toArray(new String[0])));
-        //Incorporate QueryParams:
-        buffer.append("?");
-        for (QueryParam query : params){
-            if (query.getValue() == null || query.getValue().isEmpty()){
-                continue;
-            }
-            try {
-                buffer.append(query.getKey()
-                        + "="
-                        + URLEncoder.encode(query.getValue(), "UTF-8")
-                        + "&");
-            } catch (UnsupportedEncodingException e) {}
-        }
-        String value = buffer.toString();
-        value = value.substring(0, value.length()-1);
-        return value;
-    }
-
     public P get(C consume , QueryParam...params) throws HttpInvocationException {
         P produce = null;
         Class<P> type = getInferredProduce();
@@ -267,7 +237,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
         });
     }
 
-    @Override
+    @Override @SuppressWarnings("Duplicates")
     public <T> URI getUri(T... params) {
         try {
             if (params instanceof String[]){

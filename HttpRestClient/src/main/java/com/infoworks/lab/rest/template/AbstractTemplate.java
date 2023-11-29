@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.QueueItem;
 import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.models.ResponseList;
@@ -11,7 +12,9 @@ import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +31,36 @@ public abstract class AbstractTemplate {
             routeTo = getClass().getAnnotation(Route.class).value();
         }
         return routeTo;
+    }
+
+    protected String urlencodedQueryParam(QueryParam...params){
+        if (params == null) return "";
+        StringBuilder buffer = new StringBuilder();
+        //Separate Paths:
+        List<String> pathsBag = new ArrayList<>();
+        for (QueryParam query : params) {
+            if (query.getValue() != null && !query.getValue().isEmpty()) {
+                continue;
+            }
+            pathsBag.add(query.getKey());
+        }
+        buffer.append(validatePaths(pathsBag.toArray(new String[0])));
+        //Incorporate QueryParams:
+        buffer.append("?");
+        for (QueryParam query : params){
+            if (query.getValue() == null || query.getValue().isEmpty()){
+                continue;
+            }
+            try {
+                buffer.append(query.getKey()
+                        + "="
+                        + URLEncoder.encode(query.getValue(), "UTF-8")
+                        + "&");
+            } catch (UnsupportedEncodingException e) {}
+        }
+        String value = buffer.toString();
+        value = value.substring(0, value.length()-1);
+        return value;
     }
 
     private ObjectMapper jsonSerializer;

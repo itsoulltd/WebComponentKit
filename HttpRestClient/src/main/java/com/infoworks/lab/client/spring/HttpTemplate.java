@@ -73,7 +73,7 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
     }
 
     protected String routePath() {
-        String routeTo = "/";
+        String routeTo = "";
         if (getClass().isAnnotationPresent(Route.class)){
             routeTo = getClass().getAnnotation(Route.class).value();
         }

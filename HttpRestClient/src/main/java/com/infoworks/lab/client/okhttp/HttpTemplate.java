@@ -113,7 +113,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
     }
 
     protected String routePath() {
-        String routeTo = "/";
+        String routeTo = "";
         if (getClass().isAnnotationPresent(Route.class)){
             routeTo = getClass().getAnnotation(Route.class).value();
         }

@@ -123,7 +123,9 @@ public abstract class AbstractTemplate {
         StringBuffer buffer = new StringBuffer();
         Arrays.stream(params).forEach(str -> {
             String trimmed = str.trim();
-            if (trimmed.length() > 2 && trimmed.endsWith("/")) trimmed = trimmed.substring(0, trimmed.length() - 1);
+            if (trimmed.length() > 2 && trimmed.endsWith("/"))
+                trimmed = trimmed.substring(0, trimmed.length() - 1);
+
             if(trimmed.startsWith("/"))
                 buffer.append(trimmed);
             else

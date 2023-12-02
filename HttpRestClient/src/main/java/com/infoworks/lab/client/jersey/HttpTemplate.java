@@ -47,8 +47,9 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
     public void configure(Object... config) throws InstantiationException{
         if (config == null) throw new InstantiationException();
         Arrays.stream(config).forEach(o -> {
-            if (o instanceof URI){
-                _domain = ((URI)o).toString();
+            if (o instanceof URI
+                    || o instanceof URL){
+                _domain = o.toString();
             }else if(o instanceof Property) {
                 properties.add((Property) o);
             }else if (o instanceof Class<?>){

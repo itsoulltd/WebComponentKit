@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 public class HttpTemplate<P extends Response, C extends EntityInterface> extends AbstractTemplate implements HttpInteractor<P,C> {
 
+    private String _domain;
     private Class<P> inferredProduce;
     private Class<C> inferredConsume;
     private List<Property> properties = new ArrayList<>();
@@ -44,7 +45,10 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
     public void configure(Object... config) throws InstantiationException{
         if (config != null) {
             Arrays.stream(config).forEach(o -> {
-                if (o instanceof Property) {
+                if (o instanceof URI
+                        || o instanceof URL){
+                    _domain = o.toString();
+                } else if (o instanceof Property) {
                     properties.add((Property) o);
                 } else if (o instanceof Class<?>) {
                     if (inferredProduce == null) inferredProduce = (Class<P>) o;
@@ -60,7 +64,8 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
     }
 
     protected String domain() throws MalformedURLException {
-        String _domain = String.format("%s%s:%s%s", schema(), host(), port(), validatePaths(api()));
+        if (Objects.nonNull(_domain)) return _domain;
+        _domain = String.format("%s%s:%s%s", schema(), host(), port(), validatePaths(api()));
         URL url = new URL(_domain);
         return url.toString();
     }

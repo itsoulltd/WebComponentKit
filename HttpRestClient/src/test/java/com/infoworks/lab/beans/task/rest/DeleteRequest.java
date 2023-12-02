@@ -33,7 +33,7 @@ public class DeleteRequest<C extends EntityInterface, P extends Response> extend
             return new Response().setStatus(result ? 200 : 400)
                     .setMessage(result ? "Deletion Successful" : "Deletion Failed");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return new Response().setStatus(500).setMessage(e.getMessage());
         }
     }
 }

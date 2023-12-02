@@ -1,9 +1,13 @@
 package com.infoworks.lab.beans.tasks.impl;
 
 import com.infoworks.lab.beans.task.rest.FetchRequest;
+import com.infoworks.lab.beans.task.rest.GetRequest;
+import com.infoworks.lab.beans.task.rest.PostRequest;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.client.jersey.HttpRepositoryTemplate;
+import com.infoworks.lab.client.jersey.HttpTemplate;
 import com.infoworks.lab.rest.models.Response;
+import com.infoworks.lab.rest.repository.RestRepository;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -18,8 +22,12 @@ public class RestTemplateTaskTest {
     public void requestFlowTest() {
         CountDownLatch latch = new CountDownLatch(1);
         //
+        HttpTemplate template = new PersonRestTemplate();
+
         TaskStack stack = TaskStack.createSync(true);
-        stack.push(new FetchRequest(new PersonRestTemplate(), 1, 10));
+        stack.push(new FetchRequest((RestRepository) template, 1, 10));
+        stack.push(new GetRequest(template, new Person()));
+        stack.push(new PostRequest(template, new Person(), "/api/save"));
         //
         stack.commit(true, (message, status) -> {
             if (message == null) {

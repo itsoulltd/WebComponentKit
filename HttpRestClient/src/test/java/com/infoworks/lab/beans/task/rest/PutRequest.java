@@ -6,7 +6,7 @@ import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.template.HttpInteractor;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
-public class PutRequest<C extends EntityInterface, P extends Response> extends ExecutableTask<Message, P> {
+public class PutRequest<C extends EntityInterface, P extends Response> extends ExecutableTask<Message, Response> {
 
     private HttpInteractor<P, C> template;
     private C consume;
@@ -25,13 +25,13 @@ public class PutRequest<C extends EntityInterface, P extends Response> extends E
     }
 
     @Override
-    public P execute(Message message) throws RuntimeException {
+    public Response execute(Message message) throws RuntimeException {
         if (template == null) throw new RuntimeException(GetRequest.class.getName() + " template is null!");
         try {
             P res = template.put(consume, paths);
             return res;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return new Response().setStatus(500).setMessage(e.getMessage());
         }
     }
 }

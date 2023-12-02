@@ -1,13 +1,17 @@
 package com.infoworks.lab.beans.tasks.impl;
 
+import com.infoworks.lab.beans.task.rest.aggregate.AggregateRequest;
+import com.infoworks.lab.beans.task.rest.aggregate.AggregatedResponse;
 import com.infoworks.lab.beans.task.rest.repository.FetchRequest;
 import com.infoworks.lab.beans.task.rest.request.GetRequest;
 import com.infoworks.lab.beans.task.rest.request.PostRequest;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.client.jersey.HttpRepositoryTemplate;
 import com.infoworks.lab.client.jersey.HttpTemplate;
+import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.repository.RestRepository;
+import com.infoworks.lab.rest.template.Invocation;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -36,6 +40,38 @@ public class RestTemplateTaskTest {
                 System.out.println("\n");
                 System.out.println("State: " + status);
                 System.out.println(message.toString());
+            }
+            latch.countDown();
+        });
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void aggregatedRequestTest() {
+        CountDownLatch latch = new CountDownLatch(1);
+        //
+        HttpTemplate template = new PersonRestTemplate();
+
+        TaskStack stack = TaskStack.createSync(true);
+        stack.push(new AggregateRequest(template, Invocation.Method.GET, new Person()
+                , new QueryParam("/api", null), new QueryParam("id", "121")));
+        stack.push(new AggregateRequest(template, Invocation.Method.POST, new Person()
+                , new QueryParam("/api", null), new QueryParam("save", null)));
+        //
+        stack.commit(true, (message, status) -> {
+            if (message == null) {
+                System.out.println("No Message Return!");
+            } else {
+                System.out.println("\n");
+                System.out.println("State: " + status);
+                //System.out.println(message.toString());
+                if (message instanceof AggregatedResponse) {
+                    ((AggregatedResponse<Response>) message)
+                            .forEach(val -> System.out.println(val.toString()));
+                }
             }
             latch.countDown();
         });

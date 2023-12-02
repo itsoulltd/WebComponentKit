@@ -21,6 +21,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C extends EntityInterface> extends HttpAbstractTemplate implements HttpInteractor<P,C> {
@@ -83,6 +84,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
 
     @Override
     protected synchronized String domain() throws MalformedURLException {
+        if (Objects.nonNull(_domain)) return _domain;
         _domain = String.format("%s%s:%s%s", schema(), host(), port(), validatePaths(api()));
         validateURL(_domain);
         return _domain;

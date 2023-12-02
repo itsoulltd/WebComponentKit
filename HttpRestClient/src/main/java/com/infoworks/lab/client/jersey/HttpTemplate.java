@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -75,6 +76,7 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
 
     @Override
     protected synchronized String domain() throws MalformedURLException {
+        if (Objects.nonNull(_domain)) return _domain;
         _domain = String.format("%s%s:%s%s", schema(), host(), port(), validatePaths(api()));
         validateURL(_domain);
         return _domain;

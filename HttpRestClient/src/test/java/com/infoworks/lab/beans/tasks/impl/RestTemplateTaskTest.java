@@ -1,9 +1,8 @@
 package com.infoworks.lab.beans.tasks.impl;
 
-import com.infoworks.lab.beans.task.FetchRequest;
+import com.infoworks.lab.beans.task.rest.FetchRequest;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.client.jersey.HttpRepositoryTemplate;
-import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.Response;
 import org.junit.Test;
 

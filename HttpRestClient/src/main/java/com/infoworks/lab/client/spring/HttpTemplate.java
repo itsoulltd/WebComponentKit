@@ -6,13 +6,13 @@ import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.template.AbstractTemplate;
 import com.infoworks.lab.rest.template.HttpInteractor;
+import com.infoworks.lab.rest.template.Route;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.it.soul.lab.sql.query.models.Property;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.MalformedURLException;
@@ -56,11 +56,11 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
                 }
             });
         }
-        HttpComponentsClientHttpRequestFactory clientFactory
+        /*HttpComponentsClientHttpRequestFactory clientFactory
                 = new HttpComponentsClientHttpRequestFactory();
         clientFactory.setReadTimeout(7000);
-        clientFactory.setConnectTimeout(5000);
-        this.template = new RestTemplate(clientFactory);
+        clientFactory.setConnectTimeout(5000);*/
+        this.template = new RestTemplate();
     }
 
     protected String domain() throws MalformedURLException {
@@ -68,6 +68,33 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
         _domain = String.format("%s%s:%s%s", schema(), host(), port(), validatePaths(api()));
         URL url = new URL(_domain);
         return url.toString();
+    }
+
+    protected String routePath() {
+        String routeTo = "/";
+        if (getClass().isAnnotationPresent(Route.class)){
+            routeTo = getClass().getAnnotation(Route.class).value();
+        }
+        return routeTo;
+    }
+
+    @SuppressWarnings("Duplicates")
+    protected StringBuffer validatePaths(String... params) {
+        StringBuffer buffer = new StringBuffer();
+        for (String str : params) {
+            String trimmed = str.trim();
+            if (trimmed.isEmpty()) continue;
+            if (trimmed.length() > 2 && trimmed.endsWith("/"))
+                trimmed = trimmed.substring(0, trimmed.length() - 1);
+
+            if(trimmed.startsWith("/"))
+                buffer.append(trimmed);
+            else if(trimmed.startsWith("?"))
+                buffer.append(trimmed);
+            else
+                buffer.append("/" + trimmed);
+        }
+        return buffer;
     }
 
     private Class<P> getInferredProduce(){
@@ -100,6 +127,7 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
         return "";
     }
 
+    @SuppressWarnings("Duplicates")
     private HttpHeaders createSecureHeader(EntityInterface consume){
         HttpHeaders headers = new HttpHeaders();
         if (consume != null){
@@ -129,9 +157,10 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
             //Prepare request-uri:
             String queryParam = urlencodedQueryParam(params);
             String rootUri = resourcePath(queryParam);
-            ResponseEntity<P> rs = template.exchange(rootUri, HttpMethod.GET, entity, type);
-            P produce = rs.getBody();
-            return produce;
+            ResponseEntity<String> rs = template.exchange(rootUri, HttpMethod.GET, entity, String.class);
+            List<P> produce = inflateJson(rs.getBody(), type);
+            return (produce != null && !produce.isEmpty())
+                    ? produce.get(0) : null;
         }catch (Exception e) {
             throw new HttpInvocationException(e.getMessage());
         }
@@ -165,9 +194,10 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
             HttpEntity<C> entity = new HttpEntity<>(consume, headers);
             //Prepare request-uri:
             String rootUri = resourcePath(paths);
-            ResponseEntity<P> rs = template.exchange(rootUri, HttpMethod.POST, entity, type);
-            P produce = rs.getBody();
-            return produce;
+            ResponseEntity<String> rs = template.exchange(rootUri, HttpMethod.POST, entity, String.class);
+            List<P> produce = inflateJson(rs.getBody(), type);
+            return (produce != null && !produce.isEmpty())
+                    ? produce.get(0) : null;
         }catch (Exception e) {
             throw new HttpInvocationException(e.getMessage());
         }
@@ -201,9 +231,10 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
             HttpEntity<C> entity = new HttpEntity<>(consume, headers);
             //Prepare request-uri:
             String rootUri = resourcePath(paths);
-            ResponseEntity<P> rs = template.exchange(rootUri, HttpMethod.PUT, entity, type);
-            P produce = rs.getBody();
-            return produce;
+            ResponseEntity<String> rs = template.exchange(rootUri, HttpMethod.PUT, entity, String.class);
+            List<P> produce = inflateJson(rs.getBody(), type);
+            return (produce != null && !produce.isEmpty())
+                    ? produce.get(0) : null;
         }catch (Exception e) {
             throw new HttpInvocationException(e.getMessage());
         }

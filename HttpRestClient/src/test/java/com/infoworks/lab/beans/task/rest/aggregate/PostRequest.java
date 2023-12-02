@@ -1,24 +1,23 @@
-package com.infoworks.lab.beans.task.rest;
+package com.infoworks.lab.beans.task.rest.aggregate;
 
 import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
 import com.infoworks.lab.rest.models.Message;
-import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.template.HttpInteractor;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
-public class GetRequest<C extends EntityInterface, P extends Response> extends ExecutableTask<Message, Response> {
+public class PostRequest<C extends EntityInterface, P extends Response> extends ExecutableTask<Message, Response> {
 
     private HttpInteractor<P, C> template;
     private C consume;
-    private QueryParam[] params;
+    private String[] paths;
 
-    public GetRequest() {}
+    public PostRequest() {}
 
-    public GetRequest(HttpInteractor<P, C> template, C consume, QueryParam... params) {
+    public PostRequest(HttpInteractor<P, C> template, C consume, String... paths) {
         this.template = template;
         this.consume = consume;
-        this.params = params;
+        this.paths = paths;
     }
 
     public void setTemplate(HttpInteractor<P, C> template) {
@@ -29,7 +28,7 @@ public class GetRequest<C extends EntityInterface, P extends Response> extends E
     public Response execute(Message message) throws RuntimeException {
         if (template == null) throw new RuntimeException(GetRequest.class.getName() + " template is null!");
         try {
-            P res = template.get(consume, params);
+            P res = template.post(consume, paths);
             return res;
         } catch (Exception e) {
             return new Response().setStatus(500).setMessage(e.getMessage());

@@ -1,4 +1,4 @@
-package com.infoworks.lab.beans.task.rest;
+package com.infoworks.lab.beans.task.rest.repository;
 
 import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
 import com.infoworks.lab.rest.models.ItemCount;

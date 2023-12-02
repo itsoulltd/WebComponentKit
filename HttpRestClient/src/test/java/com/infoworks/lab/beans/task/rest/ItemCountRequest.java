@@ -10,7 +10,13 @@ public class ItemCountRequest extends ExecutableTask<Message, Response> {
 
     private RestRepository repository;
 
+    public ItemCountRequest() {}
+
     public ItemCountRequest(RestRepository repository) {
+        this.repository = repository;
+    }
+
+    public void setRepository(RestRepository repository) {
         this.repository = repository;
     }
 

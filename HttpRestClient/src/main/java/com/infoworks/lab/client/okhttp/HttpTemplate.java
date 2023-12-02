@@ -62,7 +62,8 @@ public class HttpTemplate<P extends com.infoworks.lab.rest.models.Response, C ex
             }else if(o instanceof Property) {
                 properties.add((Property) o);
             }else if (o instanceof Class<?>){
-                if (inferredProduce == null  && o instanceof com.infoworks.lab.rest.models.Response)
+                if (inferredProduce == null
+                        && (com.infoworks.lab.rest.models.Response.class.isAssignableFrom((Class<?>) o)))
                     inferredProduce = (Class<P>) o;
                 else if (inferredConsume == null) inferredConsume = (Class<C>) o;
             }

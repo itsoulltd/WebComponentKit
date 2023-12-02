@@ -1,27 +1,39 @@
 package com.infoworks.lab.beans.task.rest;
 
-import com.infoworks.lab.beans.tasks.nuts.AbstractTask;
+import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
 import com.infoworks.lab.rest.models.Message;
+import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.template.HttpInteractor;
+import com.it.soul.lab.sql.entity.EntityInterface;
 
-public class DeleteRequest <In extends Message, Out extends Response> extends AbstractTask<In, Out> {
+public class DeleteRequest<C extends EntityInterface, P extends Response> extends ExecutableTask<Message, Response> {
 
-    private HttpInteractor<Out,In> template;
-
-    public void setTemplate(HttpInteractor<Out, In> template) {
-        this.template = template;
-    }
+    private HttpInteractor<P, C> template;
+    private C consume;
+    private QueryParam[] params;
 
     public DeleteRequest() {}
 
-    @Override
-    public Out execute(In message) throws RuntimeException {
-        return null;
+    public DeleteRequest(HttpInteractor<P, C> template, C consume, QueryParam... params) {
+        this.template = template;
+        this.consume = consume;
+        this.params = params;
+    }
+
+    public void setTemplate(HttpInteractor<P, C> template) {
+        this.template = template;
     }
 
     @Override
-    public Out abort(In message) throws RuntimeException {
-        return null;
+    public Response execute(Message message) throws RuntimeException {
+        if (template == null) throw new RuntimeException(GetRequest.class.getName() + " template is null!");
+        try {
+            boolean result = template.delete(consume, params);
+            return new Response().setStatus(result ? 200 : 400)
+                    .setMessage(result ? "Deletion Successful" : "Deletion Failed");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

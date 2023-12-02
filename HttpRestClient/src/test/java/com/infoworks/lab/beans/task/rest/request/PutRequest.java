@@ -1,4 +1,4 @@
-package com.infoworks.lab.beans.task.rest.aggregate;
+package com.infoworks.lab.beans.task.rest.request;
 
 import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
 import com.infoworks.lab.rest.models.Message;

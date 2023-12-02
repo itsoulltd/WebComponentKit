@@ -1,8 +1,8 @@
 package com.infoworks.lab.beans.tasks.impl;
 
 import com.infoworks.lab.beans.task.rest.repository.FetchRequest;
-import com.infoworks.lab.beans.task.rest.aggregate.GetRequest;
-import com.infoworks.lab.beans.task.rest.aggregate.PostRequest;
+import com.infoworks.lab.beans.task.rest.request.GetRequest;
+import com.infoworks.lab.beans.task.rest.request.PostRequest;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.client.jersey.HttpRepositoryTemplate;
 import com.infoworks.lab.client.jersey.HttpTemplate;

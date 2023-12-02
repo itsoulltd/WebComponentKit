@@ -11,11 +11,15 @@ import com.infoworks.lab.client.jersey.HttpTemplate;
 import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.repository.RestRepository;
+import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -30,8 +34,8 @@ public class RestTemplateTaskTest {
 
         TaskStack stack = TaskStack.createSync(true);
         stack.push(new FetchRequest((RestRepository) template, 1, 10));
-        stack.push(new GetRequest(template, new Person()));
-        stack.push(new PostRequest(template, new Person(), "/api/save"));
+        stack.push(new GetRequest(template, new Passenger()));
+        stack.push(new PostRequest(template, new Passenger(), "/api/save"));
         //
         stack.commit(true, (message, status) -> {
             if (message == null) {
@@ -50,16 +54,27 @@ public class RestTemplateTaskTest {
     }
 
     @Test
-    public void aggregatedRequestTest() {
+    public void aggregatedRequestTest() throws MalformedURLException {
         CountDownLatch latch = new CountDownLatch(1);
         //
-        HttpTemplate template = new PersonRestTemplate();
+        HttpInteractor template = new com.infoworks.lab.client.spring.HttpTemplate(
+                new URL("http://localhost:8080/passenger"), Passenger.class);
 
         TaskStack stack = TaskStack.createSync(true);
-        stack.push(new AggregateRequest(template, Invocation.Method.GET, new Person()
-                , new QueryParam("/api", null), new QueryParam("id", "121")));
-        stack.push(new AggregateRequest(template, Invocation.Method.POST, new Person()
-                , new QueryParam("/api", null), new QueryParam("save", null)));
+        stack.push(new AggregateRequest(template, Invocation.Method.GET
+                , null
+                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
+
+        stack.push(new AggregateRequest(template, Invocation.Method.POST
+                , new Passenger("Towhid", 19)));
+
+        stack.push(new AggregateRequest(template, Invocation.Method.GET
+                , null
+                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
+
+        stack.push(new AggregateRequest(template, Invocation.Method.DELETE
+                , null
+                , new QueryParam("name", "Towhid")));
         //
         stack.commit(true, (message, status) -> {
             if (message == null) {
@@ -84,7 +99,7 @@ public class RestTemplateTaskTest {
 
     ////////////////////////////////////////////////////////////////////
 
-    private static class PersonRestTemplate extends HttpRepositoryTemplate<Person, String> {
+    private static class PersonRestTemplate extends HttpRepositoryTemplate<Passenger, String> {
 
         @Override
         protected String schema() {
@@ -112,34 +127,38 @@ public class RestTemplateTaskTest {
         }
 
         @Override
-        public Class<Person> getEntityType() {
-            return Person.class;
+        public Class<Passenger> getEntityType() {
+            return Passenger.class;
         }
 
         @Override
-        protected List<Person> unmarshal(String json) throws IOException {
+        protected List<Passenger> unmarshal(String json) throws IOException {
             return null;
         }
 
         private static Random random = new Random(1232);
 
         @Override
-        public List<Person> fetch(Integer page, Integer limit) throws RuntimeException {
-            List<Person> res = new ArrayList<>();
-            res.add(new Person("MyName", random.nextInt()));
+        public List<Passenger> fetch(Integer page, Integer limit) throws RuntimeException {
+            List<Passenger> res = new ArrayList<>();
+            res.add(new Passenger("MyName", random.nextInt()));
             return res;
         }
     }
 
-    private static class Person extends Response {
+    private static class Passenger extends Response {
 
+        private Integer id = 0;
         private String name;
-        private Integer age;
+        private Integer age = 18;
+        private String sex = "NONE";
+        private Date dob = new java.sql.Date(new Date().getTime());
+        private boolean active;
 
         //For Jackson Serializer need empty constructor:
-        public Person() {}
+        public Passenger() {}
 
-        public Person(String name, Integer age) {
+        public Passenger(String name, Integer age) {
             this.name = name;
             this.age = age;
         }
@@ -159,6 +178,38 @@ public class RestTemplateTaskTest {
 
         public void setAge(Integer age) {
             this.age = age;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        public String getSex() {
+            return sex;
+        }
+
+        public void setSex(String sex) {
+            this.sex = sex;
+        }
+
+        public Date getDob() {
+            return dob;
+        }
+
+        public void setDob(Date dob) {
+            this.dob = dob;
+        }
+
+        public boolean isActive() {
+            return active;
+        }
+
+        public void setActive(boolean active) {
+            this.active = active;
         }
 
         @Override

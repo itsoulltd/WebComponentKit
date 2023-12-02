@@ -51,7 +51,8 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
                 } else if (o instanceof Property) {
                     properties.add((Property) o);
                 } else if (o instanceof Class<?>) {
-                    if (inferredProduce == null) inferredProduce = (Class<P>) o;
+                    if (inferredProduce == null && o instanceof Response)
+                        inferredProduce = (Class<P>) o;
                     else if (inferredConsume == null) inferredConsume = (Class<C>) o;
                 }
             });

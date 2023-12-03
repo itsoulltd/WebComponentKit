@@ -58,7 +58,6 @@ public class SearchRequest<T> extends ExecutableTask<Message, Response> {
         //
         try {
             List<T> res = repository.search(query);
-            System.out.println("Search Item count: " + res.size());
             String json = Message.marshal(res);
             return new Response().setStatus(200).setMessage(json);
         } catch (Exception e) {

@@ -56,7 +56,6 @@ public class FetchRequest<T> extends ExecutableTask<Message, Response> {
         //
         try {
             List<T> res = repository.fetch(page, pageSize);
-            System.out.println("Items count: " + res.size());
             String json = Message.marshal(res);
             return new Response().setStatus(200).setMessage(json);
         } catch (Exception e) {

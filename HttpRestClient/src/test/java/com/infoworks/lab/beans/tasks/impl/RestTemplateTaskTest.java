@@ -1,15 +1,22 @@
 package com.infoworks.lab.beans.tasks.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.infoworks.lab.beans.task.rest.aggregate.AggregateRequest;
 import com.infoworks.lab.beans.task.rest.aggregate.AggregatedResponse;
 import com.infoworks.lab.beans.task.rest.repository.FetchRequest;
+import com.infoworks.lab.beans.task.rest.repository.ItemCountRequest;
+import com.infoworks.lab.beans.task.rest.repository.SearchRequest;
+import com.infoworks.lab.beans.task.rest.request.DeleteRequest;
 import com.infoworks.lab.beans.task.rest.request.GetRequest;
 import com.infoworks.lab.beans.task.rest.request.PostRequest;
+import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.client.jersey.HttpRepositoryTemplate;
 import com.infoworks.lab.client.jersey.HttpTemplate;
+import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
+import com.infoworks.lab.rest.models.SearchQuery;
 import com.infoworks.lab.rest.repository.RestRepository;
 import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
@@ -18,26 +25,20 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 public class RestTemplateTaskTest {
 
     @Test
-    public void requestFlowTest() {
-        CountDownLatch latch = new CountDownLatch(1);
+    public void requestJerseyFlowTest() {
+        CountDownLatch latch = new CountDownLatch(6);
         //
-        HttpTemplate template = new PersonRestTemplate();
+        HttpTemplate template = new PersonRestTemplate(Passenger.class);
 
-        TaskStack stack = TaskStack.createSync(true);
-        stack.push(new FetchRequest((RestRepository) template, 1, 10));
-        stack.push(new GetRequest(template, new Passenger()));
-        stack.push(new PostRequest(template, new Passenger(), "/api/save"));
-        //
-        stack.commit(true, (message, status) -> {
+        TaskQueue queue = TaskQueue.createSync(true);
+        queue.onTaskComplete((message, status) -> {
             if (message == null) {
                 System.out.println("No Message Return!");
             } else {
@@ -47,6 +48,20 @@ public class RestTemplateTaskTest {
             }
             latch.countDown();
         });
+
+        //queue.add(new GetRequest(template, null, new QueryParam("page", "0"), new QueryParam("limit", "10")));
+        //OR
+        queue.add(new FetchRequest((RestRepository) template, 0, 10));
+
+        queue.add(new PostRequest(template, new Passenger("Sohana", 29)));
+        queue.add(new ItemCountRequest((RestRepository) template));
+
+        SearchQuery query = new SearchQuery();
+        query.add("name").isEqualTo("Sohana");
+        queue.add(new SearchRequest((RestRepository) template, query));
+
+        queue.add(new DeleteRequest(template, null, new QueryParam("name", "Sohana")));
+        queue.add(new ItemCountRequest((RestRepository) template));
         //
         try {
             latch.await();
@@ -187,6 +202,10 @@ public class RestTemplateTaskTest {
 
     private static class PersonRestTemplate extends HttpRepositoryTemplate<Passenger, String> {
 
+        public PersonRestTemplate(Class<Passenger> aClass) {
+            super(aClass);
+        }
+
         @Override
         protected String schema() {
             return "http://";
@@ -204,7 +223,7 @@ public class RestTemplateTaskTest {
 
         @Override
         protected String api() {
-            return "/api/person";
+            return "/passenger";
         }
 
         @Override
@@ -219,16 +238,8 @@ public class RestTemplateTaskTest {
 
         @Override
         protected List<Passenger> unmarshal(String json) throws IOException {
-            return null;
-        }
-
-        private static Random random = new Random(1232);
-
-        @Override
-        public List<Passenger> fetch(Integer page, Integer limit) throws RuntimeException {
-            List<Passenger> res = new ArrayList<>();
-            res.add(new Passenger("MyName", random.nextInt()));
-            return res;
+            List<Passenger> list = Message.unmarshal(new TypeReference<List<Passenger>>() {}, json);
+            return list;
         }
     }
 

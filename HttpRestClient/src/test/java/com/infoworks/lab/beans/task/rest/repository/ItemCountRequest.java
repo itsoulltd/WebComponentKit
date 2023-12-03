@@ -24,7 +24,7 @@ public class ItemCountRequest extends ExecutableTask<Message, Response> {
     public Response execute(Message message) throws RuntimeException {
         try {
             ItemCount count = repository.rowCount();
-            return new Response().setStatus(200).setMessage(count.toString());
+            return count;
         } catch (Exception e) {
             return new Response().setStatus(500).setError(e.getMessage());
         }

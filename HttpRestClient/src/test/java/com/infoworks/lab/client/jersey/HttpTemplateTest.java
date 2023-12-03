@@ -128,7 +128,10 @@ public class HttpTemplateTest {
         StringBuffer buffer = new StringBuffer();
         for (String str : params) {
             String trimmed = str.trim();
-            if (trimmed.length() > 2 && trimmed.endsWith("/")) trimmed = trimmed.substring(0, trimmed.length() - 1);
+            if (trimmed.isEmpty()) continue;
+            if (trimmed.length() > 2 && trimmed.endsWith("/"))
+                trimmed = trimmed.substring(0, trimmed.length() - 1);
+
             if(trimmed.startsWith("/"))
                 buffer.append(trimmed);
             else if(trimmed.startsWith("?"))

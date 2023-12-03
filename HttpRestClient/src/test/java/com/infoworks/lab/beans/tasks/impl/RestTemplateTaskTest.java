@@ -54,7 +54,7 @@ public class RestTemplateTaskTest {
     }
 
     @Test
-    public void aggregatedRequestTest() throws MalformedURLException {
+    public void aggregatedSpringRequestTest() throws MalformedURLException {
         CountDownLatch latch = new CountDownLatch(1);
         //
         HttpInteractor template = new com.infoworks.lab.client.spring.HttpTemplate(

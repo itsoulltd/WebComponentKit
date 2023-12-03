@@ -71,6 +71,62 @@ public class RestTemplateTaskTest {
     }
 
     @Test
+    public void requestOkHttpFlowTest() throws MalformedURLException {
+        CountDownLatch latch = new CountDownLatch(3);
+        //
+        HttpInteractor template = new com.infoworks.lab.client.okhttp.HttpTemplate(
+                new URL("http://localhost:8080/passenger"), Passenger.class);
+
+        TaskQueue queue = TaskQueue.createSync(true);
+        queue.onTaskComplete((message, status) -> {
+            if (message == null) {
+                System.out.println("No Message Return!");
+            } else {
+                System.out.println("\n");
+                System.out.println("State: " + status);
+                System.out.println(message.toString());
+            }
+            latch.countDown();
+        });
+
+        queue.add(new GetRequest(template, null, new QueryParam("page", "0"), new QueryParam("limit", "10")));
+        queue.add(new PostRequest(template, new Passenger("Sohana", 29)));
+        queue.add(new DeleteRequest(template, null, new QueryParam("name", "Sohana")));
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void requestSpringFlowTest() throws MalformedURLException {
+        CountDownLatch latch = new CountDownLatch(3);
+        //
+        HttpInteractor template = new com.infoworks.lab.client.spring.HttpTemplate(
+                new URL("http://localhost:8080/passenger"), Passenger.class);
+
+        TaskQueue queue = TaskQueue.createSync(true);
+        queue.onTaskComplete((message, status) -> {
+            if (message == null) {
+                System.out.println("No Message Return!");
+            } else {
+                System.out.println("\n");
+                System.out.println("State: " + status);
+                System.out.println(message.toString());
+            }
+            latch.countDown();
+        });
+
+        queue.add(new GetRequest(template, null, new QueryParam("page", "0"), new QueryParam("limit", "10")));
+        queue.add(new PostRequest(template, new Passenger("Sohana", 29)));
+        queue.add(new DeleteRequest(template, null, new QueryParam("name", "Sohana")));
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
     public void aggregatedSpringRequestTest() throws MalformedURLException {
         CountDownLatch latch = new CountDownLatch(1);
         //

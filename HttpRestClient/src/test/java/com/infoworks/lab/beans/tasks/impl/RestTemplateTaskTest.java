@@ -17,6 +17,8 @@ import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.models.SearchQuery;
+import com.infoworks.lab.rest.models.pagination.Pagination;
+import com.infoworks.lab.rest.models.pagination.SortOrder;
 import com.infoworks.lab.rest.repository.RestRepository;
 import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
@@ -56,7 +58,7 @@ public class RestTemplateTaskTest {
         queue.add(new PostRequest(template, new Passenger("Sohana", 29)));
         queue.add(new ItemCountRequest((RestRepository) template));
 
-        SearchQuery query = new SearchQuery();
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.DESC);
         query.add("name").isEqualTo("Sohana");
         queue.add(new SearchRequest((RestRepository) template, query));
 

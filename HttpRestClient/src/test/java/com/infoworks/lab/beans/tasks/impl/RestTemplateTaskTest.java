@@ -96,6 +96,92 @@ public class RestTemplateTaskTest {
         } catch (InterruptedException e) {}
     }
 
+    @Test
+    public void aggregatedOkHttpRequestTest() throws MalformedURLException {
+        CountDownLatch latch = new CountDownLatch(1);
+        //
+        HttpInteractor template = new com.infoworks.lab.client.okhttp.HttpTemplate(
+                new URL("http://localhost:8080/passenger"), Passenger.class);
+
+        TaskStack stack = TaskStack.createSync(true);
+        stack.push(new AggregateRequest(template, Invocation.Method.GET
+                , null
+                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
+
+        stack.push(new AggregateRequest(template, Invocation.Method.POST
+                , new Passenger("Towhid", 19)));
+
+        stack.push(new AggregateRequest(template, Invocation.Method.GET
+                , null
+                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
+
+        stack.push(new AggregateRequest(template, Invocation.Method.DELETE
+                , null
+                , new QueryParam("name", "Towhid")));
+        //
+        stack.commit(true, (message, status) -> {
+            if (message == null) {
+                System.out.println("No Message Return!");
+            } else {
+                System.out.println("\n");
+                System.out.println("State: " + status);
+                //System.out.println(message.toString());
+                if (message instanceof AggregatedResponse) {
+                    ((AggregatedResponse<Response>) message)
+                            .forEach(val -> System.out.println(val.toString()));
+                }
+            }
+            latch.countDown();
+        });
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void aggregatedJerseyRequestTest() throws MalformedURLException {
+        CountDownLatch latch = new CountDownLatch(1);
+        //
+        HttpInteractor template = new com.infoworks.lab.client.jersey.HttpTemplate(
+                new URL("http://localhost:8080/passenger"), Passenger.class);
+
+        TaskStack stack = TaskStack.createSync(true);
+        stack.push(new AggregateRequest(template, Invocation.Method.GET
+                , null
+                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
+
+        stack.push(new AggregateRequest(template, Invocation.Method.POST
+                , new Passenger("Towhid", 19)));
+
+        stack.push(new AggregateRequest(template, Invocation.Method.GET
+                , null
+                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
+
+        stack.push(new AggregateRequest(template, Invocation.Method.DELETE
+                , null
+                , new QueryParam("name", "Towhid")));
+        //
+        stack.commit(true, (message, status) -> {
+            if (message == null) {
+                System.out.println("No Message Return!");
+            } else {
+                System.out.println("\n");
+                System.out.println("State: " + status);
+                //System.out.println(message.toString());
+                if (message instanceof AggregatedResponse) {
+                    ((AggregatedResponse<Response>) message)
+                            .forEach(val -> System.out.println(val.toString()));
+                }
+            }
+            latch.countDown();
+        });
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
 
     ////////////////////////////////////////////////////////////////////
 

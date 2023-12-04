@@ -1,4 +1,4 @@
-package com.infoworks.lab.beans.task.rest.request;
+package com.infoworks.lab.beans.tasks.rest.request;
 
 import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
 import com.infoworks.lab.rest.models.Message;
@@ -6,15 +6,15 @@ import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.template.HttpInteractor;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
-public class PostRequest<C extends EntityInterface, P extends Response> extends ExecutableTask<Message, Response> {
+public class PutRequest<C extends EntityInterface, P extends Response> extends ExecutableTask<Message, Response> {
 
     private HttpInteractor<P, C> template;
     private C consume;
     private String[] paths;
 
-    public PostRequest() {}
+    public PutRequest() {}
 
-    public PostRequest(HttpInteractor<P, C> template, C consume, String... paths) {
+    public PutRequest(HttpInteractor<P, C> template, C consume, String... paths) {
         this.template = template;
         this.consume = consume;
         this.paths = paths;
@@ -28,7 +28,7 @@ public class PostRequest<C extends EntityInterface, P extends Response> extends 
     public Response execute(Message message) throws RuntimeException {
         if (template == null) throw new RuntimeException(GetRequest.class.getName() + " template is null!");
         try {
-            P res = template.post(consume, paths);
+            P res = template.put(consume, paths);
             return res;
         } catch (Exception e) {
             return new Response().setStatus(500).setMessage(e.getMessage());

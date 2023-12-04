@@ -1,4 +1,4 @@
-package com.infoworks.lab.beans.task.rest.repository;
+package com.infoworks.lab.beans.tasks.rest.repository;
 
 import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
 import com.infoworks.lab.rest.models.Message;

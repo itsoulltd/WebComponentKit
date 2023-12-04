@@ -1,14 +1,14 @@
 package com.infoworks.lab.beans.tasks.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.infoworks.lab.beans.task.rest.aggregate.AggregateRequest;
-import com.infoworks.lab.beans.task.rest.aggregate.AggregatedResponse;
-import com.infoworks.lab.beans.task.rest.repository.FetchRequest;
-import com.infoworks.lab.beans.task.rest.repository.ItemCountRequest;
-import com.infoworks.lab.beans.task.rest.repository.SearchRequest;
-import com.infoworks.lab.beans.task.rest.request.DeleteRequest;
-import com.infoworks.lab.beans.task.rest.request.GetRequest;
-import com.infoworks.lab.beans.task.rest.request.PostRequest;
+import com.infoworks.lab.beans.tasks.rest.aggregate.AggregateRequest;
+import com.infoworks.lab.beans.tasks.rest.aggregate.AggregatedResponse;
+import com.infoworks.lab.beans.tasks.rest.repository.FetchRequest;
+import com.infoworks.lab.beans.tasks.rest.repository.ItemCountRequest;
+import com.infoworks.lab.beans.tasks.rest.repository.SearchRequest;
+import com.infoworks.lab.beans.tasks.rest.request.DeleteRequest;
+import com.infoworks.lab.beans.tasks.rest.request.GetRequest;
+import com.infoworks.lab.beans.tasks.rest.request.PostRequest;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.definition.TaskStack;
 import com.infoworks.lab.client.jersey.HttpRepositoryTemplate;

@@ -1,6 +1,6 @@
 package com.infoworks.lab.beans.tasks.rest.aggregate;
 
-import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
+import com.infoworks.lab.beans.tasks.rest.client.base.BaseRequest;
 import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
@@ -8,13 +8,7 @@ import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class AggregateRequest<C extends EntityInterface, P extends Response> extends ExecutableTask<Message, AggregatedResponse<P>> {
+public class AggregateRequest<C extends EntityInterface, P extends Response> extends BaseRequest<Message, AggregatedResponse<P>> {
 
     private HttpInteractor<P, C> template;
     private C consume;
@@ -65,48 +59,5 @@ public class AggregateRequest<C extends EntityInterface, P extends Response> ext
             ((AggregatedResponse) message).add(response);
         }
         return (AggregatedResponse<P>) message;
-    }
-
-    private String urlencodedQueryParam(QueryParam...params){
-        if (params == null) return "";
-        StringBuilder buffer = new StringBuilder();
-        //Separate Paths:
-        List<String> pathsBag = new ArrayList<>();
-        for (QueryParam query : params) {
-            if (query.getValue() != null && !query.getValue().isEmpty()) {
-                continue;
-            }
-            pathsBag.add(query.getKey());
-        }
-        buffer.append(validatePaths(pathsBag.toArray(new String[0])));
-        //Incorporate QueryParams:
-        buffer.append("?");
-        for (QueryParam query : params){
-            if (query.getValue() == null || query.getValue().isEmpty()){
-                continue;
-            }
-            try {
-                buffer.append(query.getKey()
-                        + "="
-                        + URLEncoder.encode(query.getValue(), "UTF-8")
-                        + "&");
-            } catch (UnsupportedEncodingException e) {}
-        }
-        String value = buffer.toString();
-        value = value.substring(0, value.length()-1);
-        return value;
-    }
-
-    private StringBuilder validatePaths(String... params) {
-        StringBuilder buffer = new StringBuilder();
-        Arrays.stream(params).forEach(str -> {
-            String trimmed = str.trim();
-            if (trimmed.length() > 2 && trimmed.endsWith("/")) trimmed = trimmed.substring(0, trimmed.length() - 1);
-            if(trimmed.startsWith("/"))
-                buffer.append(trimmed);
-            else
-                buffer.append("/" + trimmed);
-        });
-        return buffer;
     }
 }

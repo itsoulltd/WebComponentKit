@@ -19,8 +19,7 @@ public class JerseyHttpRequestTest {
     public void requestJerseyFlowTest() throws MalformedURLException {
         CountDownLatch latch = new CountDownLatch(3);
         //
-        HttpTemplate template = new HttpTemplate(new URL("http://localhost:8080/passenger")
-                , Passenger.class);
+        HttpTemplate template = new HttpTemplate(new URL("http://localhost:8080/passenger"));
 
         TaskQueue queue = TaskQueue.createSync(true);
         queue.onTaskComplete((message, status) -> {

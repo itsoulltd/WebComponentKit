@@ -46,7 +46,8 @@ public class HttpRequest extends BaseRequest<Message, Response> {
             }
             ResponseEntity<String> rs = template.exchange(consume, String.class);
             responseCode = rs.getStatusCodeValue();
-            List<Response> returnList = inflateJson(rs.getBody(), (Class<Response>) responseType);
+            String responseAsString = rs.getBody();
+            List<Response> returnList = inflateJson(responseAsString, (Class<Response>) responseType);
             return returnList.get(0);
         } catch (Exception e) {
             return new Response().setStatus(responseCode).setError(e.getMessage());

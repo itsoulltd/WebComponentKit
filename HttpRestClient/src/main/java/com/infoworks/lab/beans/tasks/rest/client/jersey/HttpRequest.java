@@ -11,6 +11,7 @@ import com.it.soul.lab.sql.entity.EntityInterface;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 
 public class HttpRequest extends BaseRequest<Message, Response> {
 
@@ -41,8 +42,8 @@ public class HttpRequest extends BaseRequest<Message, Response> {
             javax.ws.rs.core.Response res = template.execute(consume, method, params);
             responseCode = res.getStatus();
             String responseAsString = res.readEntity(String.class);
-            Response response = Message.unmarshal(responseType, responseAsString);
-            return response;
+            List<Response> returnList = inflateJson(responseAsString, (Class<Response>) responseType);
+            return returnList.get(0);
         } catch (MalformedURLException | HttpInvocationException e) {
             return new Response().setStatus(responseCode).setError(e.getMessage());
         } catch (IOException e) {

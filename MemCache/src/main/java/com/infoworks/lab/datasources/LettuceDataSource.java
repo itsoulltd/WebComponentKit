@@ -31,13 +31,11 @@ public class LettuceDataSource implements RedisDataSource {
     public Map<String, Object> read(String key) {
         RedisCommands<String, String> cmd = connection.sync();
         String json = cmd.get(key);
-        if (Message.isValidJson(json)) {
-            if (Message.isValidJson(json)){
-                try {
-                    Map<String, Object> data = Message.unmarshal(new TypeReference<Map<String, Object>>() {}, json);
-                    return data;
-                } catch (IOException e) {}
-            }
+        if (Message.isValidJson(json)){
+            try {
+                Map<String, Object> data = Message.unmarshal(new TypeReference<Map<String, Object>>() {}, json);
+                return data;
+            } catch (IOException e) {}
         }
         return null;
     }

@@ -17,7 +17,7 @@ public class EventQueue extends AbstractTaskQueue {
         numberOfThreads = numberOfThreads <= 0
                 ? (Runtime.getRuntime().availableProcessors() / 2)
                 : numberOfThreads;
-        this.exeQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(numberOfThreads));
+        this.exeQueue = TaskQueue.createAsync(Executors.newFixedThreadPool(numberOfThreads));
     }
 
     public EventQueue() {

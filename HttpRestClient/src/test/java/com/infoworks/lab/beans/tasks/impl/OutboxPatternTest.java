@@ -75,7 +75,7 @@ public class OutboxPatternTest {
     @Test
     public void stackTest(){
         //Initialize:
-        TaskQueue orderQueue = TaskQueue.createSync(false, Executors.newFixedThreadPool(5));
+        TaskQueue orderQueue = TaskQueue.createAsync(Executors.newFixedThreadPool(5));
         TaskQueue deliveryQueue = TaskQueue.createSync(true); //Sync=true means Executors.newSingleThreadExecutor()
         //
         CountDownLatch latch = new CountDownLatch(1);

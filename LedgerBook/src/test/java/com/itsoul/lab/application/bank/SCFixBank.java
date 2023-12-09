@@ -28,7 +28,7 @@ public class SCFixBank extends SCBank implements TheFixBank {
         this.driverClass = driverClass;
         this.user = manager == null ? "manager" : manager;
         this.password = password == null ? "man@123" : password;
-        this.queue = TaskQueue.createSync(false, Executors.newSingleThreadExecutor());
+        this.queue = TaskQueue.createAsync(Executors.newSingleThreadExecutor());
     }
 
     @Override

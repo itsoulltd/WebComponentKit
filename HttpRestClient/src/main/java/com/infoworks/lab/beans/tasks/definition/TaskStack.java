@@ -49,8 +49,8 @@ public interface TaskStack {
         return new TransactionStack(sync);
     }
 
-    static TaskStack createSync(boolean sync, ExecutorService service){
-        return new TransactionStack(sync, service);
+    static TaskStack createAsync(ExecutorService service){
+        return new TransactionStack(false, service);
     }
 
     TaskStack push(Task task);

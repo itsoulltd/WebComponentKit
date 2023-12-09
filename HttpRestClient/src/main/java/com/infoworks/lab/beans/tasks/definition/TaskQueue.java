@@ -39,8 +39,8 @@ public interface TaskQueue {
         return new TransactionQueue(sync);
     }
 
-    static TaskQueue createSync(boolean sync, ExecutorService service){
-        return new TransactionQueue(sync, service);
+    static TaskQueue createAsync(ExecutorService service){
+        return new TransactionQueue(false, service);
     }
 
     TaskQueue add(Task task);

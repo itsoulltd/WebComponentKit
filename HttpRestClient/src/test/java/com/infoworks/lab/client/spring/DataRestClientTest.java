@@ -1,7 +1,9 @@
 package com.infoworks.lab.client.spring;
 
-import com.infoworks.lab.client.spring.data.rest.DataRestClient;
-import com.infoworks.lab.client.spring.data.rest.models.*;
+import com.infoworks.lab.client.data.rest.Any;
+import com.infoworks.lab.client.data.rest.Links;
+import com.infoworks.lab.client.data.rest.Page;
+import com.infoworks.lab.client.data.rest.PaginatedResponse;
 import org.junit.Assert;
 import org.junit.Test;
 

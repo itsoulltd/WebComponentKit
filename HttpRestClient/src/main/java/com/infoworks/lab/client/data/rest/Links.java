@@ -1,4 +1,4 @@
-package com.infoworks.lab.client.spring.data.rest.models;
+package com.infoworks.lab.client.data.rest;
 
 import com.it.soul.lab.sql.entity.Entity;
 

@@ -1,4 +1,4 @@
-package com.infoworks.lab.client.spring.data.rest.models;
+package com.infoworks.lab.client.data.rest;
 
 import com.infoworks.lab.rest.models.Response;
 

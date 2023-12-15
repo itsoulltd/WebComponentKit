@@ -1,9 +1,9 @@
-package com.infoworks.lab.client.spring.data.rest;
+package com.infoworks.lab.client.spring;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.infoworks.lab.client.spring.data.rest.models.Any;
-import com.infoworks.lab.client.spring.data.rest.models.Page;
-import com.infoworks.lab.client.spring.data.rest.models.PaginatedResponse;
+import com.infoworks.lab.client.data.rest.Any;
+import com.infoworks.lab.client.data.rest.Page;
+import com.infoworks.lab.client.data.rest.PaginatedResponse;
 import com.infoworks.lab.rest.models.Message;
 import com.it.soul.lab.data.simple.SimpleDataSource;
 import org.springframework.http.HttpEntity;

@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 public class DataRestClientTest {
 
     @Test
-    public void doLoadTest() throws IOException {
+    public void doLoadTest() throws Exception {
         //
         URL url = new URL("http://localhost:8080/api/data/passengers");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
@@ -35,10 +35,12 @@ public class DataRestClientTest {
 
         Links links = response.getLinks();
         Assert.assertTrue(links != null);
+        //Close:
+        dataSource.close();
     }
 
     @Test
-    public void doAsyncLoadTest() throws IOException, InterruptedException {
+    public void doAsyncLoadTest() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         //
         URL url = new URL("http://localhost:8080/api/data/passengers");
@@ -62,10 +64,12 @@ public class DataRestClientTest {
         });
 
         latch.await();
+        //Close:
+        dataSource.close();
     }
 
     @Test
-    public void addSingleItem() throws MalformedURLException {
+    public void addSingleItem() throws Exception {
         URL url = new URL("http://localhost:8080/api/data/passengers");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
@@ -81,10 +85,33 @@ public class DataRestClientTest {
         //Create:
         Object id = dataSource.add(newPassenger);
         Assert.assertTrue(id != null);
+        //Close:
+        dataSource.close();
     }
 
     @Test
-    public void readTest() throws MalformedURLException {
+    public void updateSingleItem() throws Exception {
+        URL url = new URL("http://localhost:8080/api/data/passengers");
+        DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
+        dataSource.load();
+        //
+        System.out.println("Is last page: " + dataSource.isLastPage());
+        //
+        Object[] passengers = dataSource.readSync(0, 1);
+        Assert.assertTrue(passengers.length > 0);
+        //
+        Passenger passenger = (Passenger) passengers[0];
+        passenger.setName("Dr. Sohana Khan");
+        //Update:
+        Object id = passenger.parseId();
+        if(id == null) dataSource.put(id, passenger);
+        Assert.assertTrue(id != null);
+        //Close:
+        dataSource.close();
+    }
+
+    @Test
+    public void readTest() throws Exception {
         URL url = new URL("http://localhost:8080/api/data/passengers");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
@@ -92,10 +119,12 @@ public class DataRestClientTest {
         Passenger passenger = dataSource.read(1l);
         Assert.assertTrue(passenger != null);
         System.out.println(passenger.getName());
+        //Close:
+        dataSource.close();
     }
 
     @Test
-    public void sizeTest() throws MalformedURLException {
+    public void sizeTest() throws Exception {
         URL url = new URL("http://localhost:8080/api/data/passengers");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
@@ -103,10 +132,12 @@ public class DataRestClientTest {
         int size = dataSource.size();
         Assert.assertTrue(size >= 0);
         System.out.println("Size is: " + size);
+        //Close:
+        dataSource.close();
     }
 
     @Test
-    public void readNextTest() throws MalformedURLException {
+    public void readNextTest() throws Exception {
         URL url = new URL("http://localhost:8080/api/data/passengers");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
@@ -117,10 +148,12 @@ public class DataRestClientTest {
         Assert.assertTrue(passengers.isPresent());
         //
         System.out.println("Is last page: " + dataSource.isLastPage());
+        //Close:
+        dataSource.close();
     }
 
     @Test
-    public void readAsyncNextTest() throws MalformedURLException, InterruptedException {
+    public void readAsyncNextTest() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         //
         URL url = new URL("http://localhost:8080/api/data/passengers");
@@ -136,6 +169,8 @@ public class DataRestClientTest {
         latch.await();
         //
         System.out.println("Is last page: " + dataSource.isLastPage());
+        //Close:
+        dataSource.close();
     }
 
     @Test
@@ -180,7 +215,7 @@ public class DataRestClientTest {
     }
 
     @Test
-    public void readAllPages() throws MalformedURLException {
+    public void readAllPages() throws Exception {
         URL url = new URL("http://localhost:8080/api/data/passengers");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         //Read All Pages Until last page:
@@ -197,6 +232,8 @@ public class DataRestClientTest {
             if (item instanceof Passenger)
                 System.out.println(((Passenger) item).getName());
         });
+        //Close:
+        dataSource.close();
     }
 
     @Test

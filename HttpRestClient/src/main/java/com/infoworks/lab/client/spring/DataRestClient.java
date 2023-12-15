@@ -77,6 +77,12 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         service = null;
     }
 
+    /**
+     * Create Or Update an Entity from server and cache.
+     * @param key
+     * @param value
+     * @throws RuntimeException
+     */
     @Override
     public void put(Object key, Value value) throws RuntimeException {
         //Put will do PUT
@@ -89,6 +95,12 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
             super.replace(key, value);
     }
 
+    /**
+     * Create an Entity from server and cache.
+     * @param value
+     * @return
+     * @throws RuntimeException
+     */
     @Override
     public Object add(Value value) throws RuntimeException {
         //Add will do POST
@@ -107,6 +119,12 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         }
     }
 
+    /**
+     * Remove an Entity from server and cache.
+     * @param key
+     * @return
+     * @throws RuntimeException
+     */
     @Override
     public Value remove(Object key) throws RuntimeException {
         //Remove will do DELETE
@@ -120,6 +138,12 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         return any;
     }
 
+    /**
+     * Read from cache if not exist then fetch from server and update the cache.
+     * @param key
+     * @return
+     * @throws RuntimeException
+     */
     @Override
     public Value read(Object key) throws RuntimeException {
         //First check in Cache:
@@ -169,6 +193,11 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         }
     }
 
+    /**
+     * Load the baseUrl and its result into local cache.
+     * @return
+     * @throws RuntimeException
+     */
     public PaginatedResponse load() throws RuntimeException {
         if (baseResponse != null) return baseResponse;
         //Load the base URL:
@@ -189,6 +218,10 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         }
     }
 
+    /**
+     * Load asynchronously the baseUrl and its result into local cache.
+     * @param consumer
+     */
     public void load(Consumer<PaginatedResponse> consumer) {
         if (consumer == null) return;
         if (baseResponse != null)
@@ -239,6 +272,10 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         return items;
     }
 
+    /**
+     * Asynchronous version of next()
+     * @param consumer
+     */
     public void next(Consumer<Optional<List<Value>>> consumer) {
         if (consumer != null) {
             getService().submit(() -> consumer.accept(next()));

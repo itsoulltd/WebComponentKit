@@ -103,7 +103,7 @@ public class DataRestClientTest {
         Passenger passenger = (Passenger) passengers[0];
         passenger.setName("Dr. Sohana Khan");
         //Update:
-        Object id = passenger.parseId();
+        Object id = passenger.parseId().orElse(null);
         if(id == null) dataSource.put(id, passenger);
         Assert.assertTrue(id != null);
         //Close:

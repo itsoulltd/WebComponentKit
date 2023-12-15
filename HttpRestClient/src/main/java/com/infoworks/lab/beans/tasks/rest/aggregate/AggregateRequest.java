@@ -8,7 +8,7 @@ import com.infoworks.lab.rest.template.HttpInteractor;
 import com.infoworks.lab.rest.template.Invocation;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
-public class AggregateRequest<C extends EntityInterface, P extends Response> extends BaseRequest<Message, AggregatedResponse<P>> {
+public class AggregateRequest<P extends Response, C extends EntityInterface> extends BaseRequest<Message, AggregatedResponse<P>> {
 
     private HttpInteractor<P, C> template;
     private C consume;

@@ -6,7 +6,7 @@ import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.template.HttpInteractor;
 import com.it.soul.lab.sql.entity.EntityInterface;
 
-public class PutRequest<C extends EntityInterface, P extends Response> extends ExecutableTask<Message, Response> {
+public class PutRequest<P extends Response, C extends EntityInterface> extends ExecutableTask<Message, Response> {
 
     private HttpInteractor<P, C> template;
     private C consume;

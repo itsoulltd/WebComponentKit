@@ -37,6 +37,10 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         this(type, baseUrl, template, Executors.newSingleThreadExecutor());
     }
 
+    public DataRestClient(Class<? extends Any> type, URL baseUrl, ExecutorService service) {
+        this(type, baseUrl, new RestTemplate(), service);
+    }
+
     public DataRestClient(Class<? extends Any> type, URL baseUrl, RestTemplate template, ExecutorService service) {
         this.anyClassType = type;
         this.baseUrl = baseUrl;
@@ -72,6 +76,7 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
     public void close() throws Exception {
         //Do all memory clean-up and terminate running process:
         clear();
+        baseResponse = null;
         //immediate shutdown all enqueued tasks and return
         service.shutdown();
         service = null;
@@ -195,6 +200,7 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
 
     /**
      * Load the baseUrl and its result into local cache.
+     * If we need to re-load, then first do close() and then call load() again.
      * @return
      * @throws RuntimeException
      */

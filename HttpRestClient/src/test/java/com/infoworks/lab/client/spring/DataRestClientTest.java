@@ -97,7 +97,7 @@ public class DataRestClientTest {
         //
         System.out.println("Is last page: " + dataSource.isLastPage());
         //
-        Object[] passengers = dataSource.readSync(0, 1);
+        Object[] passengers = dataSource.readSync(0, dataSource.size());
         Assert.assertTrue(passengers.length > 0);
         //
         Passenger passenger = (Passenger) passengers[0];

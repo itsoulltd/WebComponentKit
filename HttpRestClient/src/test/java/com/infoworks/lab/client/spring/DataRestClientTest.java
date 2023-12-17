@@ -7,13 +7,15 @@ import com.infoworks.lab.client.data.rest.PaginatedResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
@@ -303,6 +305,21 @@ public class DataRestClientTest {
 
         public void setActive(boolean active) {
             this.active = active;
+        }
+
+        @Override
+        public void unmarshallingFromMap(Map<String, Object> data, boolean inherit) {
+            Object dob = data.get("dob");
+            if (dob != null) {
+                try {
+                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                    Date parsed = formatter.parse(dob.toString());
+                    data.put("dob", parsed);
+                } catch (ParseException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            super.unmarshallingFromMap(data, inherit);
         }
     }
 

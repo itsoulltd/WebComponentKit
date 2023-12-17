@@ -278,6 +278,26 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         return items;
     }
 
+    protected List<Value> parsePageItems(Map<String, Object> dataMap) {
+        List<Value> typedObjects = new ArrayList<>();
+        if (dataMap == null) return typedObjects;
+        //Parse DataMap to get-objects:
+        Map<String, List<Map<String, Object>>> embedded =
+                (Map) dataMap.get("_embedded");
+        List<Map<String, Object>> objects = getCollectionResourceRel(embedded);
+        if (objects == null) return typedObjects;
+        //Try to re-recreate objects:
+        for (Map<String, Object> entry : objects) {
+            try {
+                Value parsed = (Value) anyClassType.newInstance();
+                parsed.unmarshallingFromMap(entry, true);
+                typedObjects.add(parsed);
+            } catch (InstantiationException
+                     | IllegalAccessException e) {}
+        }
+        return typedObjects;
+    }
+
     /**
      * Asynchronous version of next()
      * @param consumer
@@ -351,26 +371,6 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
                     new TypeReference<Map<String, Object>>() {}, result);
         } catch (IOException e) {}
         return Optional.ofNullable(dataMap);
-    }
-
-    protected List<Value> parsePageItems(Map<String, Object> dataMap) {
-        List<Value> typedObjects = new ArrayList<>();
-        if (dataMap == null) return typedObjects;
-        //Parse DataMap to get-objects:
-        Map<String, List<Map<String, Object>>> embedded =
-                (Map) dataMap.get("_embedded");
-        List<Map<String, Object>> objects = getCollectionResourceRel(embedded);
-        if (objects == null) return typedObjects;
-        //Try to re-recreate objects:
-        for (Map<String, Object> entry : objects) {
-            try {
-                Value parsed = (Value) anyClassType.newInstance();
-                parsed.unmarshallingFromMap(entry, true);
-                typedObjects.add(parsed);
-            } catch (InstantiationException
-                     | IllegalAccessException e) {}
-        }
-        return typedObjects;
     }
 
     /**

@@ -4,6 +4,7 @@ import com.infoworks.lab.client.data.rest.Any;
 import com.infoworks.lab.client.data.rest.Links;
 import com.infoworks.lab.client.data.rest.Page;
 import com.infoworks.lab.client.data.rest.PaginatedResponse;
+import com.infoworks.lab.rest.models.QueryParam;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -254,6 +255,46 @@ public class DataRestClientTest {
 
         opt = Optional.ofNullable(null);
         Assert.assertFalse(opt.isPresent());
+    }
+
+    @Test
+    public void searchFindByAgeLimitTest() throws Exception {
+        URL url = new URL("http://localhost:8080/api/data/passengers");
+        DataRestClient<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
+        dataSource.load();
+        //
+        Optional<List<Passenger>> passengers = dataSource.search("findByAgeLimit"
+                , new QueryParam("min", "18"), new QueryParam("max", "29"));
+        Assert.assertTrue(passengers.isPresent());
+        //Close:
+        dataSource.close();
+    }
+
+    @Test
+    public void searchFindByNameTest() throws Exception {
+        URL url = new URL("http://localhost:8080/api/data/passengers");
+        DataRestClient<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
+        dataSource.load();
+        //
+        Optional<List<Passenger>> passengers = dataSource.search("/findByName", new QueryParam("name", "Soha"));
+        Assert.assertTrue(passengers.isPresent());
+        //Close:
+        dataSource.close();
+    }
+
+    @Test
+    public void searchFunctionIsExistTest() throws Exception {
+        URL url = new URL("http://localhost:8080/api/data/passengers");
+        DataRestClient<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
+        dataSource.load();
+        //
+        boolean isExist = dataSource.isSearchActionExist("findByName");
+        Assert.assertTrue(isExist);
+        //
+        isExist = dataSource.isSearchActionExist("findByNameAndOthers");
+        Assert.assertFalse(isExist);
+        //Close:
+        dataSource.close();
     }
 
     /////////////////////////////////////////////////////////////////////////////

@@ -5,6 +5,7 @@ import com.infoworks.lab.client.data.rest.Any;
 import com.infoworks.lab.client.data.rest.Page;
 import com.infoworks.lab.client.data.rest.PaginatedResponse;
 import com.infoworks.lab.rest.models.Message;
+import com.infoworks.lab.rest.models.QueryParam;
 import com.it.soul.lab.data.simple.SimpleDataSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -397,6 +400,67 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         String[] paths = path.split("/");
         String pathName = paths[paths.length - 1];
         return pathName;
+    }
+
+    public Optional<List<Value>> search(String function, QueryParam... params) {
+        if (Objects.isNull(function) || function.isEmpty()) return Optional.ofNullable(null);
+        if (function.startsWith("/")) function = function.replaceFirst("/", "");
+        PaginatedResponse response = load();
+        Object href = response.getLinks().getSearch().get("href");
+        if (href != null) {
+            String searchAction = function + encodedQueryParams(params);
+            HttpEntity<Map> entity = new HttpEntity(null, getHttpHeaders());
+            String searchUrl = href + "/" + searchAction;
+            String result = exchange(HttpMethod.GET, entity, searchUrl);
+            try {
+                Map<String, Object> dataMap =
+                        Message.unmarshal(new TypeReference<Map<String, Object>>() {}, result);
+                List<Value> items = parsePageItems(dataMap);
+                return Optional.ofNullable(items);
+            } catch (IOException e) {}
+        }
+        return Optional.ofNullable(null);
+    }
+
+    public boolean isSearchActionExist(String function) {
+        boolean outcome = false;
+        if (Objects.isNull(function) || function.isEmpty()) return outcome;
+        if (function.startsWith("/")) function = function.replaceFirst("/", "");
+        PaginatedResponse response = load();
+        Object href = response.getLinks().getSearch().get("href");
+        if (href != null) {
+            HttpEntity<Map> entity = new HttpEntity(null, getHttpHeaders());
+            String searchUrl = href.toString();
+            String result = exchange(HttpMethod.GET, entity, searchUrl);
+            try {
+                Map<String, Object> dataMap =
+                        Message.unmarshal(new TypeReference<Map<String, Object>>() {}, result);
+                //outcome
+                Object data = dataMap.get("_links");
+                if (data != null && data instanceof Map) {
+                    Map<String, Object> functions = (Map<String, Object>) data;
+                    outcome = functions.containsKey(function);
+                }
+            } catch (IOException e) {}
+        }
+        return outcome;
+    }
+
+    @SuppressWarnings("Duplicates")
+    private String encodedQueryParams(QueryParam... params) {
+        StringBuilder buffer = new StringBuilder("?");
+        for (QueryParam query : params) {
+            if (query.getValue() == null || query.getValue().isEmpty()) continue;
+            try {
+                buffer.append(query.getKey()
+                        + "="
+                        + URLEncoder.encode(query.getValue(), "UTF-8")
+                        + "&");
+            } catch (UnsupportedEncodingException e) {}
+        }
+        String value = buffer.toString();
+        value = value.substring(0, value.length() - 1);
+        return value;
     }
 
 }

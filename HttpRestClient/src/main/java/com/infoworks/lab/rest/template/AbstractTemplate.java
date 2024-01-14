@@ -33,6 +33,7 @@ public abstract class AbstractTemplate {
         return routeTo;
     }
 
+    @SuppressWarnings("Duplicates")
     protected String urlencodedQueryParam(QueryParam...params){
         if (params == null) return "";
         StringBuilder buffer = new StringBuilder();

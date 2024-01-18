@@ -1,6 +1,7 @@
 package com.infoworks.lab.client.spring;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.infoworks.lab.client.data.repository.DataRestRepository;
 import com.infoworks.lab.client.data.rest.Any;
 import com.infoworks.lab.client.data.rest.Page;
 import com.infoworks.lab.client.data.rest.PaginatedResponse;
@@ -14,15 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, Value> implements AutoCloseable {
+public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, Value> implements DataRestRepository<Value> {
 
     private final URL baseUrl;
     private ExecutorService service;
@@ -402,6 +401,12 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         return pathName;
     }
 
+    /**
+     * Search using declared func-name and search params:
+     * @param function
+     * @param params
+     * @return
+     */
     public Optional<List<Value>> search(String function, QueryParam... params) {
         if (Objects.isNull(function) || function.isEmpty()) return Optional.ofNullable(null);
         if (function.startsWith("/")) function = function.replaceFirst("/", "");
@@ -420,6 +425,18 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
             } catch (IOException e) {}
         }
         return Optional.ofNullable(null);
+    }
+
+    /**
+     * Async version of search:
+     * @param function
+     * @param params
+     * @param consumer
+     */
+    public void search(String function, QueryParam[] params, Consumer<Optional<List<Value>>> consumer) {
+        if (consumer != null) {
+            getService().submit(() -> consumer.accept(search(function, params)));
+        }
     }
 
     public boolean isSearchActionExist(String function) {
@@ -444,23 +461,6 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
             } catch (IOException e) {}
         }
         return outcome;
-    }
-
-    @SuppressWarnings("Duplicates")
-    private String encodedQueryParams(QueryParam... params) {
-        StringBuilder buffer = new StringBuilder("?");
-        for (QueryParam query : params) {
-            if (query.getValue() == null || query.getValue().isEmpty()) continue;
-            try {
-                buffer.append(query.getKey()
-                        + "="
-                        + URLEncoder.encode(query.getValue(), "UTF-8")
-                        + "&");
-            } catch (UnsupportedEncodingException e) {}
-        }
-        String value = buffer.toString();
-        value = value.substring(0, value.length() - 1);
-        return value;
     }
 
 }

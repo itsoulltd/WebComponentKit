@@ -1,5 +1,6 @@
 package com.infoworks.lab.client.spring;
 
+import com.infoworks.lab.client.data.repository.DataRestRepository;
 import com.infoworks.lab.client.data.rest.Any;
 import com.infoworks.lab.client.data.rest.Links;
 import com.infoworks.lab.client.data.rest.Page;
@@ -14,10 +15,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 
@@ -271,6 +269,29 @@ public class DataRestClientTest {
     }
 
     @Test
+    public void searchAsyncFindByAgeLimitTest() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        //
+        URL url = new URL("http://localhost:8080/api/data/passengers");
+        DataRestClient<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
+        dataSource.load();
+        //
+        dataSource.search("findByAgeLimit"
+                , new QueryParam[]{new QueryParam("min", "18"), new QueryParam("max", "29")}
+                , (Optional<List<Passenger>> passengers) -> {
+                    Assert.assertTrue(passengers.isPresent());
+                    passengers.orElse(new ArrayList<>())
+                            .forEach(passenger ->
+                                    System.out.println(passenger.getName() + ", Gender:" + passenger.getSex())
+                            );
+                    latch.countDown();
+                });
+        latch.await();
+        //Close:
+        dataSource.close();
+    }
+
+    @Test
     public void searchFindByNameTest() throws Exception {
         URL url = new URL("http://localhost:8080/api/data/passengers");
         DataRestClient<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
@@ -278,6 +299,25 @@ public class DataRestClientTest {
         //
         Optional<List<Passenger>> passengers = dataSource.search("/findByName", new QueryParam("name", "Soha"));
         Assert.assertTrue(passengers.isPresent());
+        //Close:
+        dataSource.close();
+    }
+
+    @Test
+    public void searchAsyncFindByNameTest() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        //
+        URL url = new URL("http://localhost:8080/api/data/passengers");
+        DataRestRepository<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
+        dataSource.load();
+        //
+        dataSource.search("/findByName"
+                , new QueryParam[]{new QueryParam("name", "Soha")}
+                , (Optional<List<Passenger>> passengers) -> {
+                    Assert.assertTrue(passengers.isPresent());
+                    latch.countDown();
+                });
+        latch.await();
         //Close:
         dataSource.close();
     }

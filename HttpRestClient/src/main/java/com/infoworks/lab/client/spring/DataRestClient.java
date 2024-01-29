@@ -147,6 +147,11 @@ public class DataRestClient<Value extends Any> extends SimpleDataSource<Object, 
         return any;
     }
 
+    @Override
+    public void delete(Value value) throws RuntimeException {
+        this.remove(value.getId());
+    }
+
     /**
      * Read from cache if not exist then fetch from server and update the cache.
      * @param key

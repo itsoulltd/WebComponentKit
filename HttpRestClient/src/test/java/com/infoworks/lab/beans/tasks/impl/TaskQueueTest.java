@@ -28,7 +28,7 @@ public class TaskQueueTest {
     }
 
     @Test
-    public void stackTest(){
+    public void queueTest(){
         //Initialize:
         boolean isSynch = true;
         TaskQueue queue = TaskQueue.createSync(isSynch);
@@ -56,7 +56,7 @@ public class TaskQueueTest {
     }
 
     @Test
-    public void stackAbortTest(){
+    public void queueAbortTest(){
         //Initialize:
         boolean isSynch = false;
         TaskQueue queue = TaskQueue.createSync(isSynch);

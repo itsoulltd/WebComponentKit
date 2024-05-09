@@ -6,6 +6,7 @@ import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.Response;
 
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class SimpleTask extends AbstractTask {
@@ -13,6 +14,7 @@ public class SimpleTask extends AbstractTask {
     private Task nextTask;
     private Message message;
     private Function<Message, Message> converter;
+    private Consumer<Message> callback;
 
     public SimpleTask() {}
 
@@ -25,6 +27,11 @@ public class SimpleTask extends AbstractTask {
         this.message = new Message();
         this.message.setPayload(message);
         this.converter = converter;
+    }
+
+    public SimpleTask(Consumer<Message> callback) {
+        this.message = new Message();
+        this.callback = callback;
     }
 
     @Override
@@ -58,7 +65,7 @@ public class SimpleTask extends AbstractTask {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //
+        if (callback != null) callback.accept(message);
         return response;
     }
 
@@ -78,7 +85,7 @@ public class SimpleTask extends AbstractTask {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //
+        if (callback != null) callback.accept(message);
         return response;
     }
 

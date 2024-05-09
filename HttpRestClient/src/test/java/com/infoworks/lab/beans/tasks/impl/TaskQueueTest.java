@@ -6,12 +6,16 @@ import com.infoworks.lab.beans.task.AbortTask;
 import com.infoworks.lab.beans.task.ExampleTask;
 import com.infoworks.lab.beans.task.SimpleTask;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
+import com.infoworks.lab.rest.models.Message;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class TaskQueueTest {
 
@@ -49,6 +53,40 @@ public class TaskQueueTest {
         queue.add(new SimpleTask("Hello bro! I am Hayes"));
         queue.add(new SimpleTask("Hi there! I am Cris"));
         queue.add(new SimpleTask("Let's bro! I am James"));
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void executorConcurrencyTest(){
+        //Initialize:
+        ExecutorService queue = Executors.newFixedThreadPool(3);
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicInteger counter = new AtomicInteger(4);
+        //
+        Consumer<Message> callback = (msg) -> {
+            System.out.println(msg.toString());
+            if (counter.get() > 1) {
+                counter.decrementAndGet();
+            } else {
+                latch.countDown();
+            }
+        };
+        //
+        queue.submit(() -> {
+            new SimpleTask(callback).execute(new Message().setPayload("Wow bro! I am Adams"));
+        });
+        queue.submit(() -> {
+            new SimpleTask(callback).execute(new Message().setPayload("Hello bro! I am Hayes"));
+        });
+        queue.submit(() -> {
+            new SimpleTask(callback).execute(new Message().setPayload("Hi there! I am Cris"));
+        });
+        queue.submit(() -> {
+            new SimpleTask(callback).execute(new Message().setPayload("Let's bro! I am James"));
+        });
         //
         try {
             latch.await();

@@ -34,8 +34,34 @@ public class TaskQueueTest {
     @Test
     public void queueTest(){
         //Initialize:
-        boolean isSynch = true;
-        TaskQueue queue = TaskQueue.createSync(isSynch);
+        TaskQueue queue = TaskQueue.createSync(true);
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicInteger counter = new AtomicInteger(4);
+        //
+        queue.onTaskComplete((result, state) -> {
+            System.out.println("State: " + state.name());
+            System.out.println(result.toString());
+            if (counter.get() > 1) {
+                counter.decrementAndGet();
+            } else {
+                latch.countDown();
+            }
+        });
+        //
+        queue.add(new SimpleTask("Wow bro! I am Adams"));
+        queue.add(new SimpleTask("Hello bro! I am Hayes"));
+        queue.add(new SimpleTask("Hi there! I am Cris"));
+        queue.add(new SimpleTask("Let's bro! I am James"));
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void queueConcurrentTest(){
+        //Initialize:
+        TaskQueue queue = TaskQueue.createAsync(Executors.newFixedThreadPool(3));
         CountDownLatch latch = new CountDownLatch(1);
         AtomicInteger counter = new AtomicInteger(4);
         //

@@ -5,6 +5,7 @@ import com.infoworks.lab.beans.tasks.definition.QueuedTaskLifecycleListener;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@Deprecated
 public class AsyncQueueManager extends SyncQueueManager {
 
     public AsyncQueueManager() {}

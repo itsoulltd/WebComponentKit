@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+@Deprecated
 public class SyncQueueManager extends AbstractQueueManager {
 
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());

@@ -1,11 +1,11 @@
 package com.infoworks.lab.beans.tasks.definition;
 
 import com.infoworks.lab.beans.tasks.impl.ConcurrentQueue;
-import com.infoworks.lab.beans.tasks.impl.TransactionQueue;
 import com.infoworks.lab.rest.models.Message;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
 public interface TaskQueue {
@@ -33,11 +33,11 @@ public interface TaskQueue {
     }
 
     static TaskQueue create(){
-        return create(TransactionQueue.class);
+        return create(ConcurrentQueue.class);
     }
 
     static TaskQueue createSync(boolean sync){
-        return new TransactionQueue(sync);
+        return new ConcurrentQueue(sync ? Executors.newSingleThreadExecutor() : null);
     }
 
     static TaskQueue createAsync(ExecutorService service){

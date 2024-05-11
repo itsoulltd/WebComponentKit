@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
 
+@Deprecated
 public class TransactionQueue implements TaskQueue, QueuedTaskLifecycleListener {
 
     private final TaskManager manager;

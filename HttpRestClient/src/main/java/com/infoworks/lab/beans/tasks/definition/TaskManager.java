@@ -1,12 +1,12 @@
 package com.infoworks.lab.beans.tasks.definition;
 
-import com.infoworks.lab.beans.tasks.impl.AsyncQueueManager;
 import com.infoworks.lab.beans.tasks.impl.AsyncTaskManager;
-import com.infoworks.lab.beans.tasks.impl.SyncQueueManager;
 import com.infoworks.lab.beans.tasks.impl.SyncTaskManager;
+import com.infoworks.lab.beans.tasks.impl.TaskLifecycleQueueManager;
 import com.infoworks.lab.rest.models.Message;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public interface TaskManager extends AutoCloseable{
@@ -29,19 +29,19 @@ public interface TaskManager extends AutoCloseable{
     }
 
     static TaskManager createAsyncQ(QueuedTaskLifecycleListener listener){
-        return new AsyncQueueManager(listener);
+        return new TaskLifecycleQueueManager(null);
     }
 
     static TaskManager createAsyncQ(QueuedTaskLifecycleListener listener, ExecutorService service){
-        return new AsyncQueueManager(listener, service);
+        return new TaskLifecycleQueueManager(service);
     }
 
     static TaskManager createSyncQ(QueuedTaskLifecycleListener listener){
-        return new SyncQueueManager(listener);
+        return new TaskLifecycleQueueManager(Executors.newSingleThreadExecutor());
     }
 
     static TaskManager createSyncQ(QueuedTaskLifecycleListener listener, ExecutorService service){
-        return new SyncQueueManager(listener, service);
+        return new TaskLifecycleQueueManager(service);
     }
 
     void start(Task task, Message message);

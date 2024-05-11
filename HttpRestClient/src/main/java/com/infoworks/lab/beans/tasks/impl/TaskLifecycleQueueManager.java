@@ -17,6 +17,7 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
     private TaskCompletionListener listener;
     private final Queue<Task> beanQueue;
     private final Queue<Task> abortQueue;
+
     protected ExecutorService service;
 
     public TaskLifecycleQueueManager(ExecutorService service) {

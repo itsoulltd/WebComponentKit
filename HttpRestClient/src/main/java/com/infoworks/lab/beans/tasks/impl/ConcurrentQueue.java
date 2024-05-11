@@ -14,6 +14,10 @@ public class ConcurrentQueue implements TaskQueue {
         this.manager = new TaskLifecycleQueueManager(service);
     }
 
+    public ConcurrentQueue() {
+        this(null);
+    }
+
     @Override
     public TaskQueue add(Task task) {
         manager.start(task, null);

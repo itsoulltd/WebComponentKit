@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
-public class TransactionStack implements TaskLifecycleListener, TaskStack {
+public class TransactionStack implements TaskStack, TaskLifecycleListener {
 
     private final TaskManager manager;
     private Stack<Task> beanStack;

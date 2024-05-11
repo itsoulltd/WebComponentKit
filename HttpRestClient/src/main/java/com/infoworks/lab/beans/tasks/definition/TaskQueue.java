@@ -1,5 +1,6 @@
 package com.infoworks.lab.beans.tasks.definition;
 
+import com.infoworks.lab.beans.tasks.impl.ConcurrentQueue;
 import com.infoworks.lab.beans.tasks.impl.TransactionQueue;
 import com.infoworks.lab.rest.models.Message;
 
@@ -40,7 +41,7 @@ public interface TaskQueue {
     }
 
     static TaskQueue createAsync(ExecutorService service){
-        return new TransactionQueue(false, service);
+        return new ConcurrentQueue(service);
     }
 
     TaskQueue add(Task task);

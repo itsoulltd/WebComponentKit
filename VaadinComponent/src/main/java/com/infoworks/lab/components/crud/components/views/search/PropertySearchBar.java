@@ -18,12 +18,10 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 
 public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
 
-    public static final String CLEAR_BUTTON_TITLE = "Clear";
-    public static final String SEARCH_BUTTON_TITLE = "Search";
     private TextField searchField;
     private Button newButton;
-    private Property searchProperty;
     private Button searchButton;
+    private Property searchProperty;
     private ComboBox<Property> propertyComboBox;
 
     public PropertySearchBar(Class<T> beanType, SearchBarConfigurator configurator) {
@@ -106,7 +104,7 @@ public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
                 clearSearchBarView();
                 configurator.getDataSource().reloadGrid();
             } else {
-                //Does not update grid when result comes from rest-api.
+                //Do not update grid when result comes from rest-api.
                 //configurator.getDataSource().addSearchFilter(event.getValue().toString());
                 if (searchProperty != null) {
                     if (searchProperty.getValue() == null) {
@@ -124,10 +122,8 @@ public class PropertySearchBar<T extends EntityInterface> extends SearchBar<T> {
     @Override
     public void clearSearchBarView() {
         super.clearSearchBarView();
+        //Since searchField clear will trigger the valueChange listener, eventually button text will change.
         searchField.clear();
-        //Since searchField clear will trigger the valueChange listener, which will alter the text.
-        //So need following line:
-        //alterButton(searchButton, SEARCH_BUTTON_TITLE, new Icon("lumo", "search"));
         propertyComboBox.clear();
     }
 }

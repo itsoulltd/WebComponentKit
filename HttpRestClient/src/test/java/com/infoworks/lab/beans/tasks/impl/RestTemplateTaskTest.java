@@ -127,6 +127,42 @@ public class RestTemplateTaskTest {
     }
 
     @Test
+    public void aggregatedSpringRequestItemCountTest() throws MalformedURLException {
+        CountDownLatch latch = new CountDownLatch(1);
+        //
+        HttpInteractor templateA = new com.infoworks.lab.client.spring.HttpTemplate(
+                new URL("http://localhost:8080/passenger/rowCount"), ItemCount.class);
+
+        HttpInteractor templateB = new com.infoworks.lab.client.spring.HttpTemplate(
+                new URL("http://localhost:8080/passenger"), ItemCount.class);
+
+        TaskStack stack = TaskStack.createSync(true);
+        stack.push(new AggregateRequest(templateA, Invocation.Method.GET
+                , null));
+        stack.push(new AggregateRequest(templateB, Invocation.Method.GET
+                , null
+                , new QueryParam("rowCount", null)));
+
+        //
+        stack.commit(true, (message, status) -> {
+            if (message == null) {
+                System.out.println("No Message Return!");
+            } else {
+                System.out.println("State: " + status);
+                if (message instanceof AggregatedResponse) {
+                    ((AggregatedResponse<Response>) message)
+                            .forEach(val -> System.out.println(val.toString()));
+                }
+            }
+            latch.countDown();
+        });
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
     public void aggregatedSpringRequestTest() throws MalformedURLException {
         CountDownLatch latch = new CountDownLatch(1);
         //
@@ -177,7 +213,7 @@ public class RestTemplateTaskTest {
                 new URL("http://localhost:8080/passenger"), Passenger.class);
 
         HttpInteractor itemCountTemplate = new com.infoworks.lab.client.spring.HttpTemplate(
-                new URL("http://localhost:8080/passenger"), ItemCount.class);
+                new URL("http://localhost:8080/passenger/rowCount"), ItemCount.class);
 
         AggregatedResponse<Response> aggResponse = new AggregatedResponse<>();
 
@@ -193,8 +229,7 @@ public class RestTemplateTaskTest {
                 //Rest Call 02: After Insert
                 , CompletableFuture.supplyAsync(() -> {
                     AggregateRequest request = new AggregateRequest(itemCountTemplate, Invocation.Method.GET
-                            , null
-                            , new QueryParam("rowCount", null));
+                            , null);
                     return request.execute(aggResponse);
                 }, queue).thenAccept(response -> System.out.println("ItemCount status: " + response.getStatus()))
 
@@ -209,8 +244,7 @@ public class RestTemplateTaskTest {
                 //Rest Call 04: After Delete
                 , CompletableFuture.supplyAsync(() -> {
                     AggregateRequest request = new AggregateRequest(itemCountTemplate, Invocation.Method.GET
-                            , null
-                            , new QueryParam("rowCount", null));
+                            , null);
                     return request.execute(aggResponse);
                 }, queue).thenAccept(response -> System.out.println("ItemCount status: " + response.getStatus()))
         ).join();

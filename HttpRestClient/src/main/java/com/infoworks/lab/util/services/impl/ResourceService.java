@@ -62,7 +62,7 @@ public class ResourceService implements iResourceService {
                 } catch (IOException e) {}
             }else{
                 try {
-                    ObjectMapper objectMapper = new ObjectMapper();
+                    ObjectMapper objectMapper = Message.getJsonSerializer();
                     List res = objectMapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {});
                     return res;
                 } catch (IOException e) {}

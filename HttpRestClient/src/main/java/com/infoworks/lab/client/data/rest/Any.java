@@ -2,10 +2,14 @@ package com.infoworks.lab.client.data.rest;
 
 import com.it.soul.lab.sql.entity.Entity;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Map;
 import java.util.Optional;
 
-public class Any<ID> extends Entity {
+public class Any<ID> extends Entity implements Externalizable {
     private ID id;
     private Map<String, Object> _links;
 
@@ -37,5 +41,16 @@ public class Any<ID> extends Entity {
             return Optional.ofNullable(last);
         }
         return Optional.ofNullable(null);
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(marshallingToMap(true));
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        Map<String, Object> data = (Map<String, Object>) in.readObject();
+        unmarshallingFromMap(data, true);
     }
 }

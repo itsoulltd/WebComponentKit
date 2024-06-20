@@ -6,8 +6,10 @@ import org.redisson.api.RedissonClient;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class RedissonDataSource implements RedisDataSource {
 
@@ -97,4 +99,14 @@ public class RedissonDataSource implements RedisDataSource {
         return false;
     }
 
+    @Override
+    public String[] keys(String prefix) {
+        //TODO (CAUTION): fetch client.getKeys() in Batch (in-future) to avoid memory-dumb.
+        RKeys keys = client.getKeys();
+        List<String> targetMaskedKeys = keys.getKeysStream()
+                .filter(key -> key.startsWith(prefix))
+                .collect(Collectors.toList());
+        targetMaskedKeys.sort(String::compareTo);
+        return targetMaskedKeys.toArray(new String[0]);
+    }
 }

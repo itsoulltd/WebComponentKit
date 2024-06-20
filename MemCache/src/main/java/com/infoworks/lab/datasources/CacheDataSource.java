@@ -77,8 +77,10 @@ public class CacheDataSource<E> extends SimpleDataSource<String, E> {
     }
 
     @Override
-    public void add(E e) {
-        put(String.valueOf(e.hashCode()), e);
+    public String add(E e) {
+        String key = String.valueOf(e.hashCode());
+        put(key, e);
+        return key;
     }
 
     public DataSource<String, E> add(E...items){

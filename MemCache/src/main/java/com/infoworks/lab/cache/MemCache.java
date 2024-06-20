@@ -145,8 +145,10 @@ public class MemCache<Entity extends EntityInterface> implements DataSource<Stri
     }
 
     @Override
-    public void add(Entity e) {
-        put(String.valueOf(e.hashCode()), e);
+    public String add(Entity e) {
+        String key = String.valueOf(e.hashCode());
+        put(key, e);
+        return key;
     }
 
     public DataSource<String, Entity> add(Entity...items){

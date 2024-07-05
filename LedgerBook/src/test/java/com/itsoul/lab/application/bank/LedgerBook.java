@@ -1,6 +1,6 @@
 package com.itsoul.lab.application.bank;
 
-import com.itsoul.lab.domain.models.TransactionSearchQuery;
+import com.infoworks.lab.rest.models.SearchQuery;
 import com.it.soul.lab.sql.SQLExecutor;
 import com.it.soul.lab.sql.query.QueryType;
 import com.it.soul.lab.sql.query.SQLJoinQuery;
@@ -8,19 +8,16 @@ import com.it.soul.lab.sql.query.SQLQuery;
 import com.it.soul.lab.sql.query.models.Operator;
 import com.it.soul.lab.sql.query.models.Predicate;
 import com.it.soul.lab.sql.query.models.Where;
-import com.itsoul.lab.generalledger.entities.Money;
-import com.itsoul.lab.generalledger.entities.Transaction;
-import com.itsoul.lab.generalledger.entities.TransferRequest;
+import com.itsoul.lab.generalledger.entities.*;
 import com.itsoul.lab.ledgerbook.accounting.head.ChartOfAccounts;
 import com.itsoul.lab.ledgerbook.accounting.head.Ledger;
 import com.itsoul.lab.ledgerbook.connector.SourceConnector;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -115,7 +112,16 @@ public class LedgerBook {
             , String ref
             , String from
             , String amount
-            , String to) throws RuntimeException{
+            , String to) throws RuntimeException {
+        return makeTransactions(type, ref, AccountingType.Liability, from, amount, to);
+    }
+
+    public Money makeTransactions(String type
+            , String ref
+            , AccountingType acType
+            , String from
+            , String amount
+            , String to) throws RuntimeException {
         //
         Ledger book = null;
         try {
@@ -130,7 +136,7 @@ public class LedgerBook {
             //Transfer request:
             TransferRequest transferRequest1 = book.createTransferRequest()
                     .reference(validateTransactionRef(ref))
-                    .type(type)
+                    .type(type, acType)
                     .account(from).debit(amount, currency)
                     .account(to).credit(amount, currency)
                     .build();
@@ -209,6 +215,25 @@ public class LedgerBook {
         return cashAccountTransactionList;
     }
 
+    public Map<String, String> convertTransaction(Transaction transaction, String matcher) {
+        Map<String, String> info = new HashMap<>();
+        info.put("transaction-ref", transaction.getTransactionRef());
+        Optional<TransactionLeg> tLeg = transaction.getLegs().stream()
+                .filter(leg -> leg.getAccountRef().equalsIgnoreCase(matcher))
+                .findFirst();
+        if (tLeg.isPresent()){
+            info.put("amount", tLeg.get().getAmount().getAmount().toPlainString());
+            info.put("currency", tLeg.get().getAmount().getCurrency().getCurrencyCode());
+            info.put("currencyDisplayName", tLeg.get().getAmount().getCurrency().getDisplayName());
+            info.put("balance", tLeg.get().getBalance().toPlainString());
+        }
+        info.put("transaction-type", transaction.getTransactionType());
+        /*info.put("transaction-date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                .format(transaction.getTransactionDate()));*/
+        info.put("transaction-date", transaction.getTransactionDate().getTime() + "");
+        return info;
+    }
+
     /**
      * Select
      *    th.transaction_ref
@@ -227,31 +252,33 @@ public class LedgerBook {
      * order by th.transaction_date DESC;
      */
 
-    public List<Map<String, Object>> findTransactions(String prefix, String username, TransactionSearchQuery query) {
+    public List<Map<String, Object>> findTransactions(String prefix, String username, SearchQuery query) {
         String cash_account = getACNo(username, prefix);
-        Predicate clause = new Where("tl.account_ref").isEqualTo(cash_account)
-                .and("tl.tenant_ref").isEqualTo(tenantID)
-                .and("tl.client_ref").isEqualTo(owner);
+        Predicate clause = new Where("tl.account_ref").isEqualTo(cash_account);
         //Queryable- by Type, From-Date, To-Date
         if (query.get("type") != null){
             clause.and("th.transaction_type").isLike("%"+ query.get("type", String.class)+"%");
         }
         if (query.get("from") != null && query.get("to") != null) {
-            //TODO: clause.between(query.get("from", String.class), query.get("to", String.class));
+            String from = query.get("from", String.class);
+            String to = minusADay(query.get("to", String.class), "yyyy-MM-dd");
+            clause.and("th.transaction_date").between(from, to);
         } else if (query.get("from") != null && query.get("till") != null) {
-            //TODO: clause.between(query.get("from", String.class), query.get("till", String.class));
+            String from = query.get("from", String.class);
+            String till = query.get("till", String.class);
+            clause.and("th.transaction_date").between(from, till);
         } else {
             if (query.get("from") != null) {
                 clause.and("th.transaction_date").isGreaterThenOrEqual(query.get("from", String.class));
-            }
-            if (query.get("to") != null) {
-                clause.and("th.transaction_date").isLessThenOrEqual(query.get("to", String.class));
-            }
-            if (query.get("till") != null) {
-                clause.and("th.transaction_date").isLessThen(query.get("till", String.class));
+            } else if (query.get("to") != null) {
+                clause.and("th.transaction_date").isLessThen(query.get("to", String.class));
+            } else if (query.get("till") != null) {
+                clause.and("th.transaction_date").isLessThenOrEqual(query.get("till", String.class));
             }
         }
         //
+        int limit = query.getSize() <= 0 ? 10 : query.getSize();
+        int offset = query.getPage() <= 0 ? 0 : ((query.getPage() - 1) * limit);
         SQLJoinQuery joins = new SQLQuery.Builder(QueryType.LEFT_JOIN)
                 .joinAsAlice("transaction_history", "th"
                         , "transaction_ref", "transaction_type", "transaction_date")
@@ -260,8 +287,10 @@ public class LedgerBook {
                         , "account_ref", "amount", "currency", "balance")
                 .where(clause)
                 .orderBy(Operator.DESC, "th.transaction_date")
+                .addLimit(limit, offset)
                 .build();
-        //joins.toString();
+        //
+        LOG.info(joins.toString());
         try (SQLExecutor executor = new SQLExecutor(connector.getConnection())) {
             ResultSet set = executor.executeSelect(joins);
             List<Map<String, Object>> data = executor.convertToKeyValuePair(set);
@@ -271,4 +300,17 @@ public class LedgerBook {
         }
         return new ArrayList<>();
     }
+
+    private String minusADay(String date, String dateFormat) {
+        if (Objects.isNull(date) || date.isEmpty()) dateFormat = "yyyy-MM-dd";
+        try {
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+            cal.setTime(format.parse(date));
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            date = format.format(cal.getTime());
+        } catch (ParseException e) {}
+        return date;
+    }
+
 }

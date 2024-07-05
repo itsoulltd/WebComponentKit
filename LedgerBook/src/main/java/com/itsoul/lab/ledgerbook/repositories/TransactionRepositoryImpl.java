@@ -99,7 +99,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .add("tenant_ref",getClientRef().getTenantRef())
                 .add("transaction_ref", transaction.getTransactionRef())
                 .add("transaction_type", transaction.getTransactionType())
-                .add("transaction_date", new java.sql.Timestamp(transaction.getTransactionDate().getTime()));
+                .add("transaction_date", new java.sql.Date(transaction.getTransactionDate().getTime()));
         SQLInsertQuery query = new SQLQuery.Builder(QueryType.INSERT)
                 .into("transaction_history")
                 .values(row.getProperties().toArray(new Property[0]))

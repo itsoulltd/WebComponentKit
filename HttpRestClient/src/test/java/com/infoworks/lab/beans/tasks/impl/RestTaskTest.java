@@ -38,11 +38,11 @@ public class RestTaskTest {
             latch.countDown();
         });
         //
-        RestTask task = new GetTask("http://localhost:8080/user"
-                , "?limit={limit}&page={page}", (res) -> {
-            System.out.println(res);
-        });
-        task.setParams(10, 0);
+        RestTask task = new GetTask(
+                "http://localhost:8080/user"
+                , "?limit={limit}&page={page}"
+                , 10, 0);
+        task.addResponseListener((res) -> System.out.println(res));
         queue.add(task);
         //
         try {

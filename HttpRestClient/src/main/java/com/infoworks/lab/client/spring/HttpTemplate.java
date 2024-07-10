@@ -58,11 +58,6 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
                 }
             });
         }
-        /*HttpComponentsClientHttpRequestFactory clientFactory
-                = new HttpComponentsClientHttpRequestFactory();
-        clientFactory.setReadTimeout(7000);
-        clientFactory.setConnectTimeout(5000);*/
-        this.template = new RestTemplate();
     }
 
     protected String domain() throws MalformedURLException {
@@ -129,6 +124,16 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
         return "";
     }
 
+    protected RestTemplate getTemplate() {
+        if (this.template == null)
+            this.template = new RestTemplate();
+        return this.template;
+    }
+
+    public void setTemplate(RestTemplate template) {
+        this.template = template;
+    }
+
     @SuppressWarnings("Duplicates")
     private HttpHeaders createSecureHeader(EntityInterface consume){
         HttpHeaders headers = new HttpHeaders();
@@ -159,7 +164,7 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
             //Prepare request-uri:
             String queryParam = urlencodedQueryParam(params);
             String rootUri = resourcePath(queryParam);
-            ResponseEntity<String> rs = template.exchange(rootUri, HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> rs = getTemplate().exchange(rootUri, HttpMethod.GET, entity, String.class);
             List<P> produce = inflateJson(rs.getBody(), type);
             return (produce != null && !produce.isEmpty())
                     ? produce.get(0) : null;
@@ -196,7 +201,7 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
             HttpEntity<C> entity = new HttpEntity<>(consume, headers);
             //Prepare request-uri:
             String rootUri = resourcePath(paths);
-            ResponseEntity<String> rs = template.exchange(rootUri, HttpMethod.POST, entity, String.class);
+            ResponseEntity<String> rs = getTemplate().exchange(rootUri, HttpMethod.POST, entity, String.class);
             List<P> produce = inflateJson(rs.getBody(), type);
             return (produce != null && !produce.isEmpty())
                     ? produce.get(0) : null;
@@ -233,7 +238,7 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
             HttpEntity<C> entity = new HttpEntity<>(consume, headers);
             //Prepare request-uri:
             String rootUri = resourcePath(paths);
-            ResponseEntity<String> rs = template.exchange(rootUri, HttpMethod.PUT, entity, String.class);
+            ResponseEntity<String> rs = getTemplate().exchange(rootUri, HttpMethod.PUT, entity, String.class);
             List<P> produce = inflateJson(rs.getBody(), type);
             return (produce != null && !produce.isEmpty())
                     ? produce.get(0) : null;
@@ -269,7 +274,7 @@ public class HttpTemplate<P extends Response, C extends EntityInterface> extends
             //Prepare request-uri:
             String queryParam = urlencodedQueryParam(params);
             String rootUri = resourcePath(queryParam);
-            ResponseEntity<String> response = template.exchange(rootUri, HttpMethod.DELETE, entity, String.class);
+            ResponseEntity<String> response = getTemplate().exchange(rootUri, HttpMethod.DELETE, entity, String.class);
             if (response.getStatusCodeValue() == 500) throw new HttpInvocationException("Internal Server Error!");
             return response.getStatusCodeValue() == 200;
         }catch (Exception e) {

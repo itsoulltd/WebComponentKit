@@ -3,6 +3,7 @@ package com.infoworks.lab.beans.tasks.rest.client.spring.methods;
 import com.infoworks.lab.beans.tasks.rest.client.base.BaseRequest;
 import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.Response;
+import com.infoworks.lab.rest.models.SearchQuery;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.it.soul.lab.sql.query.models.Row;
 import org.springframework.http.HttpEntity;
@@ -18,7 +19,7 @@ public abstract class RestTask<In extends Message, Out extends Response>
     protected String baseUri;
     protected String requestUri;
     protected String token;
-    protected HttpEntity<Map> body;
+    protected HttpEntity body;
     protected Object[] params = new Object[0];
     protected RestTemplate template;
     protected Consumer<String> responseListener;
@@ -53,6 +54,12 @@ public abstract class RestTask<In extends Message, Out extends Response>
         return this;
     }
 
+    public RestTask setBody(SearchQuery query, String token) {
+        this.token = (token == null) ? "" : token;
+        this.body = new HttpEntity(query, createHeaderFrom(this.token));
+        return this;
+    }
+
     public RestTask setBody(Map<String, Object> data, String token) {
         this.token = (token == null) ? "" : token;
         this.body = new HttpEntity(data, createHeaderFrom(this.token));
@@ -73,7 +80,7 @@ public abstract class RestTask<In extends Message, Out extends Response>
         return setBody(data, token);
     }
 
-    protected HttpEntity<Map> getBody() {
+    protected HttpEntity getBody() {
         return this.body;
     }
 

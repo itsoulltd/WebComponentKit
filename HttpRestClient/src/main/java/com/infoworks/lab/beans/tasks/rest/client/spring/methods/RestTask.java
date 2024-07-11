@@ -1,6 +1,6 @@
 package com.infoworks.lab.beans.tasks.rest.client.spring.methods;
 
-import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
+import com.infoworks.lab.beans.tasks.rest.client.base.BaseRequest;
 import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.Response;
 import com.it.soul.lab.sql.entity.EntityInterface;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public abstract class RestTask<In extends Message, Out extends Response>
-        extends ExecutableTask<In, Out> {
+        extends BaseRequest<In, Out> {
 
     protected String baseUri;
     protected String requestUri;

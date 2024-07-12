@@ -4,7 +4,6 @@ import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.Response;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.function.Consumer;
@@ -32,9 +31,15 @@ public class DeleteTask extends RestTask<Message, Response> {
                     , getParams());
             if (getResponseListener() != null)
                 getResponseListener().accept(response.getBody());
-        } catch (RestClientException e) {
-            return new Response().setStatus(500).setError(e.getMessage());
+            return (Response) new Response()
+                    .setStatus(200)
+                    .setMessage(getUri())
+                    .setPayload(response.getBody());
+        } catch (Exception e) {
+            return new Response()
+                    .setStatus(500)
+                    .setMessage(getUri())
+                    .setError(e.getMessage());
         }
-        return new Response().setStatus(200);
     }
 }

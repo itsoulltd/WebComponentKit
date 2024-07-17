@@ -2,6 +2,9 @@ package com.infoworks.lab.beans.tasks.impl;
 
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.rest.client.spring.methods.*;
+import com.infoworks.lab.rest.models.SearchQuery;
+import com.infoworks.lab.rest.models.pagination.Pagination;
+import com.infoworks.lab.rest.models.pagination.SortOrder;
 import com.it.soul.lab.sql.query.models.Row;
 import org.junit.Test;
 
@@ -121,6 +124,32 @@ public class RestTaskTest {
                 , 0);
         deleteTask.addResponseListener((response) -> System.out.println(response));
         queue.add(deleteTask);
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void searchTaskTest() {
+        CountDownLatch latch = new CountDownLatch(1);
+        //TaskFlow:
+        TaskQueue queue = TaskQueue.createSync(false);
+        queue.onTaskComplete((message, state) -> {
+            System.out.println("State: " + state);
+            latch.countDown();
+        });
+        //
+        RestTask task = new PostTask(
+                "http://localhost:8080/user"
+                , "/search");
+        //Make query:
+        SearchQuery query = Pagination.createQuery(SearchQuery.class, 10, SortOrder.DESC);
+        query.add("name").isLike("%hana%");
+        //
+        task.setBody(query, "my-token");
+        task.addResponseListener((response) -> System.out.println(response));
+        queue.add(task);
         //
         try {
             latch.await();

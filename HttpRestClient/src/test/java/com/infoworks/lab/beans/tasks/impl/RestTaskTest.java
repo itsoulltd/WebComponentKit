@@ -2,6 +2,7 @@ package com.infoworks.lab.beans.tasks.impl;
 
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.rest.client.spring.methods.*;
+import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.SearchQuery;
 import com.infoworks.lab.rest.models.pagination.Pagination;
 import com.infoworks.lab.rest.models.pagination.SortOrder;
@@ -41,10 +42,28 @@ public class RestTaskTest {
             latch.countDown();
         });
         //
-        RestTask task = new GetTask(
-                "http://localhost:8080/user"
+        RestTask task = new GetTask("http://localhost:8080/user"
                 , "?limit={limit}&page={page}"
                 , 10, 0);
+        task.addResponseListener((res) -> System.out.println(res));
+        queue.add(task);
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void getFetchTaskWithQueryParamTest() {
+        CountDownLatch latch = new CountDownLatch(1);
+        TaskQueue queue = TaskQueue.createSync(false);
+        queue.onTaskComplete((message, state) -> {
+            System.out.println("State: " + state);
+            latch.countDown();
+        });
+        //
+        RestTask task = new GetTask("http://localhost:8080/user", ""
+                , new QueryParam("limit", "10"), new QueryParam("page", "0"));
         task.addResponseListener((res) -> System.out.println(res));
         queue.add(task);
         //

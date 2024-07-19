@@ -35,4 +35,16 @@ public class UserValidationTest {
         }
     }
 
+    @Test
+    public void userValidationTestV2() {
+        User user = new User();
+        user.setEmail("m.tow.g.com");
+        user.setPassword("01op");
+        //Validation:
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        for (ConstraintViolation<User> violation : violations) {
+            System.out.println(violation.getMessage());
+        }
+    }
+
 }

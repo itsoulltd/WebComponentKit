@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface PasswordRule {
 
-    int mixLengthRule() default 0;
+    int minLengthRule() default 0;
     int maxLengthRule() default 0;
     int maxUpperCaseCharRule() default 0;
     int maxDigitCharRule() default 0;

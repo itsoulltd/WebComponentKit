@@ -31,10 +31,8 @@ public class UserValidationTest {
     public void userValidationTest() {
         User user = new User();
         //Validation:
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        for (ConstraintViolation<User> violation : violations) {
-            System.out.println(violation.getMessage());
-        }
+        String[] messages = validate(validator, user);
+        System.out.println(String.join("; \n", messages));
     }
 
     @Test
@@ -47,9 +45,18 @@ public class UserValidationTest {
         System.out.println(String.join("; \n", messages));
     }
 
-    public <T> String[] validate(Validator validator, T type) {
+    @Test
+    public void userValidationTestV3() {
+        User user = null;
+        //Validation:
+        String[] messages = validate(validator, user);
+        System.out.println(String.join("; \n", messages));
+    }
+
+    public <T> String[] validate(Validator validator, T target) {
+        if (target == null) return new String[]{"Validation target must not be null;"};
         List<String> messages = new ArrayList<>();
-        Set<ConstraintViolation<T>> violations = validator.validate(type);
+        Set<ConstraintViolation<T>> violations = validator.validate(target);
         for (ConstraintViolation<T> violation : violations) {
             messages.add(violation.getMessage());
         }

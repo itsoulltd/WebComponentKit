@@ -53,6 +53,18 @@ public class UserValidationTest {
         System.out.println(String.join("; \n", messages));
     }
 
+    @Test
+    public void userValidationTestV4() {
+        User user = new User();
+        user.setTenantID("mytenant");
+        user.setEmail("sohana@gmail.com");
+        user.setAge(20);
+        user.setCurrency("BDT");
+        //Validation:
+        String[] messages = validate(validator, user);
+        System.out.println(String.join("; \n", messages));
+    }
+
     public <T> String[] validate(Validator validator, T target) {
         if (target == null) return new String[]{"Validation target must not be null;"};
         List<String> messages = new ArrayList<>();

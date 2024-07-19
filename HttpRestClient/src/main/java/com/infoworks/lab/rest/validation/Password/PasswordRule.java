@@ -24,6 +24,7 @@ public @interface PasswordRule {
     int maxAlphaSequenceRule() default 0;
     int maxQwertySequenceRule() default 0;
     boolean whitespaceRule() default false;
+    boolean nullable() default true;
     String message() default "Invalid Password";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

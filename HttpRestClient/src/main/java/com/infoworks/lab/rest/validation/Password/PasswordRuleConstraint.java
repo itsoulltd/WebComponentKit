@@ -9,9 +9,11 @@ import java.util.List;
 public class PasswordRuleConstraint implements ConstraintValidator<PasswordRule, String> {
 
     private PasswordValidator validator;
+    private boolean nullable;
 
     @Override
     public void initialize(final PasswordRule annotation) {
+        nullable = annotation.nullable();
         List<Rule> rules = new ArrayList<>();
         if (annotation.maxLengthRule() > 0 && annotation.minLengthRule() > 0)
             rules.add(new LengthRule(annotation.minLengthRule(), annotation.maxLengthRule()));
@@ -34,6 +36,7 @@ public class PasswordRuleConstraint implements ConstraintValidator<PasswordRule,
 
     @Override
     public boolean isValid(final String password, final ConstraintValidatorContext context) {
+        if (password == null && nullable) return true;
         // @formatter:off
         final RuleResult result = validator.validate(new PasswordData(password));
         if (result.isValid()) {

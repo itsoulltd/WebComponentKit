@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface EmailPattern {
 
-    boolean nullable() default false;
+    boolean nullable() default true;
     String message() default "Invalid Email";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

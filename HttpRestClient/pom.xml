@@ -121,18 +121,40 @@
             <version>${okhttp.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- -->
+        <!-- Password validator using Passay-v1.0 -->
+        <dependency>
+            <groupId>org.passay</groupId>
+            <artifactId>passay</artifactId>
+            <version>${passay.version}</version>
+        </dependency>
+        <!-- Javax.Validation API -->
         <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>2.0.1.Final</version>
         </dependency>
+        <!-- Because v6.0.13.Final is the last impl with javax.validation.* -->
         <dependency>
-            <groupId>org.passay</groupId>
-            <artifactId>passay</artifactId>
-            <version>${passay.version}</version>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.0.13.Final</version>
+            <scope>test</scope>
         </dependency>
+        <!-- -->
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <!-- javax.el implementation (was also needed for org.hibernate.validator)-->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- -->
         <!-- Test-Scope -->
         <dependency>
             <groupId>com.github.stefanbirkner</groupId>

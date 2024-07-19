@@ -8,6 +8,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class UserValidationTest {
@@ -41,10 +43,17 @@ public class UserValidationTest {
         user.setEmail("m.tow.g.com");
         user.setPassword("01op");
         //Validation:
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        for (ConstraintViolation<User> violation : violations) {
-            System.out.println(violation.getMessage());
+        String[] messages = validate(validator, user);
+        System.out.println(String.join("; \n", messages));
+    }
+
+    public <T> String[] validate(Validator validator, T type) {
+        List<String> messages = new ArrayList<>();
+        Set<ConstraintViolation<T>> violations = validator.validate(type);
+        for (ConstraintViolation<T> violation : violations) {
+            messages.add(violation.getMessage());
         }
+        return messages.toArray(new String[0]);
     }
 
 }

@@ -14,11 +14,11 @@ public class User extends Any<Long> {
     @NotEmpty(message = "TenantID must not be null or empty!")
     private String tenantID;
 
-    @EmailPattern(message = "Invalid email-address!")
+    @EmailPattern(message = "Invalid email-address!", nullable = true)
     @NotEmpty(message = "Email must not be null or empty!")
     private String email;
 
-    @PasswordRule(message = "PasswordRule Violation."
+    @PasswordRule(message = "PasswordRule Violation.", nullable = true
             , minLengthRule = 4, maxLengthRule = 12, maxUpperCaseCharRule = 1, maxAlphaSequenceRule = 5)
     private String password;
 

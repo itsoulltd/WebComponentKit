@@ -10,10 +10,12 @@ public class PasswordRuleConstraint implements ConstraintValidator<PasswordRule,
 
     private PasswordValidator validator;
     private boolean nullable;
+    private String defaultMessage;
 
     @Override
     public void initialize(final PasswordRule annotation) {
         nullable = annotation.nullable();
+        defaultMessage = annotation.message();
         List<Rule> rules = new ArrayList<>();
         if (annotation.maxLengthRule() > 0 && annotation.minLengthRule() > 0)
             rules.add(new LengthRule(annotation.minLengthRule(), annotation.maxLengthRule()));
@@ -37,14 +39,24 @@ public class PasswordRuleConstraint implements ConstraintValidator<PasswordRule,
     @Override
     public boolean isValid(final String password, final ConstraintValidatorContext context) {
         if (password == null && nullable) return true;
+        if (password == null) {
+            //because in this case nullable is false;
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(defaultMessage)
+                    .addConstraintViolation();
+            return false;
+        }
         // @formatter:off
         final RuleResult result = validator.validate(new PasswordData(password));
         if (result.isValid()) {
             return true;
+        } else {
+            context.disableDefaultConstraintViolation();
+            String compiledMessage = String.join(",", validator.getMessages(result));
+            context.buildConstraintViolationWithTemplate(compiledMessage)
+                    .addConstraintViolation();
+            return false;
         }
-        context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(String.join(",", validator.getMessages(result))).addConstraintViolation();
-        return false;
     }
 
 }

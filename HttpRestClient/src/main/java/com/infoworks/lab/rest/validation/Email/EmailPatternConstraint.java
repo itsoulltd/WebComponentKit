@@ -9,20 +9,25 @@ public class EmailPatternConstraint implements ConstraintValidator<EmailPattern,
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private static final Pattern PATTERN = Pattern.compile(EMAIL_PATTERN);
     private boolean nullable;
+    private String defaultMessage;
 
     @Override
-    public void initialize(EmailPattern constraintAnnotation) {
-        nullable = constraintAnnotation.nullable();
+    public void initialize(EmailPattern annotation) {
+        nullable = annotation.nullable();
+        defaultMessage = annotation.message();
     }
 
     @Override
     public boolean isValid(final String username, final ConstraintValidatorContext context) {
-        return (validateEmail(username));
-    }
-
-    private boolean validateEmail(final String email) {
-        if (email == null && nullable) return true;
-        Matcher matcher = PATTERN.matcher(email);
+        if (username == null && nullable) return true;
+        if (username == null) {
+            //because in this case nullable is false;
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(defaultMessage)
+                    .addConstraintViolation();
+            return false;
+        }
+        Matcher matcher = PATTERN.matcher(username);
         return matcher.matches();
     }
 }

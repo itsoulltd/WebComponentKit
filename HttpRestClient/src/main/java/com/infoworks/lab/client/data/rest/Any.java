@@ -32,7 +32,7 @@ public class Any<ID> extends Entity implements Externalizable {
     }
 
     public Optional<Object> parseId() {
-        if (get_links() == null) return null;
+        if (get_links() == null) return Optional.ofNullable(null);
         Map<String, Object> self = (Map<String, Object>) get_links().get("self");
         if (self != null) {
             String href = self.get("href").toString();

@@ -70,8 +70,8 @@ public class iResourceServiceTest {
     }
 
     private InputStream createFileInputStream(String fileName) throws FileNotFoundException {
-        Path path = Paths.get("src","test","resources");
-        File imfFile = new File(path.toFile().getAbsolutePath() + fileName);
+        Path path = Paths.get("src","test","resources", fileName);
+        File imfFile = new File(path.toFile().getAbsolutePath());
         InputStream ios = new FileInputStream(imfFile);
         return ios;
     }

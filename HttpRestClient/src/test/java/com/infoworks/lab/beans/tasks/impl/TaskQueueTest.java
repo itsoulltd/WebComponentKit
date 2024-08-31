@@ -122,8 +122,8 @@ public class TaskQueueTest {
     @Test
     public void queueAbortTest(){
         //Initialize:
-        boolean isSynch = false;
-        TaskQueue queue = TaskQueue.createSync(isSynch);
+        boolean isSync = true;
+        TaskQueue queue = TaskQueue.createSync(isSync);
         CountDownLatch latch = new CountDownLatch(1);
         AtomicInteger counter = new AtomicInteger(4);
         //

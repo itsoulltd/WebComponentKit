@@ -82,6 +82,46 @@ public class ExcelReadingServiceTest {
         //
     }
 
+    @Test
+    public void readAsyncFileXlsx() throws IOException {
+        //Read src/test/resources/Download/file_example_XLSX_50.xls
+        InputStream ios = createFileInputStream("/Download/file_example_XLSX_50.xlsx");
+        Assert.assertTrue(ios != null);
+        //
+        ExcelReadingService excelReadService = new ExcelReadingService();
+        excelReadService.readAsync(ios
+                , 50, 0
+                , 0, Integer.MAX_VALUE
+                , 10
+                , (rows) -> {
+                    rows.forEach((index, row) -> {
+                        System.out.println("Index: " + index);
+                        System.out.println("Row: " + String.join("; ", row));
+                    });
+                });
+        //
+    }
+
+    @Test
+    public void readAsyncFileXlsxV2() throws IOException {
+        //Read src/test/resources/Download/file_example_XLSX_50.xls
+        InputStream ios = createFileInputStream("/Download/file_example_XLSX_50.xlsx");
+        Assert.assertTrue(ios != null);
+        //
+        ExcelReadingService excelReadService = new ExcelReadingService();
+        excelReadService.readAsync(ios
+                , 50, 0
+                , 10, 27
+                , 5
+                , (rows) -> {
+                    rows.forEach((index, row) -> {
+                        System.out.println("Index: " + index);
+                        System.out.println("Row: " + String.join("; ", row));
+                    });
+                });
+        //
+    }
+
     @Test(expected = NullPointerException.class)
     public void readFileXlsxFailed() throws IOException {
         //Read src/test/resources/Download/file_example_XLSX_50.xls

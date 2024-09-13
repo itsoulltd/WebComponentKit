@@ -127,6 +127,8 @@ public abstract class RestTask<In extends Message, Out extends Response>
 
     protected HttpHeaders createHeaderFrom(String token) {
         HttpHeaders httpHeaders = new HttpHeaders();
+        if (token == null || token.isEmpty()) return httpHeaders;
+        //
         if (token.startsWith("Bearer")){
             httpHeaders.set(HttpHeaders.AUTHORIZATION, token);
         } else {

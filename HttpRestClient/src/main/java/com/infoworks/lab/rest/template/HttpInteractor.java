@@ -29,10 +29,11 @@ public interface HttpInteractor<P extends Response, C extends EntityInterface> e
     static String authorizationValue(String token){return HttpInteractor.prefix() + HttpInteractor.parseToken(token);}
     static String prefix(){return "Bearer ";}
     static String parseToken(String token){
+        if (token == null) return null;
         final String prefix = HttpInteractor.prefix();
-        if (token.trim().startsWith(prefix)){
-            String pToken = token.trim();
-            return pToken.substring(prefix.length());
+        if (token.trim().startsWith(prefix.trim()) || token.trim().startsWith(prefix.trim().toLowerCase())){
+            String pToken = token.trim().substring(prefix.trim().length());
+            return pToken.trim();
         }
         return token;
     }

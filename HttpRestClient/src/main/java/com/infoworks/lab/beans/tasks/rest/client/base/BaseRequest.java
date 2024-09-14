@@ -6,6 +6,8 @@ import com.infoworks.lab.rest.models.Message;
 import com.infoworks.lab.rest.models.QueryParam;
 import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.models.ResponseList;
+import com.infoworks.lab.rest.template.HttpInteractor;
+import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,7 +17,7 @@ import java.util.*;
 public abstract class BaseRequest<In extends Message, Out extends Response> extends ExecutableTask<In, Out> {
 
     @SuppressWarnings("Duplicates")
-    protected String urlencodedQueryParam(QueryParam...params){
+    protected String urlencodedQueryParam(QueryParam...params) {
         if (params == null) return "";
         StringBuilder buffer = new StringBuilder();
         //Separate Paths:
@@ -82,6 +84,19 @@ public abstract class BaseRequest<In extends Message, Out extends Response> exte
             }
         }
         return (List<T>) Arrays.asList(new Response().setMessage(json));
+    }
+
+    protected HttpHeaders createHeaderFrom(String token) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        //CHECK token empty or null after prefix:
+        if (token == null || token.trim().isEmpty()) return httpHeaders;
+        String prefix = HttpInteractor.prefix();
+        //Get rid off prefix in either-case:
+        token = HttpInteractor.parseToken(token);
+        //CHECK again token empty or null after prefix:
+        if (token == null || token.trim().isEmpty()) return httpHeaders;
+        httpHeaders.set(HttpHeaders.AUTHORIZATION, prefix + token);
+        return httpHeaders;
     }
 
 }

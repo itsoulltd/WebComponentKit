@@ -7,7 +7,6 @@ import com.infoworks.lab.rest.models.SearchQuery;
 import com.it.soul.lab.sql.entity.EntityInterface;
 import com.it.soul.lab.sql.query.models.Row;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -54,18 +53,6 @@ public abstract class RestTask<In extends Message, Out extends Response>
         return this;
     }
 
-    public RestTask setBody(SearchQuery query, String token) {
-        this.token = (token == null) ? "" : token;
-        this.body = new HttpEntity(query, createHeaderFrom(this.token));
-        return this;
-    }
-
-    public RestTask setBody(Map<String, Object> data, String token) {
-        this.token = (token == null) ? "" : token;
-        this.body = new HttpEntity(data, createHeaderFrom(this.token));
-        return this;
-    }
-
     public RestTask setBody(EntityInterface body, String token) {
         Map<String, Object> data = (body != null)
                 ? body.marshallingToMap(true)
@@ -80,8 +67,33 @@ public abstract class RestTask<In extends Message, Out extends Response>
         return setBody(data, token);
     }
 
-    protected HttpEntity getBody() {
+    public RestTask setBody(Map<String, Object> data, String token) {
+        setToken(token);
+        setBody(new HttpEntity(data, createHeaderFrom(this.token)));
+        return this;
+    }
+
+    public RestTask setBody(SearchQuery query, String token) {
+        setToken(token);
+        setBody(new HttpEntity(query, createHeaderFrom(this.token)));
+        return this;
+    }
+
+    public void setBody(HttpEntity body) {
+        this.body = body;
+    }
+
+    public HttpEntity getBody() {
         return this.body;
+    }
+
+    public void setToken(String token) {
+        //this.token = token;
+        this.token = (token == null) ? "" : token;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     public RestTask setParams(Object...params) {
@@ -123,17 +135,5 @@ public abstract class RestTask<In extends Message, Out extends Response>
                 ? this.requestUri
                 : "/" + this.requestUri);
         return builder.toString();
-    }
-
-    protected HttpHeaders createHeaderFrom(String token) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        if (token == null || token.isEmpty()) return httpHeaders;
-        //
-        if (token.startsWith("Bearer")){
-            httpHeaders.set(HttpHeaders.AUTHORIZATION, token);
-        } else {
-            httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + token);
-        }
-        return httpHeaders;
     }
 }

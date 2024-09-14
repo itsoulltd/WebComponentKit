@@ -3,12 +3,15 @@ package com.infoworks.lab.beans.tasks.impl;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
 import com.infoworks.lab.beans.tasks.rest.client.spring.methods.*;
 import com.infoworks.lab.rest.models.QueryParam;
+import com.infoworks.lab.rest.models.Response;
 import com.infoworks.lab.rest.models.SearchQuery;
 import com.infoworks.lab.rest.models.pagination.Pagination;
 import com.infoworks.lab.rest.models.pagination.SortOrder;
 import com.it.soul.lab.sql.query.models.Row;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class RestTaskTest {
@@ -70,6 +73,26 @@ public class RestTaskTest {
         try {
             latch.await();
         } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void login() {
+        Row row = new Row()
+                .add("username", "domain@app.com")
+                .add("password", "******");
+        //Type of tokens:
+        List<String> types = Arrays.asList(
+                //Will pass the test:
+                null, "", "   ", "bearer ", "Bearer "
+                //Shall not pass the test:
+                , " Bearer ", "sdasdasffsdfsdffsf", " Bearer sdasdasffsdfsdffsf", " sdasdasffsdfsdffsf ");
+        //Create a request:
+        types.forEach(token -> {
+            PostTask task = new PostTask("http://localhost:80/api/auth/auth/v1", "login");
+            task.setBody(row, token);
+            Response response = task.execute(null);
+            System.out.println(response.getPayload());
+        });
     }
 
     @Test

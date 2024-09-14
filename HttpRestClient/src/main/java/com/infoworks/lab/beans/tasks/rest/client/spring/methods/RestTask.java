@@ -84,6 +84,9 @@ public abstract class RestTask<In extends Message, Out extends Response>
     }
 
     public HttpEntity getBody() {
+        if (this.body == null) {
+            return new HttpEntity(null, createHeaderFrom(getToken()));
+        }
         return this.body;
     }
 

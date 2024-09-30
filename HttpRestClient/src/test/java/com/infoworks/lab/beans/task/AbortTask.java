@@ -16,13 +16,13 @@ public class AbortTask extends SimpleTask {
 
     @Override
     public Message execute(Message message) throws RuntimeException {
-        System.out.println("AbortTask: execute 01");
+        System.out.println("AbortTask: execute: (" + getMessage().getPayload() + ")");
         throw new RuntimeException("I AM Aborting! Critical Error @ (" + getMessage().getPayload() + ")");
     }
 
     @Override
     public Message abort(Message message) throws RuntimeException {
-        System.out.println("AbortTask: abort 02");
+        System.out.println("AbortTask: abort: (" + getMessage().getPayload() + ")");
         return super.abort(message);
     }
 }

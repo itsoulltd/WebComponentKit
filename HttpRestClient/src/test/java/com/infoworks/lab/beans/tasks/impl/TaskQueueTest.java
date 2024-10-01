@@ -148,6 +148,37 @@ public class TaskQueueTest {
     }
 
     @Test
+    public void queueAbortTestV2(){
+        //Initialize:
+        TaskQueue queue = TaskQueue.createAsync(Executors.newFixedThreadPool(2));
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicInteger counter = new AtomicInteger(6);
+        //
+        queue.onTaskComplete((result, state) -> {
+            try {
+                System.out.println("State: " + state.name());
+                System.out.println(result.toString());
+            } catch (Exception e) {}
+            if (counter.get() > 1) {
+                counter.decrementAndGet();
+            } else {
+                latch.countDown();
+            }
+        });
+        //
+        queue.add(new AbortTask("01"));
+        queue.add(new AbortTask("02"));
+        queue.add(new AbortTask("03"));
+        queue.add(new AbortTask("04"));
+        queue.add(new AbortTask("05"));
+        queue.add(new AbortTask("06"));
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
     public void eventQueueTest() {
         //Initialize:
         CountDownLatch latch = new CountDownLatch(1);

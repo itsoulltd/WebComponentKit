@@ -46,7 +46,10 @@ public abstract class AbstractQueueManager implements TaskManager {
             Message msg = null;
             try {
                 msg = task.abort(reason);
-            } catch (RuntimeException e) {}
+            } catch (RuntimeException e) {
+                msg = new Message();
+                msg.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
+            }
             //End Execute:
             if (getListener() != null) {
                 getListener().after(task, State.Backward);

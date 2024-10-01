@@ -150,9 +150,37 @@ public class TaskQueueTest {
     @Test
     public void queueAbortTestV2(){
         //Initialize:
-        TaskQueue queue = TaskQueue.createAsync(Executors.newFixedThreadPool(2));
+        TaskQueue queue = TaskQueue.createSync(false);
         CountDownLatch latch = new CountDownLatch(1);
-        AtomicInteger counter = new AtomicInteger(6);
+        AtomicInteger counter = new AtomicInteger(5);
+        //
+        queue.onTaskComplete((result, state) -> {
+            System.out.println("State: " + state.name());
+            System.out.println(result.toString());
+            if (counter.get() > 1) {
+                counter.decrementAndGet();
+            } else {
+                latch.countDown();
+            }
+        });
+        //
+        queue.add(new SimpleTask("Wow bro! I am Adams"));
+        queue.add(new AbortTask("01"));
+        queue.add(new SimpleTask("Hi there! I am Cris"));
+        queue.add(new AbortTask("02"));
+        queue.add(new SimpleTask("Let's bro! I am James"));
+        //
+        try {
+            latch.await();
+        } catch (InterruptedException e) {}
+    }
+
+    @Test
+    public void queueAbortTestV3(){
+        //Initialize:
+        TaskQueue queue = TaskQueue.createAsync(Executors.newFixedThreadPool(3));
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicInteger counter = new AtomicInteger(7);
         //
         queue.onTaskComplete((result, state) -> {
             try {
@@ -172,6 +200,7 @@ public class TaskQueueTest {
         queue.add(new AbortTask("04"));
         queue.add(new AbortTask("05"));
         queue.add(new AbortTask("06"));
+        queue.add(new AbortTask("07"));
         //
         try {
             latch.await();

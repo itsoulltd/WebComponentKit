@@ -2,12 +2,11 @@ package com.infoworks.lab.beans.tasks.impl;
 
 import com.infoworks.lab.beans.tasks.definition.*;
 import com.infoworks.lab.rest.models.Message;
+import com.infoworks.lab.rest.models.events.Event;
+import com.infoworks.lab.rest.models.events.EventType;
 
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.BiConsumer;
 
 public class TaskLifecycleQueueManager extends AbstractQueueManager implements QueuedTaskLifecycleListener {
@@ -41,12 +40,74 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
 
     @Override
     public void start(Task task, Message message) {
-        getService().execute(() -> super.start(task, message));
+        //getService().execute(() -> super.start(task, message));
+        //New:
+        if (task != null){
+            if (getListener() != null)
+                getListener().before(task, State.Forward);
+            //Call Execute:
+            boolean mustAbort = false;
+            Future<Message> futureMsg = getService().submit(() -> {
+                Message msg = new Message();
+                try {
+                    msg = task.execute(message);
+                } catch (RuntimeException e) {
+                    msg.setEvent(new Event().setEventType(EventType.ERROR));
+                    msg.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
+                }
+                return msg;
+            });
+            //End Execute:
+            Message msg = null;
+            try {
+                msg = futureMsg.get();
+                if (msg != null && msg.getEvent() != null) {
+                    mustAbort = msg.getEvent().getEventType() == EventType.ERROR;
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                mustAbort = true;
+            }
+            //
+            if (getListener() != null) {
+                if (mustAbort) {
+                    getListener().abort(task, msg);
+                } else {
+                    getListener().after(task, State.Forward);
+                    getListener().finished(msg);
+                }
+            }
+        }
     }
 
     @Override
     public void stop(Task task, Message reason) {
-        getService().execute(()-> super.stop(task, reason));
+        //getService().execute(()-> super.stop(task, reason));
+        //New:
+        if (task != null){
+            if (getListener() != null)
+                getListener().before(task, State.Backward);
+            //Call Execute:
+            Future<Message> future = getService().submit(() -> {
+                Message msg = new Message();
+                try {
+                    msg = task.abort(reason);
+                } catch (RuntimeException e) {
+                    msg.setEvent(new Event().setEventType(EventType.ERROR));
+                    msg.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
+                }
+                return msg;
+            });
+            //End Execute:
+            Message msg = null;
+            try {
+                msg = future.get();
+            } catch (InterruptedException | ExecutionException e) {}
+            //
+            if (getListener() != null) {
+                getListener().after(task, State.Backward);
+                getListener().failed(msg);
+            }
+        }
     }
 
     public TaskStack.State getState() {

@@ -2,9 +2,9 @@ package com.infoworks.lab.beans.tasks.impl;
 
 import com.infoworks.lab.beans.tasks.definition.*;
 import com.infoworks.lab.rest.models.Message;
-import com.infoworks.lab.rest.models.events.Event;
-import com.infoworks.lab.rest.models.events.EventType;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.function.BiConsumer;
@@ -52,7 +52,6 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
                 try {
                     msg = task.execute(message);
                 } catch (RuntimeException e) {
-                    msg.setEvent(new Event().setEventType(EventType.ERROR));
                     msg.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
                 }
                 return msg;
@@ -61,12 +60,14 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
             Message msg = null;
             try {
                 msg = futureMsg.get();
-                if (msg != null && msg.getEvent() != null) {
-                    mustAbort = msg.getEvent().getEventType() == EventType.ERROR;
+                if (msg != null) {
+                    Map<String, Object> payload = Message.unmarshal(Map.class, msg.getPayload());
+                    if (payload != null) {
+                        String status = Optional.ofNullable(payload.get("status")).orElse("200").toString();
+                        mustAbort = Integer.valueOf(status) == 500;
+                    }
                 }
-            } catch (InterruptedException | ExecutionException e) {
-                mustAbort = true;
-            }
+            } catch (Exception e) {}
             //
             if (getListener() != null) {
                 if (mustAbort) {
@@ -92,7 +93,6 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
                 try {
                     msg = task.abort(reason);
                 } catch (RuntimeException e) {
-                    msg.setEvent(new Event().setEventType(EventType.ERROR));
                     msg.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
                 }
                 return msg;

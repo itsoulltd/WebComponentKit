@@ -2,6 +2,7 @@ package com.infoworks.lab.beans.tasks.definition;
 
 import com.infoworks.lab.rest.models.Message;
 
+import java.time.Duration;
 import java.util.function.Function;
 
 public interface Task<In extends Message, Out extends Message> {
@@ -11,6 +12,9 @@ public interface Task<In extends Message, Out extends Message> {
     Out abort(In message) throws RuntimeException;
     default In getMessage() {return null;}
     default void setMessage(In message) {}
+    default Duration getTimeoutDuration() {
+        return Duration.ofMillis(1000 * 30); //30 Seconds
+    }
 
     default Function<Message, Message> getConverter() {return null;}
     default MessageConverter getMessageConverter() {return null;}

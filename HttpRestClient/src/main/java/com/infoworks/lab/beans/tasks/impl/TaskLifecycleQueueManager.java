@@ -59,7 +59,7 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
             //End Execute:
             Message msg = null;
             try {
-                msg = futureMsg.get();
+                msg = futureMsg.get(task.getTimeoutDuration().toMillis(), TimeUnit.MILLISECONDS);
                 if (msg != null) {
                     Map<String, Object> payload = Message.unmarshal(Map.class, msg.getPayload());
                     if (payload != null) {
@@ -67,6 +67,12 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
                         mustAbort = Integer.valueOf(status) == 500;
                     }
                 }
+            } catch (TimeoutException e) {
+                mustAbort = true;
+                msg = new Message().setPayload(String.format("{\"error\":\"%s\", \"status\":500}"
+                        , e.getMessage() == null
+                                ? "TimeoutException During future.get(...)"
+                                : e.getMessage()));
             } catch (Exception e) {}
             //
             if (getListener() != null) {
@@ -100,8 +106,13 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
             //End Execute:
             Message msg = null;
             try {
-                msg = future.get();
-            } catch (InterruptedException | ExecutionException e) {}
+                msg = future.get(task.getTimeoutDuration().toMillis(), TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                msg = new Message().setPayload(String.format("{\"error\":\"%s\", \"status\":500}"
+                        , e.getMessage() == null
+                                ? "TimeoutException During future.get(...)"
+                                : e.getMessage()));
+            } catch (Exception e) {}
             //
             if (getListener() != null) {
                 getListener().after(task, State.Backward);

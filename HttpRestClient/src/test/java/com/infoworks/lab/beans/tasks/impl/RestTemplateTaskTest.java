@@ -2,9 +2,6 @@ package com.infoworks.lab.beans.tasks.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.infoworks.lab.beans.tasks.definition.TaskQueue;
-import com.infoworks.lab.beans.tasks.definition.TaskStack;
-import com.infoworks.lab.beans.tasks.rest.aggregate.AggregateRequest;
-import com.infoworks.lab.beans.tasks.rest.aggregate.AggregatedResponse;
 import com.infoworks.lab.beans.tasks.rest.repository.FetchRequest;
 import com.infoworks.lab.beans.tasks.rest.repository.ItemCountRequest;
 import com.infoworks.lab.beans.tasks.rest.repository.SearchRequest;
@@ -13,12 +10,14 @@ import com.infoworks.lab.beans.tasks.rest.request.GetRequest;
 import com.infoworks.lab.beans.tasks.rest.request.PostRequest;
 import com.infoworks.lab.client.jersey.HttpRepositoryTemplate;
 import com.infoworks.lab.client.jersey.HttpTemplate;
-import com.infoworks.lab.rest.models.*;
+import com.infoworks.lab.rest.models.Message;
+import com.infoworks.lab.rest.models.QueryParam;
+import com.infoworks.lab.rest.models.Response;
+import com.infoworks.lab.rest.models.SearchQuery;
 import com.infoworks.lab.rest.models.pagination.Pagination;
 import com.infoworks.lab.rest.models.pagination.SortOrder;
 import com.infoworks.lab.rest.repository.RestRepository;
 import com.infoworks.lab.rest.template.HttpInteractor;
-import com.infoworks.lab.rest.template.Invocation;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -26,10 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class RestTemplateTaskTest {
 
@@ -125,248 +121,6 @@ public class RestTemplateTaskTest {
             latch.await();
         } catch (InterruptedException e) {}
     }
-
-    @Test
-    public void aggregatedSpringRequestItemCountTest() throws MalformedURLException {
-        CountDownLatch latch = new CountDownLatch(1);
-        //
-        HttpInteractor templateA = new com.infoworks.lab.client.spring.HttpTemplate(
-                new URL("http://localhost:8080/passenger/rowCount"), ItemCount.class);
-
-        HttpInteractor templateB = new com.infoworks.lab.client.spring.HttpTemplate(
-                new URL("http://localhost:8080/passenger"), ItemCount.class);
-
-        TaskStack stack = TaskStack.createSync(true);
-        stack.push(new AggregateRequest(templateA, Invocation.Method.GET
-                , null));
-        stack.push(new AggregateRequest(templateB, Invocation.Method.GET
-                , null
-                , new QueryParam("rowCount", null)));
-
-        //
-        stack.commit(true, (message, status) -> {
-            if (message == null) {
-                System.out.println("No Message Return!");
-            } else {
-                System.out.println("State: " + status);
-                if (message instanceof AggregatedResponse) {
-                    ((AggregatedResponse<Response>) message)
-                            .forEach(val -> System.out.println(val.toString()));
-                }
-            }
-            latch.countDown();
-        });
-        //
-        try {
-            latch.await();
-        } catch (InterruptedException e) {}
-    }
-
-    @Test
-    public void aggregatedSpringRequestTest() throws MalformedURLException {
-        CountDownLatch latch = new CountDownLatch(1);
-        //
-        HttpInteractor template = new com.infoworks.lab.client.spring.HttpTemplate(
-                new URL("http://localhost:8080/passenger"), Passenger.class);
-
-        TaskStack stack = TaskStack.createSync(true);
-        stack.push(new AggregateRequest(template, Invocation.Method.GET
-                , null
-                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
-
-        stack.push(new AggregateRequest(template, Invocation.Method.POST
-                , new Passenger("Towhid", 19)));
-
-        stack.push(new AggregateRequest(template, Invocation.Method.GET
-                , null
-                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
-
-        stack.push(new AggregateRequest(template, Invocation.Method.DELETE
-                , null
-                , new QueryParam("name", "Towhid")));
-        //
-        stack.commit(true, (message, status) -> {
-            if (message == null) {
-                System.out.println("No Message Return!");
-            } else {
-                System.out.println("\n");
-                System.out.println("State: " + status);
-                //System.out.println(message.toString());
-                if (message instanceof AggregatedResponse) {
-                    ((AggregatedResponse<Response>) message)
-                            .forEach(val -> System.out.println(val.toString()));
-                }
-            }
-            latch.countDown();
-        });
-        //
-        try {
-            latch.await();
-        } catch (InterruptedException e) {}
-    }
-
-    @Test
-    public void aggregatedSpringRequestWithSequentialCompletableFutureTest() throws MalformedURLException {
-        ExecutorService queue = Executors.newSingleThreadExecutor();
-
-        HttpInteractor template = new com.infoworks.lab.client.spring.HttpTemplate(
-                new URL("http://localhost:8080/passenger"), Passenger.class);
-
-        HttpInteractor itemCountTemplate = new com.infoworks.lab.client.spring.HttpTemplate(
-                new URL("http://localhost:8080/passenger/rowCount"), ItemCount.class);
-
-        AggregatedResponse<Response> aggResponse = new AggregatedResponse<>();
-
-        CompletableFuture.allOf(
-                //Rest Call 01: Insert Passenger
-                CompletableFuture.supplyAsync(() -> {
-                    AggregateRequest request = new AggregateRequest(template
-                            , Invocation.Method.POST
-                            , new Passenger("Towhid", 39));
-                    return request.execute(aggResponse);
-                }, queue).thenAccept(response -> System.out.println("Insert status: " + response.getStatus()))
-
-                //Rest Call 02: After Insert
-                , CompletableFuture.supplyAsync(() -> {
-                    AggregateRequest request = new AggregateRequest(itemCountTemplate, Invocation.Method.GET
-                            , null);
-                    return request.execute(aggResponse);
-                }, queue).thenAccept(response -> System.out.println("ItemCount status: " + response.getStatus()))
-
-                //Rest Call 03: Delete Passenger
-                , CompletableFuture.supplyAsync(() -> {
-                    AggregateRequest request = new AggregateRequest(template, Invocation.Method.DELETE
-                            , null
-                            , new QueryParam("name", "Towhid"));
-                    return request.execute(aggResponse);
-                }, queue).thenAccept(response -> System.out.println("Delete status: " + response.getStatus()))
-
-                //Rest Call 04: After Delete
-                , CompletableFuture.supplyAsync(() -> {
-                    AggregateRequest request = new AggregateRequest(itemCountTemplate, Invocation.Method.GET
-                            , null);
-                    return request.execute(aggResponse);
-                }, queue).thenAccept(response -> System.out.println("ItemCount status: " + response.getStatus()))
-        ).join();
-
-        //Print Aggregated response:
-        aggResponse.forEach(response -> System.out.println(response.toString()));
-    }
-
-    @Test
-    public void aggregatedSpringRequestWithParallelCompletableFutureTest() throws MalformedURLException {
-        HttpInteractor template = new com.infoworks.lab.client.spring.HttpTemplate(
-                new URL("http://localhost:8080/passenger"), Passenger.class);
-
-        AggregatedResponse<Response> aggResponse = new AggregatedResponse<>();
-
-        CompletableFuture.allOf(
-                //Rest Call 01:
-                CompletableFuture.supplyAsync(() -> {
-                    AggregateRequest request = new AggregateRequest(template, Invocation.Method.GET
-                            , null
-                            , new QueryParam("page", "0"), new QueryParam("limit", "2"));
-                    return request.execute(aggResponse);
-                }).thenAccept(response -> System.out.println("Page_0, limit_2 status: " + response.getStatus()))
-                //Rest Call 02:
-                , CompletableFuture.supplyAsync(() -> {
-                    AggregateRequest request = new AggregateRequest(template, Invocation.Method.GET
-                            , null
-                            , new QueryParam("page", "1"), new QueryParam("limit", "2"));
-                    return request.execute(aggResponse);
-                }).thenAccept(response -> System.out.println("Page_1, limit_2 status: " + response.getStatus()))
-        ).join();
-
-        //Print Aggregated response:
-        aggResponse.forEach(response -> System.out.println(response.toString()));
-    }
-
-    @Test
-    public void aggregatedOkHttpRequestTest() throws MalformedURLException {
-        CountDownLatch latch = new CountDownLatch(1);
-        //
-        HttpInteractor template = new com.infoworks.lab.client.okhttp.HttpTemplate(
-                new URL("http://localhost:8080/passenger"), Passenger.class);
-
-        TaskStack stack = TaskStack.createSync(true);
-        stack.push(new AggregateRequest(template, Invocation.Method.GET
-                , null
-                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
-
-        stack.push(new AggregateRequest(template, Invocation.Method.POST
-                , new Passenger("Towhid", 19)));
-
-        stack.push(new AggregateRequest(template, Invocation.Method.GET
-                , null
-                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
-
-        stack.push(new AggregateRequest(template, Invocation.Method.DELETE
-                , null
-                , new QueryParam("name", "Towhid")));
-        //
-        stack.commit(true, (message, status) -> {
-            if (message == null) {
-                System.out.println("No Message Return!");
-            } else {
-                System.out.println("\n");
-                System.out.println("State: " + status);
-                //System.out.println(message.toString());
-                if (message instanceof AggregatedResponse) {
-                    ((AggregatedResponse<Response>) message)
-                            .forEach(val -> System.out.println(val.toString()));
-                }
-            }
-            latch.countDown();
-        });
-        //
-        try {
-            latch.await();
-        } catch (InterruptedException e) {}
-    }
-
-    @Test
-    public void aggregatedJerseyRequestTest() throws MalformedURLException {
-        CountDownLatch latch = new CountDownLatch(1);
-        //
-        HttpInteractor template = new com.infoworks.lab.client.jersey.HttpTemplate(
-                new URL("http://localhost:8080/passenger"), Passenger.class);
-
-        TaskStack stack = TaskStack.createSync(true);
-        stack.push(new AggregateRequest(template, Invocation.Method.GET
-                , null
-                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
-
-        stack.push(new AggregateRequest(template, Invocation.Method.POST
-                , new Passenger("Towhid", 19)));
-
-        stack.push(new AggregateRequest(template, Invocation.Method.GET
-                , null
-                , new QueryParam("page", "0"), new QueryParam("limit", "10")));
-
-        stack.push(new AggregateRequest(template, Invocation.Method.DELETE
-                , null
-                , new QueryParam("name", "Towhid")));
-        //
-        stack.commit(true, (message, status) -> {
-            if (message == null) {
-                System.out.println("No Message Return!");
-            } else {
-                System.out.println("\n");
-                System.out.println("State: " + status);
-                //System.out.println(message.toString());
-                if (message instanceof AggregatedResponse) {
-                    ((AggregatedResponse<Response>) message)
-                            .forEach(val -> System.out.println(val.toString()));
-                }
-            }
-            latch.countDown();
-        });
-        //
-        try {
-            latch.await();
-        } catch (InterruptedException e) {}
-    }
-
 
     ////////////////////////////////////////////////////////////////////
 

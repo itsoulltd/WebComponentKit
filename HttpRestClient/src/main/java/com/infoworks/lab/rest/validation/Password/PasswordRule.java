@@ -17,9 +17,9 @@ public @interface PasswordRule {
 
     int minLengthRule() default 0;
     int maxLengthRule() default 0;
-    int maxUpperCaseCharRule() default 0;
-    int maxDigitCharRule() default 0;
-    int maxSpecialCharRule() default 0;
+    int minUpperCaseCharRule() default 0;
+    int minDigitCharRule() default 0;
+    int minSpecialCharRule() default 0;
     int maxNumericalSequenceRule() default 0;
     int maxAlphaSequenceRule() default 0;
     int maxQwertySequenceRule() default 0;

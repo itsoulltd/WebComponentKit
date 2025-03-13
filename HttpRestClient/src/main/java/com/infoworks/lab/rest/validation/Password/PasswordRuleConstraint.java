@@ -19,12 +19,12 @@ public class PasswordRuleConstraint implements ConstraintValidator<PasswordRule,
         List<Rule> rules = new ArrayList<>();
         if (annotation.maxLengthRule() > 0 && annotation.minLengthRule() > 0)
             rules.add(new LengthRule(annotation.minLengthRule(), annotation.maxLengthRule()));
-        if (annotation.maxUpperCaseCharRule() > 0)
-            rules.add(new UppercaseCharacterRule(annotation.maxUpperCaseCharRule()));
-        if (annotation.maxDigitCharRule() > 0)
-            rules.add(new DigitCharacterRule(annotation.maxDigitCharRule()));
-        if (annotation.maxSpecialCharRule() > 0)
-            rules.add(new SpecialCharacterRule(annotation.maxSpecialCharRule()));
+        if (annotation.minUpperCaseCharRule() > 0)
+            rules.add(new UppercaseCharacterRule(annotation.minUpperCaseCharRule()));
+        if (annotation.minDigitCharRule() > 0)
+            rules.add(new DigitCharacterRule(annotation.minDigitCharRule()));
+        if (annotation.minSpecialCharRule() > 0)
+            rules.add(new SpecialCharacterRule(annotation.minSpecialCharRule()));
         if (annotation.maxNumericalSequenceRule() > 0)
             rules.add(new NumericalSequenceRule(annotation.maxNumericalSequenceRule(), false));
         if (annotation.maxAlphaSequenceRule() > 0)

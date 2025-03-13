@@ -18,8 +18,14 @@ public class User extends Any<Long> {
     @NotEmpty(message = "Email must not be null or empty!")
     private String email;
 
-    @PasswordRule(message = "PasswordRule Violation.", nullable = true
-            , minLengthRule = 4, maxLengthRule = 12, maxUpperCaseCharRule = 1, maxAlphaSequenceRule = 5)
+    @PasswordRule(message = "PasswordRule Violation."
+            , nullable = true    //by default nullable is true.
+            , minLengthRule = 4, maxLengthRule = 18
+            , minUpperCaseCharRule = 2
+            , minDigitCharRule = 2
+            , minSpecialCharRule = 2
+            , maxAlphaSequenceRule = 4
+            , maxNumericalSequenceRule = 4)
     private String password;
 
     //@Size() or @Length()

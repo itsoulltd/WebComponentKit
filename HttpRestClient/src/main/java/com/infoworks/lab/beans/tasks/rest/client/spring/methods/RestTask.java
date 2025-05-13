@@ -131,12 +131,16 @@ public abstract class RestTask<In extends Message, Out extends Response>
 
     protected String getUri() {
         StringBuilder builder = new StringBuilder();
-        builder.append(this.baseUri.endsWith("/")
-                ? this.baseUri.substring(0, (this.baseUri.length() - 1))
-                : this.baseUri);
-        builder.append(this.requestUri.startsWith("/")
-                ? this.requestUri
-                : "/" + this.requestUri);
+        if (this.baseUri != null && !this.baseUri.isEmpty()) {
+            builder.append(this.baseUri.endsWith("/")
+                    ? this.baseUri.substring(0, (this.baseUri.length() - 1))
+                    : this.baseUri);
+        }
+        if (this.requestUri != null && !this.requestUri.isEmpty()) {
+            builder.append(this.requestUri.startsWith("/")
+                    ? this.requestUri
+                    : "/" + this.requestUri);
+        }
         return builder.toString();
     }
 }

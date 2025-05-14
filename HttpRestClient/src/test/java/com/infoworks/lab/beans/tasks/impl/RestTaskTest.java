@@ -252,7 +252,35 @@ public class RestTaskTest {
     }
 
     @Test
-    public void downloadTaskTest3() {
+    public void downloadTaskTest3v1() {
+        //TaskFlow:
+        //Test Url-2: https://farm2.staticflickr.com/1090/4595137268_0e3f2b9aa7_z_d.jpg
+        //
+        DownloadTask task = new DownloadTask("https://farm2.staticflickr.com/1090/4595137268_0e3f2b9aa7_z_d.jpg"
+                , null);
+        task.setToken("my-token");
+        task.addResponseListener((encoded) -> {
+            System.out.println(encoded != null ? encoded.length() : "0");
+            if (encoded != null) {
+                try {
+                    iResourceService service = iResourceService.create();
+                    BufferedImage img = service.readImageFromBase64(encoded);
+                    System.out.println("Image Loaded From Base64 String.");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        DownloadTask.ResourceResponse response = task.execute(null);
+        System.out.println("Status: " + response.getStatus());
+        //
+        if (response.getResource() != null) {
+            System.out.println("Image Downloaded: " + response.getResource().getFilename());
+        }
+    }
+
+    @Test
+    public void downloadTaskTest3v2() {
         //TaskFlow:
         //Test Url-2: https://farm2.staticflickr.com/1090/4595137268_0e3f2b9aa7_z_d.jpg
         //

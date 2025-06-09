@@ -9,6 +9,7 @@ import com.it.soul.lab.sql.query.models.Operator;
 import com.it.soul.lab.sql.query.models.Predicate;
 import com.it.soul.lab.sql.query.models.Where;
 import com.itsoul.lab.generalledger.entities.*;
+import com.itsoul.lab.generalledger.util.AESCipher;
 import com.itsoul.lab.ledgerbook.accounting.head.ChartOfAccounts;
 import com.itsoul.lab.ledgerbook.accounting.head.Ledger;
 import com.itsoul.lab.ledgerbook.connector.SourceConnector;
@@ -17,6 +18,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -242,7 +246,7 @@ public class LedgerBook {
      *  , tl.account_ref
      *  , tl.amount
      *  , tl.currency
-     *  , tl.balance
+     *  , tl.balance, tl.eventtimestamp
      * from transaction_history as th
      * Left Join transaction_leg as tl on (th.transaction_ref =  tl.transaction_ref)
      * where 1
@@ -284,7 +288,7 @@ public class LedgerBook {
                         , "transaction_ref", "transaction_type", "transaction_date")
                 .on("transaction_ref", "transaction_ref")
                 .joinAsAlice("transaction_leg", "tl"
-                        , "account_ref", "amount", "currency", "balance")
+                        , "account_ref", "amount", "currency", "balance", "eventtimestamp")
                 .where(clause)
                 .orderBy(Operator.DESC, "th.transaction_date")
                 .addLimit(limit, offset)
@@ -294,6 +298,19 @@ public class LedgerBook {
         try (SQLExecutor executor = new SQLExecutor(connector.getConnection())) {
             ResultSet set = executor.executeSelect(joins);
             List<Map<String, Object>> data = executor.convertToKeyValuePair(set);
+            //A-Hack: get the actual transaction-datetime from encrypted eventTimestamp:
+            AESCipher cipher = new AESCipher();
+            data.forEach(row -> {
+                String val = Optional.ofNullable(row.remove("eventtimestamp")).orElse("").toString();
+                if (!val.isEmpty()) {
+                    try {
+                        String decrypt = cipher.decrypt(password, val);
+                        long timestamp = Long.parseLong(decrypt);
+                        row.put("transaction_date", LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC));
+                    } catch (Exception e) { LOG.log(Level.WARNING, e.getMessage()); }
+                }
+            });
+            //
             return data;
         } catch (SQLException e) {
             LOG.log(Level.WARNING, e.getMessage());

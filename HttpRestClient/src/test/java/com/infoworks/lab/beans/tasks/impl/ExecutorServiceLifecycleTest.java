@@ -11,11 +11,11 @@ import java.util.concurrent.Future;
 public class ExecutorServiceLifecycleTest {
 
     public static void main(String[] args) {
-        int job_count = 5;
+        int jobCount = 5;
         ExecutorService service = Executors.newFixedThreadPool(2);
         List<Future<String>> handlers = new ArrayList<>();
 
-        for (int i = 0; i < job_count; i++) {
+        for (int i = 0; i < jobCount; i++) {
             Future<String> handle = service.submit(new MyTask());
             handlers.add(handle);
         }
@@ -26,6 +26,8 @@ public class ExecutorServiceLifecycleTest {
         //3. pool moves to shutdown state
         //4. when (if) all the currently submitted task complete, pool moves to terminate state.
         service.shutdown();
+        //What if we call shutdownNow()
+        //service.shutdownNow();
 
         //Note: If we do not call service.shutdown(), it means the non-daemon threads in pool are alive,
         //So the main thread shall be alive, unless we force quite.

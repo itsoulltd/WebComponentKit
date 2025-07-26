@@ -24,7 +24,7 @@ public class DataRestClientTest {
     @Test
     public void doLoadTest() throws Exception {
         //
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
 
         dataSource.setEnableLogging(true);
@@ -44,7 +44,7 @@ public class DataRestClientTest {
     public void doAsyncLoadTest() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         //
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load((response) -> {
             //In-case of exception:
@@ -71,7 +71,7 @@ public class DataRestClientTest {
 
     @Test
     public void addSingleItem() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
         //
@@ -92,7 +92,7 @@ public class DataRestClientTest {
 
     @Test
     public void updateSingleItem() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
         //
@@ -114,7 +114,7 @@ public class DataRestClientTest {
 
     @Test
     public void readTest() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
         //
@@ -127,7 +127,7 @@ public class DataRestClientTest {
 
     @Test
     public void sizeTest() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
         //
@@ -140,7 +140,7 @@ public class DataRestClientTest {
 
     @Test
     public void readNextTest() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
         //
@@ -158,7 +158,7 @@ public class DataRestClientTest {
     public void readAsyncNextTest() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         //
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
         //
@@ -177,7 +177,7 @@ public class DataRestClientTest {
 
     @Test
     public void CRUDTest() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         dataSource.load();
         //
@@ -218,7 +218,7 @@ public class DataRestClientTest {
 
     @Test
     public void readAllPages() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient(Passenger.class, url);
         //Read All Pages Until last page:
         dataSource.load();
@@ -257,7 +257,7 @@ public class DataRestClientTest {
 
     @Test
     public void searchFindByAgeLimitTest() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
         dataSource.load();
         //
@@ -272,7 +272,7 @@ public class DataRestClientTest {
     public void searchAsyncFindByAgeLimitTest() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         //
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
         dataSource.load();
         //
@@ -293,7 +293,7 @@ public class DataRestClientTest {
 
     @Test
     public void searchFindByNameTest() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
         dataSource.load();
         //
@@ -307,7 +307,7 @@ public class DataRestClientTest {
     public void searchAsyncFindByNameTest() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         //
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestRepository<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
         dataSource.load();
         //
@@ -324,7 +324,7 @@ public class DataRestClientTest {
 
     @Test
     public void searchFunctionIsExistTest() throws Exception {
-        URL url = new URL("http://localhost:8080/api/data/passengers");
+        URL url = new URL("http://localhost:8080/api/data/users");
         DataRestClient<Passenger> dataSource = new DataRestClient<>(Passenger.class, url);
         dataSource.load();
         //

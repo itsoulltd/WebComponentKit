@@ -17,8 +17,8 @@ public class iPropertiesTest {
 
     @Test
     public void test() throws URISyntaxException {
-        Path resourceDirectory = Paths.get("src","test","resources","app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src","test","resources","app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         iProperties properties = iProperties.create(absolutePath, null);
         String val = properties.read("last.read");
@@ -41,8 +41,8 @@ public class iPropertiesTest {
 
     @Test
     public void testAddAndFlush() {
-        Path resourceDirectory = Paths.get("src","test","resources","app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src","test","resources","app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         iProperties properties = iProperties.create(absolutePath, null);
         String val = properties.read("last.read");
@@ -58,8 +58,8 @@ public class iPropertiesTest {
 
     @Test
     public void testFalse() {
-        Path resourceDirectory = Paths.get("src","test","resources","app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src","test","resources","app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         iProperties properties = iProperties.create(absolutePath, null);
         String val = properties.read("last.read.vb");
@@ -69,8 +69,8 @@ public class iPropertiesTest {
 
     @Test
     public void testReplace() {
-        Path resourceDirectory = Paths.get("src","test","resources","app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src","test","resources","app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         Map data = new HashMap();
         data.put("last.read", "100");
@@ -83,8 +83,8 @@ public class iPropertiesTest {
 
     @Test
     public void testRemove() {
-        Path resourceDirectory = Paths.get("src","test","resources","app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src","test","resources","app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         Map data = new HashMap();
         data.put("last.read", "100");
@@ -97,8 +97,8 @@ public class iPropertiesTest {
 
     @Test
     public void testFileName() {
-        Path resourceDirectory = Paths.get("src", "test", "resources", "app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src", "test", "resources", "app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         iProperties properties = iProperties.create(absolutePath, null);
         Assert.assertTrue(properties.fileName().equals("app.properties"));
@@ -106,8 +106,8 @@ public class iPropertiesTest {
 
     @Test
     public void testReadSync() {
-        Path resourceDirectory = Paths.get("src", "test", "resources", "app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src", "test", "resources", "app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         iProperties properties = iProperties.create(absolutePath, null);
         String[] values = properties.readSync(0, properties.size());
@@ -116,8 +116,8 @@ public class iPropertiesTest {
 
     @Test
     public void testReadSyncInPage() {
-        Path resourceDirectory = Paths.get("src", "test", "resources", "app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src", "test", "resources", "app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         int offset = 0;
         int limit = 2;
@@ -128,8 +128,8 @@ public class iPropertiesTest {
 
     @Test
     public void testObject() throws IOException {
-        Path resourceDirectory = Paths.get("src", "test", "resources", "app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src", "test", "resources", "app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         iProperties properties = iProperties.create(absolutePath, null);
         Date dob = new Date();
@@ -144,8 +144,8 @@ public class iPropertiesTest {
 
     @Test
     public void testObject2() throws IOException {
-        Path resourceDirectory = Paths.get("src", "test", "resources", "app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src", "test", "resources", "app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         iProperties properties = iProperties.create(absolutePath, null);
         properties.putObject("obj.val.car", new Car("KHA-324490", 4));
@@ -158,8 +158,8 @@ public class iPropertiesTest {
 
     @Test
     public void testObjectFailed() throws IOException {
-        Path resourceDirectory = Paths.get("src", "test", "resources", "app.properties");
-        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path path = Paths.get("src", "test", "resources", "app.properties");
+        String absolutePath = path.toAbsolutePath().toString();
         //
         iProperties properties = iProperties.create(absolutePath, null);
         Car drive4D = properties.getObject("obj.val", Car.class);

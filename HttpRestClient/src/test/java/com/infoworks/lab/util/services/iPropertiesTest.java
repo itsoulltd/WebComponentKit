@@ -110,8 +110,20 @@ public class iPropertiesTest {
         String absolutePath = resourceDirectory.toFile().getAbsolutePath();
         //
         iProperties properties = iProperties.create(absolutePath, null);
-        String[] vals = properties.readSync(0, properties.size());
-        Assert.assertTrue(vals.length == properties.size());
+        String[] values = properties.readSync(0, properties.size());
+        Assert.assertTrue(values.length == properties.size());
+    }
+
+    @Test
+    public void testReadSyncInPage() {
+        Path resourceDirectory = Paths.get("src", "test", "resources", "app.properties");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        //
+        int offset = 0;
+        int limit = 2;
+        iProperties properties = iProperties.create(absolutePath, null);
+        String[] values = properties.readSync(offset, limit);
+        Assert.assertTrue(values.length == limit);
     }
 
     @Test

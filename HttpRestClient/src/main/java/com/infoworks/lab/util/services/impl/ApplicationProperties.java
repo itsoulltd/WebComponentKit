@@ -134,14 +134,16 @@ public class ApplicationProperties implements iProperties {
 
     @Override
     public String[] readSync(int offset, int pageSize) {
-        int size = this.size();
-        int maxItemCount = Math.abs(offset) + Math.abs(pageSize);
-        if (maxItemCount <= size) {
-            String[] values = configProp.values().toArray(new String[0]);
-            List<String> res = Arrays.asList(values).subList(Math.abs(offset), maxItemCount);
-            return res.toArray(new String[0]);
-        }
-        return new String[0];
+        //Validation:
+        int size = size();
+        int fromIndex = Math.abs(offset);
+        if (fromIndex >= size) return new String[0];
+        int toIndex = Math.abs(offset) + Math.abs(pageSize);
+        if (toIndex > size) toIndex = size;
+        //In-Memory-Pagination:
+        String[] values = configProp.values().toArray(new String[0]);
+        List<String> items = Arrays.asList(values).subList(fromIndex, toIndex);
+        return items.toArray(new String[0]);
     }
 
     @Override

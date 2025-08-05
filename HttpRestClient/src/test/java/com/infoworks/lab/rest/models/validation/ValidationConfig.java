@@ -10,6 +10,11 @@ import java.util.Set;
 
 public class ValidationConfig {
 
+    /**
+     * ValidatorFactory: Implementations are thread-safe and instances are typically cached and reused.
+     * Validator: Validates bean instances. Implementations of this interface must be thread-safe.
+     * @return
+     */
     public static Validator createValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();

@@ -30,4 +30,19 @@ public class ValidationConfig {
         }
         return messages.toArray(new String[0]);
     }
+
+    public static <T> String[] validate(T target) {
+        return validate(createValidator(), target);
+    }
+
+    public static <T> String validateWithMessage(Validator validator, T target) {
+        String[] messages = validate(validator, target);
+        return messages.length > 0
+                ? String.join("; \n", messages)
+                : null;
+    }
+
+    public static <T> String validateWithMessage(T target) {
+        return validateWithMessage(createValidator(), target);
+    }
 }

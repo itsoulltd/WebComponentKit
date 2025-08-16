@@ -92,16 +92,19 @@
             <groupId>org.eclipse.store</groupId>
             <artifactId>storage-embedded</artifactId>
             <version>${eclipsestore.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.store</groupId>
             <artifactId>storage-embedded-configuration</artifactId>
             <version>${eclipsestore.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.serializer</groupId>
             <artifactId>persistence-binary-jdk8</artifactId>
             <version>${eclipsestore.version}</version>
+            <scope>provided</scope>
         </dependency>
         <!-- -->
     </dependencies>

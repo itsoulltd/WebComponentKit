@@ -20,6 +20,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <microstream.version>07.00.00-MS-GA</microstream.version>
         <!--<microstream.version>08.01.01-MS-GA</microstream.version>-->
+        <eclipsestore.version>2.1.3</eclipsestore.version>
+        <!-- EclipseStore v3.x required Java17+ -->
+        <!--<eclipsestore.version>3.0.0</eclipsestore.version>-->
     </properties>
 
     <dependencies>
@@ -82,6 +85,23 @@
             <artifactId>microstream-storage-embedded-configuration</artifactId>
             <version>${microstream.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- -->
+        <!-- EclipseStore -->
+        <dependency>
+            <groupId>org.eclipse.store</groupId>
+            <artifactId>storage-embedded</artifactId>
+            <version>${eclipsestore.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.store</groupId>
+            <artifactId>storage-embedded-configuration</artifactId>
+            <version>${eclipsestore.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.serializer</groupId>
+            <artifactId>persistence-binary-jdk8</artifactId>
+            <version>${eclipsestore.version}</version>
         </dependency>
         <!-- -->
     </dependencies>

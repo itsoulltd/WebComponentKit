@@ -100,12 +100,12 @@
             <version>${eclipsestore.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.eclipse.serializer</groupId>
             <artifactId>persistence-binary-jdk8</artifactId>
             <version>${eclipsestore.version}</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
         <!-- -->
     </dependencies>
 

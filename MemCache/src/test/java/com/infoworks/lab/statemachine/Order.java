@@ -1,4 +1,4 @@
-package com.infoworks.lab.microstream.statemachine;
+package com.infoworks.lab.statemachine;
 
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.entity.PrimaryKey;

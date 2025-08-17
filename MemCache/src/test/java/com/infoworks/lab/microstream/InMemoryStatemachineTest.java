@@ -1,17 +1,17 @@
 package com.infoworks.lab.microstream;
 
-import com.infoworks.lab.microstream.statemachine.Order;
-import com.infoworks.lab.microstream.statemachine.PizzaRecipe;
-import com.infoworks.lab.microstream.statemachine.PizzaService;
-import com.infoworks.lab.microstream.statemachine.orders.states.BurningOnOven;
-import com.infoworks.lab.microstream.statemachine.orders.states.Confirmed;
-import com.infoworks.lab.microstream.statemachine.orders.states.Placed;
-import com.infoworks.lab.microstream.statemachine.orders.states.ReadyToServe;
-import com.infoworks.lab.microstream.statemachine.pizzas.CheeseCrustPizza;
-import com.infoworks.lab.microstream.statemachine.pizzas.Pizza;
-import com.infoworks.lab.microstream.statemachine.pizzas.ThickCrustPizza;
-import com.infoworks.lab.microstream.statemachine.pizzas.ThinCrustPizza;
-import com.infoworks.lab.microstream.statemachine.toppings.*;
+import com.infoworks.lab.statemachine.Order;
+import com.infoworks.lab.statemachine.PizzaRecipe;
+import com.infoworks.lab.statemachine.PizzaService;
+import com.infoworks.lab.statemachine.orders.states.BurningOnOven;
+import com.infoworks.lab.statemachine.orders.states.Confirmed;
+import com.infoworks.lab.statemachine.orders.states.Placed;
+import com.infoworks.lab.statemachine.orders.states.ReadyToServe;
+import com.infoworks.lab.statemachine.pizzas.CheeseCrustPizza;
+import com.infoworks.lab.statemachine.pizzas.Pizza;
+import com.infoworks.lab.statemachine.pizzas.ThickCrustPizza;
+import com.infoworks.lab.statemachine.pizzas.ThinCrustPizza;
+import com.infoworks.lab.statemachine.toppings.*;
 import com.infoworks.lab.util.states.StateMachine;
 import org.junit.After;
 import org.junit.Assert;
@@ -25,7 +25,9 @@ public class InMemoryStatemachineTest {
 
     @Before
     public void before() {
-        service = new PizzaService(location);
+        service = new PizzaService(location
+                , new MicroDataStore<>(location + "/statemachine")
+                , new MicroDataStore<>(location + "/pizza"));
         //If no seed data already added:
         if (service.getRepository().count() <= 0) {
             //Adding Recipes:

@@ -1,6 +1,6 @@
-package com.infoworks.lab.microstream.statemachine;
+package com.infoworks.lab.statemachine;
 
-import com.infoworks.lab.microstream.statemachine.pizzas.ThickCrustPizza;
+import com.infoworks.lab.statemachine.pizzas.ThickCrustPizza;
 import com.it.soul.lab.sql.entity.Entity;
 import com.it.soul.lab.sql.entity.PrimaryKey;
 import com.it.soul.lab.sql.entity.TableName;

@@ -1,4 +1,4 @@
-package com.infoworks.lab.microstream.statemachine.pizzas;
+package com.infoworks.lab.statemachine.pizzas;
 
 import java.math.BigDecimal;
 

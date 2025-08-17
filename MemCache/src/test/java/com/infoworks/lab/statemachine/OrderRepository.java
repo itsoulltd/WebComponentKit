@@ -1,4 +1,4 @@
-package com.infoworks.lab.microstream.statemachine;
+package com.infoworks.lab.statemachine;
 
 import com.infoworks.lab.microstream.MicroDataStore;
 import com.it.soul.lab.data.simple.SimpleDataSource;

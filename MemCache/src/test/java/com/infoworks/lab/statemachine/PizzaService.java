@@ -1,13 +1,13 @@
-package com.infoworks.lab.microstream.statemachine;
+package com.infoworks.lab.statemachine;
 
 import com.infoworks.lab.microstream.MicroDataStore;
-import com.infoworks.lab.microstream.statemachine.orders.states.BurningOnOven;
-import com.infoworks.lab.microstream.statemachine.orders.states.Confirmed;
-import com.infoworks.lab.microstream.statemachine.orders.states.Placed;
-import com.infoworks.lab.microstream.statemachine.orders.states.ReadyToServe;
-import com.infoworks.lab.microstream.statemachine.pizzas.Pizza;
-import com.infoworks.lab.microstream.statemachine.pizzas.ThinCrustPizza;
-import com.infoworks.lab.microstream.statemachine.toppings.Toppings;
+import com.infoworks.lab.statemachine.orders.states.BurningOnOven;
+import com.infoworks.lab.statemachine.orders.states.Confirmed;
+import com.infoworks.lab.statemachine.orders.states.Placed;
+import com.infoworks.lab.statemachine.orders.states.ReadyToServe;
+import com.infoworks.lab.statemachine.pizzas.Pizza;
+import com.infoworks.lab.statemachine.pizzas.ThinCrustPizza;
+import com.infoworks.lab.statemachine.toppings.Toppings;
 import com.infoworks.lab.util.states.StateMachine;
 import com.it.soul.lab.data.simple.SimpleDataSource;
 
@@ -22,12 +22,6 @@ public class PizzaService implements AutoCloseable{
     private final PizzaRecipeRepository repository;
     private SimpleDataSource<String, StateMachine> machines;
     private SimpleDataSource<String, Pizza> pizzas;
-
-    public PizzaService(String location) {
-        this(location
-                , new MicroDataStore<>(location + "/statemachine")
-                , new MicroDataStore<>(location + "/pizza"));
-    }
 
     public PizzaService(String location
             , SimpleDataSource<String, StateMachine> machines

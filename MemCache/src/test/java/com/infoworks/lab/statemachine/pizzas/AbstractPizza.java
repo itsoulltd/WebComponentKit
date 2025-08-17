@@ -1,6 +1,6 @@
-package com.infoworks.lab.microstream.statemachine.pizzas;
+package com.infoworks.lab.statemachine.pizzas;
 
-import com.infoworks.lab.microstream.statemachine.PizzaRecipe;
+import com.infoworks.lab.statemachine.PizzaRecipe;
 
 public abstract class AbstractPizza implements Pizza{
 

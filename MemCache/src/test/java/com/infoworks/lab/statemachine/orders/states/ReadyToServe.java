@@ -1,4 +1,4 @@
-package com.infoworks.lab.microstream.statemachine.orders.states;
+package com.infoworks.lab.statemachine.orders.states;
 
 import com.infoworks.lab.util.states.context.State;
 

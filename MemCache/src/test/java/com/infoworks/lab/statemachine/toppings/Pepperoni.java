@@ -1,16 +1,16 @@
-package com.infoworks.lab.microstream.statemachine.toppings;
+package com.infoworks.lab.statemachine.toppings;
 
-import com.infoworks.lab.microstream.statemachine.pizzas.Pizza;
+import com.infoworks.lab.statemachine.pizzas.Pizza;
 
 import java.math.BigDecimal;
 
-public class Mushroom extends AbstractToppings {
+public class Pepperoni extends AbstractToppings {
 
-    public Mushroom(Pizza pizza){
+    public Pepperoni(Pizza pizza){
         super(pizza);
     }
 
-    public Mushroom() {this(null);}
+    public Pepperoni() {this(null);}
 
     @Override
     public String getDescription() {

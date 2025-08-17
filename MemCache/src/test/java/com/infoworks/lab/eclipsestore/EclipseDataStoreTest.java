@@ -1,11 +1,34 @@
 package com.infoworks.lab.eclipsestore;
 
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.common.StorageSharedKeyCredential;
 import com.infoworks.lab.cache.models.Person;
+import org.eclipse.serializer.afs.types.ADirectory;
+import org.eclipse.serializer.persistence.binary.jdk8.types.BinaryHandlersJDK8;
+import org.eclipse.store.afs.aws.s3.types.S3Connector;
+import org.eclipse.store.afs.azure.storage.types.AzureStorageConnector;
+import org.eclipse.store.afs.blobstore.types.BlobStoreFileSystem;
+import org.eclipse.store.afs.nio.types.NioFileSystem;
+import org.eclipse.store.afs.redis.types.RedisConnector;
+import org.eclipse.store.afs.sql.types.SqlConnector;
+import org.eclipse.store.afs.sql.types.SqlFileSystem;
+import org.eclipse.store.afs.sql.types.SqlProviderPostgres;
+import org.eclipse.store.storage.embedded.configuration.types.EmbeddedStorageConfiguration;
+import org.eclipse.store.storage.embedded.types.EmbeddedStorage;
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageFoundation;
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
 import org.eclipse.store.storage.exceptions.StorageExceptionInitialization;
 import org.junit.Assert;
 import org.junit.Test;
+import org.postgresql.ds.PGSimpleDataSource;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.time.Duration;
+import java.util.Locale;
 
 public class EclipseDataStoreTest {
 
@@ -73,6 +96,93 @@ public class EclipseDataStoreTest {
         Assert.assertNotNull(person);
         System.out.println(person.getName());
         mData2.close();
+    }
+
+    @Test
+    public void localFileSystem() {
+        NioFileSystem fileSystem = NioFileSystem.New();
+        ADirectory directory = fileSystem.ensureDirectoryPath("target"
+                , "EclipseStore", "EclipseDataStoreTest", "SimpleStore");
+        //Create storage manager:
+        //EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+        //Using EclipseDataStore: Create and Save:-
+        try (EclipseDataStore<String, Person> mData = new EclipseDataStore<>(directory)) {
+            mData.put("gosling"
+                    , new Person().setName("James Gosling")
+                            .setEmail("james.gosling@gmail.com").setAge(70)
+            );
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        //Second Reload and Test:-
+        try (EclipseDataStore<String, Person> mData = new EclipseDataStore<>(directory)) {
+            Person person = mData.read("gosling");
+            Assert.assertNotNull(person);
+            System.out.println(person.getName());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    //@Test
+    public void localFileSystem_using_serializer_jdk_8() {
+        EmbeddedStorageFoundation<?> foundation = EmbeddedStorageConfiguration.Builder()
+                .setStorageDirectory("data/storage")
+                .setChannelCount(Math.max(
+                        1, // minimum one channel, if only 1 core is available
+                        Integer.highestOneBit(Runtime.getRuntime().availableProcessors() - 1)
+                ))
+                .createEmbeddedStorageFoundation();
+
+        foundation.onConnectionFoundation(BinaryHandlersJDK8::registerJDK8TypeHandlers);
+        //Create storage manager:
+        EmbeddedStorageManager storageManager = foundation.createEmbeddedStorageManager().start();
+    }
+
+    //@Test
+    public void sqlFileSystem() {
+        PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/mydb");
+        dataSource.setUser("postgres");
+        dataSource.setPassword("secret");
+        SqlFileSystem fileSystem = SqlFileSystem.New(SqlConnector.Caching(SqlProviderPostgres.New(dataSource)));
+        ADirectory directory = fileSystem.ensureDirectoryPath("storage");
+        //Create storage manager:
+        EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+    }
+
+    //@Test
+    public void blobFileSystem_redis() {
+        String redisUri = "redis://localhost:6379/0";
+        BlobStoreFileSystem fileSystem = BlobStoreFileSystem.New(RedisConnector.Caching(redisUri));
+        ADirectory directory = fileSystem.ensureDirectoryPath("storage");
+        //Create storage manager:
+        EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+    }
+
+    //@Test
+    public void blobFileSystem_s3() {
+        S3Client client = S3Client.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create("ACCESS_KEY", "SECRET_ACCESS_KEY")
+                ))
+                .region(Region.EU_NORTH_1)
+                .build();
+        BlobStoreFileSystem fileSystem = BlobStoreFileSystem.New(S3Connector.Caching(client));
+        ADirectory directory = fileSystem.ensureDirectoryPath("storage");
+        //Create storage manager:
+        EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+    }
+
+    //@Test
+    public void blobFileSystem_azure() {
+        StorageSharedKeyCredential credential = new StorageSharedKeyCredential("accountName", "accountKey");
+        String endpoint = String.format(Locale.ROOT, "https://%s.blob.core.windows.net", "accountName");
+        BlobServiceClient client = new BlobServiceClientBuilder().endpoint(endpoint).credential(credential).buildClient();
+        BlobStoreFileSystem fileSystem = BlobStoreFileSystem.New(AzureStorageConnector.Caching(client));
+        ADirectory directory = fileSystem.ensureDirectoryPath("storage");
+        //Create storage manager:
+        EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
     }
 
 }

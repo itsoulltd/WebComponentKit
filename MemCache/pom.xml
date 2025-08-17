@@ -100,12 +100,80 @@
             <version>${eclipsestore.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--<dependency>
+        <!-- -->
+        <!-- EclipseStore Configure with Serializer, SqlFileSystem & BlobStoreFileSystem
+            examples in TestScope -->
+        <dependency>
             <groupId>org.eclipse.serializer</groupId>
             <artifactId>persistence-binary-jdk8</artifactId>
             <version>${eclipsestore.version}</version>
-            <scope>provided</scope>
-        </dependency>-->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.store</groupId>
+            <artifactId>afs-sql</artifactId>
+            <version>${eclipsestore.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.5.1</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- -->
+        <dependency>
+            <groupId>org.eclipse.store</groupId>
+            <artifactId>afs-redis</artifactId>
+            <version>${eclipsestore.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- -->
+        <dependency>
+            <groupId>org.eclipse.store</groupId>
+            <artifactId>afs-kafka</artifactId>
+            <version>${eclipsestore.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>3.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- -->
+        <dependency>
+            <groupId>org.eclipse.store</groupId>
+            <artifactId>afs-azure-storage</artifactId>
+            <version>${eclipsestore.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+            <version>12.29.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- -->
+        <dependency>
+            <groupId>org.eclipse.store</groupId>
+            <artifactId>afs-aws-s3</artifactId>
+            <version>${eclipsestore.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.30.11</version>
+            <scope>test</scope>
+        </dependency>
         <!-- -->
     </dependencies>
 

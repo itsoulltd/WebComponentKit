@@ -19,23 +19,27 @@ import java.util.logging.Logger;
 public class EclipseDataStore<Key, Value> extends SimpleDataSource<Key, Value> implements DataStorage, AutoCloseable {
 
     private static Logger LOG = Logger.getLogger(EclipseDataStore.class.getSimpleName());
-    private final String location;
     private final EmbeddedStorageManager storage;
+    private final boolean enableLazyLoad;
+    private String location;
     private RootObject<Key, Value> rootObject;
     private ExecutorService executors;
-    private final boolean enableLazyLoad;
 
-    public EclipseDataStore(String location, boolean enableLazyLoad, Duration lazyEvictTimeout) {
-        this.location = location;
+    public EclipseDataStore(EmbeddedStorageManager storage, boolean enableLazyLoad, Duration lazyEvictTimeout) {
         this.enableLazyLoad = enableLazyLoad;
         if (enableLazyLoad && !lazyEvictTimeout.isZero() && !lazyEvictTimeout.isNegative()) {
             LazyRootObject.setLazyRefManager(lazyEvictTimeout);
             LOG.info("Setting up custom LazyReferenceManager was successful.");
         }
-        this.storage   = EmbeddedStorage.start(Paths.get(location));
+        this.storage = storage;
         boolean restored = retrieve();
-        if (restored) LOG.info("Storage Restore Successful: @" + location);
-        else LOG.info("Storage Initialization Successful: @" + location);
+        if (restored) LOG.info("Storage Restore Successful.");
+        else LOG.info("Storage Initialization Successful.");
+    }
+
+    public EclipseDataStore(String location, boolean enableLazyLoad, Duration lazyEvictTimeout) {
+        this(EmbeddedStorage.start(Paths.get(location)), enableLazyLoad, lazyEvictTimeout);
+        this.location = location;
     }
 
     public EclipseDataStore(String location, boolean enableLazyLoad) {

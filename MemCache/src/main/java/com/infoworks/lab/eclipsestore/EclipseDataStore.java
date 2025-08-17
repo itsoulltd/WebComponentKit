@@ -2,6 +2,7 @@ package com.infoworks.lab.eclipsestore;
 
 import com.it.soul.lab.data.base.DataStorage;
 import com.it.soul.lab.data.simple.SimpleDataSource;
+import org.eclipse.serializer.afs.types.ADirectory;
 import org.eclipse.serializer.reference.Lazy;
 import org.eclipse.serializer.reference.LazyReferenceManager;
 import org.eclipse.store.storage.embedded.types.EmbeddedStorage;
@@ -33,9 +34,20 @@ public class EclipseDataStore<Key, Value> extends SimpleDataSource<Key, Value> i
         }
         this.storage = storage;
         boolean restored = retrieve();
-        if (restored) LOG.info("Storage Restore Successful.");
-        else LOG.info("Storage Initialization Successful.");
+        if (restored) LOG.info("Restore from storage is successful.");
+        else LOG.info("Initialization of storage is successful.");
     }
+
+    public EclipseDataStore(ADirectory location, boolean enableLazyLoad, Duration lazyEvictTimeout) {
+        this(EmbeddedStorage.start(location), enableLazyLoad, lazyEvictTimeout);
+        this.location = location.toPathString();
+    }
+
+    public EclipseDataStore(ADirectory location, boolean enableLazyLoad) {
+        this(location, enableLazyLoad, Duration.ofMinutes(0));
+    }
+
+    public EclipseDataStore(ADirectory location) { this(location, false); }
 
     public EclipseDataStore(String location, boolean enableLazyLoad, Duration lazyEvictTimeout) {
         this(EmbeddedStorage.start(Paths.get(location)), enableLazyLoad, lazyEvictTimeout);

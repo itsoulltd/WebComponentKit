@@ -137,6 +137,7 @@ public class EclipseDataStoreTest {
         foundation.onConnectionFoundation(BinaryHandlersJDK8::registerJDK8TypeHandlers);
         //Create storage manager:
         EmbeddedStorageManager storageManager = foundation.createEmbeddedStorageManager().start();
+        EclipseDataStore store = new EclipseDataStore(storageManager, true, Duration.ofMillis(1000));
     }
 
     //@Test
@@ -148,7 +149,8 @@ public class EclipseDataStoreTest {
         SqlFileSystem fileSystem = SqlFileSystem.New(SqlConnector.Caching(SqlProviderPostgres.New(dataSource)));
         ADirectory directory = fileSystem.ensureDirectoryPath("storage");
         //Create storage manager:
-        EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+        //EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+        EclipseDataStore store = new EclipseDataStore(directory);
     }
 
     //@Test
@@ -157,7 +159,8 @@ public class EclipseDataStoreTest {
         BlobStoreFileSystem fileSystem = BlobStoreFileSystem.New(RedisConnector.Caching(redisUri));
         ADirectory directory = fileSystem.ensureDirectoryPath("storage");
         //Create storage manager:
-        EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+        //EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+        EclipseDataStore store = new EclipseDataStore(directory);
     }
 
     //@Test
@@ -169,9 +172,10 @@ public class EclipseDataStoreTest {
                 .region(Region.EU_NORTH_1)
                 .build();
         BlobStoreFileSystem fileSystem = BlobStoreFileSystem.New(S3Connector.Caching(client));
-        ADirectory directory = fileSystem.ensureDirectoryPath("storage");
+        ADirectory directory = fileSystem.ensureDirectoryPath("bucket-name", "folder", "subfolder");
         //Create storage manager:
-        EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+        //EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+        EclipseDataStore store = new EclipseDataStore(directory);
     }
 
     //@Test
@@ -182,7 +186,8 @@ public class EclipseDataStoreTest {
         BlobStoreFileSystem fileSystem = BlobStoreFileSystem.New(AzureStorageConnector.Caching(client));
         ADirectory directory = fileSystem.ensureDirectoryPath("storage");
         //Create storage manager:
-        EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+        //EmbeddedStorageManager storageManager = EmbeddedStorage.start(directory);
+        EclipseDataStore store = new EclipseDataStore(directory);
     }
 
 }

@@ -19,7 +19,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jersey2.version>2.27</jersey2.version>
-        <!-- [2.9.10.5, 2.18.3] < Jackson.Version, Need to use JDK 17 or latest -->
+        <!-- Set: [2.9.10.5, 2.18.3) to Jackson.Version, To use with JDK 17 or latest -->
         <jackson.version>[2.9.10.5, 2.18.3]</jackson.version>
         <javax.json>1.1.4</javax.json>
         <spring.version>5.0.4.RELEASE</spring.version>

@@ -8,9 +8,12 @@ import com.infoworks.lab.rest.models.Message;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class AbstractTaskQueueManager extends AbstractQueueManager {
 
+    protected static Logger LOG = Logger.getLogger(AbstractTaskQueueManager.class.getSimpleName());
     private QueuedTaskLifecycleListener listener;
     public QueuedTaskLifecycleListener getListener() {
         return listener;
@@ -47,6 +50,7 @@ public abstract class AbstractTaskQueueManager extends AbstractQueueManager {
                 | ClassNotFoundException
                 | IllegalAccessException | InstantiationException
                 | NoSuchMethodException | InvocationTargetException e){
+            LOG.log(Level.WARNING, e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -69,6 +73,7 @@ public abstract class AbstractTaskQueueManager extends AbstractQueueManager {
                 | ClassNotFoundException
                 | IllegalAccessException | InstantiationException
                 | NoSuchMethodException | InvocationTargetException e){
+            LOG.log(Level.WARNING, e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

@@ -36,7 +36,7 @@ public class iResourceServiceTest {
     public void imageAsString() throws IOException {
 
         iResourceService manager = iResourceService.create();
-        InputStream ios = createFileInputStreamV2(manager, "/data/final-architecture.png");
+        InputStream ios = createFileInputStreamV2(manager, "data/final-architecture.png");
         //
         BufferedImage bufferedImage = manager.readAsImage(ios, BufferedImage.TYPE_INT_RGB);
         ios.close();

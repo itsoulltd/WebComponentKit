@@ -51,7 +51,7 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
                 Message msg = new Message();
                 try {
                     msg = task.execute(message);
-                } catch (RuntimeException e) {
+                } catch (Exception e) {
                     msg.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
                 }
                 return msg;
@@ -98,7 +98,7 @@ public class TaskLifecycleQueueManager extends AbstractQueueManager implements Q
                 Message msg = new Message();
                 try {
                     msg = task.abort(reason);
-                } catch (RuntimeException e) {
+                } catch (Exception e) {
                     msg.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
                 }
                 return msg;

@@ -35,7 +35,7 @@ public class SyncTaskManager implements TaskManager  {
         boolean mustAbort = false;
         try {
             result = task.execute(message);
-        }catch (RuntimeException e) {
+        } catch (Exception e) {
             mustAbort = true;
             result = new Message();
             result.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
@@ -69,7 +69,7 @@ public class SyncTaskManager implements TaskManager  {
         Message result = null;
         try {
             result = task.abort(reason);
-        }catch (RuntimeException e) {}
+        } catch (Exception e) {}
         //End Abort:
         if (getListener() != null)
             getListener().after(task, State.Backward);

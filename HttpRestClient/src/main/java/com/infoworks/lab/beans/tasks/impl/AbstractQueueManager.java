@@ -20,7 +20,7 @@ public abstract class AbstractQueueManager implements TaskManager {
             Message msg = null;
             try {
                 msg = task.execute(message);
-            } catch (RuntimeException e) {
+            } catch (Exception e) {
                 mustAbort = true;
                 msg = new Message();
                 msg.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
@@ -46,7 +46,7 @@ public abstract class AbstractQueueManager implements TaskManager {
             Message msg = null;
             try {
                 msg = task.abort(reason);
-            } catch (RuntimeException e) {
+            } catch (Exception e) {
                 msg = new Message();
                 msg.setPayload(String.format("{\"error\":\"%s\", \"status\":500}", e.getMessage()));
             }

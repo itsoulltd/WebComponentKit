@@ -8,17 +8,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoworks.lab.rest.models.events.Event;
+import com.infoworks.lab.rest.models.pagination.SortOrder;
 import com.it.soul.lab.sql.entity.Entity;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Message<E extends Event> extends Entity implements Externalizable {
+public class Message<E extends Event> extends Entity implements Externalizable, Comparable<Message> {
 
     public Message() {
         classType = (Class<E>) Event.class;
@@ -160,6 +163,69 @@ public class Message<E extends Event> extends Entity implements Externalizable {
             return value;
         }
         return null;
+    }
+
+    public static int compareWithOrder(Message o1, Message o2, String sortBy, SortOrder order) {
+        if (order == SortOrder.ASC)
+            return compare(o1, o2, sortBy);
+        else
+            return compare(o2, o1, sortBy);
+    }
+
+    public static int compare(Message o1, Message o2, String sortBy) {
+        return o1.compareTo(o2, sortBy);
+    }
+
+    @Override
+    public int compareTo(Message other) {
+        return compareTo(other, "payload");
+    }
+
+    public int compareTo(Message other, String sortBy) {
+        Object obj1 = this.getSortBy(sortBy);
+        Object obj2 = other.getSortBy(sortBy);
+        if (obj1 != null && obj2 != null) {
+            String value = obj1.toString();
+            String oValue = obj2.toString();
+            if (obj1 instanceof Integer && obj2 instanceof Integer) {
+                return Integer.valueOf(value).compareTo(Integer.valueOf(oValue));
+            } else if (obj1 instanceof Long && obj2 instanceof Long) {
+                return Long.valueOf(value).compareTo(Long.valueOf(oValue));
+            } else if (obj1 instanceof Float && obj2 instanceof Float) {
+                return Float.valueOf(value).compareTo(Float.valueOf(oValue));
+            } else if (obj1 instanceof Double && obj2 instanceof Double) {
+                return Double.valueOf(value).compareTo(Double.valueOf(oValue));
+            } else if (obj1 instanceof BigDecimal && obj2 instanceof BigDecimal) {
+                return new BigDecimal(value).compareTo(new BigDecimal(oValue));
+            } else if (obj1 instanceof Boolean && obj2 instanceof Boolean) {
+                return Boolean.valueOf(value).compareTo(Boolean.valueOf(oValue));
+            }else {
+                return value.compareTo(oValue);
+            }
+        } else {
+            return 0; //So that, list remain as is;
+        }
+    }
+
+    protected final Object getSortBy(String sortBy) {
+        if (sortByIsEmpty(sortBy)) return null;
+        Field fl = null;
+        try {
+            fl = getClass().getDeclaredField(sortBy);
+            fl.setAccessible(true);
+            return fl.get(this);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } finally {
+            if (fl != null) fl.setAccessible(false);
+        }
+        return null;
+    }
+
+    protected final boolean sortByIsEmpty(String sortBy) {
+        return sortBy == null || sortBy.isEmpty();
     }
 
 }

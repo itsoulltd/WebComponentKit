@@ -1,11 +1,12 @@
 package com.itsoul.lab.application.bank;
 
-import com.infoworks.lab.beans.tasks.definition.TaskQueue;
-import com.infoworks.lab.beans.tasks.definition.TaskStack;
-import com.infoworks.lab.beans.tasks.nuts.ExecutableTask;
-import com.infoworks.lab.rest.models.Message;
-import com.infoworks.lab.rest.models.Response;
-import com.it.soul.lab.connect.DriverClass;
+import com.infoworks.tasks.queue.TaskQueue;
+import com.infoworks.tasks.stack.TaskStack;
+import com.infoworks.tasks.ExecutableTask;
+import com.infoworks.objects.Message;
+import com.infoworks.objects.Response;
+import com.infoworks.connect.JDBCDriverClass;
+import com.infoworks.utils.eventq.EventQueue;
 import com.itsoul.lab.generalledger.entities.Money;
 
 import java.math.BigDecimal;
@@ -18,17 +19,17 @@ import java.util.logging.Logger;
 public class SCFixBank extends SCBank implements TheFixBank {
 
     private static Logger LOG = Logger.getLogger(SCBank.class.getSimpleName());
-    private DriverClass driverClass;
+    private JDBCDriverClass driverClass;
     private String user;
     private String password;
     private TaskQueue queue;
 
-    public SCFixBank(DriverClass driverClass, String manager, String password) {
+    public SCFixBank(JDBCDriverClass driverClass, String manager, String password) {
         super(driverClass, manager, password);
         this.driverClass = driverClass;
         this.user = manager == null ? "manager" : manager;
         this.password = password == null ? "man@123" : password;
-        this.queue = TaskQueue.createAsync(Executors.newSingleThreadExecutor());
+        this.queue = new EventQueue(Executors.newSingleThreadExecutor());
     }
 
     @Override

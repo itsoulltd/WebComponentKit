@@ -1,8 +1,8 @@
 package com.itsoul.lab.application.bank;
 
-import com.infoworks.lab.beans.tasks.definition.TaskQueue;
-import com.infoworks.lab.beans.tasks.definition.TaskStack;
-import com.infoworks.lab.rest.models.Message;
+import com.infoworks.tasks.queue.TaskQueue;
+import com.infoworks.tasks.stack.TaskStack;
+import com.infoworks.objects.Message;
 
 import java.util.function.BiConsumer;
 

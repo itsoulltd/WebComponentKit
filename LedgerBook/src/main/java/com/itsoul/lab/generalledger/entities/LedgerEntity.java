@@ -1,6 +1,6 @@
 package com.itsoul.lab.generalledger.entities;
 
-import com.it.soul.lab.sql.entity.Entity;
+import com.infoworks.entity.Entity;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -16,7 +16,7 @@ public class LedgerEntity extends Entity implements Externalizable {
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        Map<String, Object> data = marshallingToMap(true);
+        Map<String, Object> data = marshalling(true);
         out.writeObject(data);
     }
 
@@ -25,7 +25,7 @@ public class LedgerEntity extends Entity implements Externalizable {
         Object data = in.readObject();
         if (data instanceof Map){
             Map<String, Object> rdData = (Map) data;
-            unmarshallingFromMap(rdData, true);
+            unmarshalling(rdData, true);
         }
     }
 }

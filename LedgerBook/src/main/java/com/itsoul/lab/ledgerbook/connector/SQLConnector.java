@@ -1,8 +1,8 @@
 package com.itsoul.lab.ledgerbook.connector;
 
-import com.it.soul.lab.connect.JDBConnection;
-import com.it.soul.lab.sql.QueryExecutor;
-import com.it.soul.lab.sql.SQLExecutor;
+import com.infoworks.connect.JDBConnection;
+import com.infoworks.sql.executor.QueryExecutor;
+import com.infoworks.sql.executor.SQLExecutor;
 
 import java.sql.Connection;
 import java.sql.SQLException;

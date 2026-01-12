@@ -1,6 +1,6 @@
 package com.itsoul.lab.application.bank;
 
-import com.it.soul.lab.connect.DriverClass;
+import com.infoworks.connect.JDBCDriverClass;
 import com.itsoul.lab.generalledger.entities.Money;
 import com.itsoul.lab.ledgerbook.connector.SourceConnector;
 
@@ -13,11 +13,11 @@ import java.util.logging.Logger;
 public class SCBank implements TheBank {
 
     private static Logger LOG = Logger.getLogger(SCBank.class.getSimpleName());
-    private DriverClass driverClass;
+    private JDBCDriverClass driverClass;
     private String user;
     private String password;
 
-    public SCBank(DriverClass driverClass, String manager, String password) {
+    public SCBank(JDBCDriverClass driverClass, String manager, String password) {
         this.driverClass = driverClass;
         this.user = manager == null ? "manager" : manager;
         this.password = password == null ? "man@123" : password;

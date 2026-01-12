@@ -1,13 +1,13 @@
 package com.itsoul.lab.application.bank;
 
-import com.infoworks.lab.rest.models.SearchQuery;
-import com.it.soul.lab.sql.SQLExecutor;
-import com.it.soul.lab.sql.query.QueryType;
-import com.it.soul.lab.sql.query.SQLJoinQuery;
-import com.it.soul.lab.sql.query.SQLQuery;
-import com.it.soul.lab.sql.query.models.Operator;
-import com.it.soul.lab.sql.query.models.Predicate;
-import com.it.soul.lab.sql.query.models.Where;
+import com.infoworks.sql.query.pagination.SearchQuery;
+import com.infoworks.sql.executor.SQLExecutor;
+import com.infoworks.sql.query.QueryType;
+import com.infoworks.sql.query.SQLJoinQuery;
+import com.infoworks.sql.query.SQLQuery;
+import com.infoworks.sql.query.models.Operator;
+import com.infoworks.sql.query.models.Predicate;
+import com.infoworks.sql.query.models.Where;
 import com.itsoul.lab.generalledger.entities.*;
 import com.itsoul.lab.generalledger.util.AESCipher;
 import com.itsoul.lab.ledgerbook.accounting.head.ChartOfAccounts;

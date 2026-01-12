@@ -13,21 +13,32 @@
     <version>1.10.6-RELEASE</version>
 
     <properties>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hk2.version>2.6.1</hk2.version>
-        <jsqleditor.version>1.1.5.6-RELEASE</jsqleditor.version>
     </properties>
 
     <dependencies>
 
-        <!-- JSQL Editor -->
         <dependency>
             <groupId>com.github.itsoulltd</groupId>
-            <artifactId>JSQLEditor</artifactId>
-            <version>${jsqleditor.version}</version>
+            <artifactId>JSqlKit</artifactId>
+            <version>[v1.0.1, )</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.itsoulltd</groupId>
+                    <artifactId>JFoundationKit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.itsoulltd</groupId>
+            <artifactId>JFoundationKit</artifactId>
+            <version>v1.0.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -106,19 +117,7 @@
             <version>${hk2.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- -->
-        <dependency>
-            <groupId>com.github.itsoulltd.WebComponentKit</groupId>
-            <artifactId>http-rest-client</artifactId>
-            <version>v1.15.3-RELEASE</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
-        </dependency>
+        <!-- Testing Scoped Jars -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>

@@ -1,13 +1,13 @@
 package com.itsoul.lab.ledgerbook.repositories;
 
 
-import com.it.soul.lab.sql.QueryExecutor;
-import com.it.soul.lab.sql.SQLExecutor;
-import com.it.soul.lab.sql.query.QueryType;
-import com.it.soul.lab.sql.query.SQLInsertQuery;
-import com.it.soul.lab.sql.query.SQLQuery;
-import com.it.soul.lab.sql.query.SQLScalarQuery;
-import com.it.soul.lab.sql.query.models.Where;
+import com.infoworks.sql.executor.QueryExecutor;
+import com.infoworks.sql.executor.SQLExecutor;
+import com.infoworks.sql.query.QueryType;
+import com.infoworks.sql.query.SQLInsertQuery;
+import com.infoworks.sql.query.SQLQuery;
+import com.infoworks.sql.query.SQLScalarQuery;
+import com.infoworks.sql.query.models.Where;
 import com.itsoul.lab.generalledger.entities.Client;
 import com.itsoul.lab.generalledger.repositories.ClientRepository;
 import org.jvnet.hk2.annotations.Service;

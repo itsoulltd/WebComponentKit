@@ -1,16 +1,16 @@
 package com.itsoul.lab.ledgerbook.repositories;
 
 import com.google.common.collect.Lists;
-import com.it.soul.lab.sql.QueryExecutor;
-import com.it.soul.lab.sql.SQLExecutor;
-import com.it.soul.lab.sql.query.QueryType;
-import com.it.soul.lab.sql.query.SQLInsertQuery;
-import com.it.soul.lab.sql.query.SQLQuery;
-import com.it.soul.lab.sql.query.SQLSelectQuery;
-import com.it.soul.lab.sql.query.models.Predicate;
-import com.it.soul.lab.sql.query.models.Property;
-import com.it.soul.lab.sql.query.models.Row;
-import com.it.soul.lab.sql.query.models.Where;
+import com.infoworks.sql.executor.QueryExecutor;
+import com.infoworks.sql.executor.SQLExecutor;
+import com.infoworks.sql.query.QueryType;
+import com.infoworks.sql.query.SQLInsertQuery;
+import com.infoworks.sql.query.SQLQuery;
+import com.infoworks.sql.query.SQLSelectQuery;
+import com.infoworks.sql.query.models.Predicate;
+import com.infoworks.orm.Property;
+import com.infoworks.orm.Row;
+import com.infoworks.sql.query.models.Where;
 import com.itsoul.lab.generalledger.entities.Client;
 import com.itsoul.lab.generalledger.entities.Money;
 import com.itsoul.lab.generalledger.entities.Transaction;

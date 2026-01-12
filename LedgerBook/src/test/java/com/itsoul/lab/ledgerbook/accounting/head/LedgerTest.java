@@ -1,15 +1,15 @@
 package com.itsoul.lab.ledgerbook.accounting.head;
 
-import com.it.soul.lab.connect.DriverClass;
-import com.it.soul.lab.connect.JDBConnection;
-import com.it.soul.lab.connect.io.ScriptRunner;
-import com.it.soul.lab.sql.SQLExecutor;
-import com.it.soul.lab.sql.query.QueryType;
-import com.it.soul.lab.sql.query.SQLDeleteQuery;
-import com.it.soul.lab.sql.query.SQLQuery;
-import com.it.soul.lab.sql.query.SQLSelectQuery;
-import com.it.soul.lab.sql.query.models.Predicate;
-import com.it.soul.lab.sql.query.models.Where;
+import com.infoworks.connect.JDBCDriverClass;
+import com.infoworks.connect.JDBConnection;
+import com.infoworks.script.SQLScriptExecutor;
+import com.infoworks.sql.executor.SQLExecutor;
+import com.infoworks.sql.query.QueryType;
+import com.infoworks.sql.query.SQLDeleteQuery;
+import com.infoworks.sql.query.SQLQuery;
+import com.infoworks.sql.query.SQLSelectQuery;
+import com.infoworks.sql.query.models.Predicate;
+import com.infoworks.sql.query.models.Where;
 import com.itsoul.lab.generalledger.entities.AccountingType;
 import com.itsoul.lab.generalledger.entities.Transaction;
 import com.itsoul.lab.generalledger.entities.TransferRequest;
@@ -56,12 +56,12 @@ public class LedgerTest {
     }
 
     private void executeScript(String initSqlFileName) throws SQLException {
-        Connection connection = new JDBConnection.Builder(DriverClass.MYSQL)
+        Connection connection = new JDBConnection.Builder(JDBCDriverClass.MYSQL)
                 .host("localhost", "3306")
                 .database("testDB")
                 .credential("root", "root@123")
                 .build();
-        ScriptRunner runner = new ScriptRunner();
+        SQLScriptExecutor runner = new SQLScriptExecutor();
         File file = new File(initSqlFileName);
         String[] cmds = runner.commands(runner.createStream(file));
         runner.execute(cmds, connection);

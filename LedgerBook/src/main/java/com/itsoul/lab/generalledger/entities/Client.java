@@ -1,9 +1,9 @@
 package com.itsoul.lab.generalledger.entities;
 
-import com.infoworks.entity.Column;
-import com.infoworks.objects.Ignore;
-import com.infoworks.entity.PrimaryKey;
-import com.infoworks.entity.TableName;
+import com.it.soul.lab.sql.entity.Column;
+import com.it.soul.lab.sql.entity.Ignore;
+import com.it.soul.lab.sql.entity.PrimaryKey;
+import com.it.soul.lab.sql.entity.TableName;
 import java.util.Date;
 import java.util.Objects;
 

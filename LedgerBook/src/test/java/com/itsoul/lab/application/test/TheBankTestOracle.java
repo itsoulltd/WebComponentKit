@@ -1,6 +1,6 @@
 package com.itsoul.lab.application.test;
 
-import com.infoworks.connect.JDBCDriverClass;
+import com.it.soul.lab.connect.DriverClass;
 import com.itsoul.lab.application.bank.SCBank;
 import com.itsoul.lab.application.bank.SCFixBank;
 import com.itsoul.lab.application.bank.TheBank;
@@ -13,27 +13,27 @@ public class TheBankTestOracle extends BaseBankTest{
 
     @Test
     public void leanerTest() throws Exception {
-        executeScript("db/drop-all-tables.sql", JDBCDriverClass.OracleOCI9i);
-        executeScript("db/oracle-schema.sql", JDBCDriverClass.OracleOCI9i);
-        TheBank aBank = new SCBank(JDBCDriverClass.OracleOCI9i, "anatolia", "324123");
+        executeScript("db/drop-all-tables.sql", DriverClass.OracleOCI9i);
+        executeScript("db/oracle-schema.sql", DriverClass.OracleOCI9i);
+        TheBank aBank = new SCBank(DriverClass.OracleOCI9i, "anatolia", "324123");
         singleThreadTest(aBank);
         aBank.close();
     }
 
     @Test
     public void concurrentTest() throws Exception {
-        executeScript("db/drop-all-tables.sql", JDBCDriverClass.OracleOCI9i);
-        executeScript("db/oracle-schema.sql", JDBCDriverClass.OracleOCI9i);
-        TheBank aBank = new SCBank(JDBCDriverClass.OracleOCI9i, "anatolia", "324123");
+        executeScript("db/drop-all-tables.sql", DriverClass.OracleOCI9i);
+        executeScript("db/oracle-schema.sql", DriverClass.OracleOCI9i);
+        TheBank aBank = new SCBank(DriverClass.OracleOCI9i, "anatolia", "324123");
         raceConditionTest(aBank);
         aBank.close();
     }
 
     @Test
     public void concurrentTest_Fix() throws Exception {
-        executeScript("db/drop-all-tables.sql", JDBCDriverClass.OracleOCI9i);
-        executeScript("db/oracle-schema.sql", JDBCDriverClass.OracleOCI9i);
-        TheFixBank aBank = new SCFixBank(JDBCDriverClass.OracleOCI9i, "anatolia", "324123");
+        executeScript("db/drop-all-tables.sql", DriverClass.OracleOCI9i);
+        executeScript("db/oracle-schema.sql", DriverClass.OracleOCI9i);
+        TheFixBank aBank = new SCFixBank(DriverClass.OracleOCI9i, "anatolia", "324123");
         raceConditionTest_Fix(aBank);
         aBank.close();
     }

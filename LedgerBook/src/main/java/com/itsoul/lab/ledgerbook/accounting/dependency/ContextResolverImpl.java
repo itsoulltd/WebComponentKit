@@ -1,7 +1,7 @@
 package com.itsoul.lab.ledgerbook.accounting.dependency;
 
-import com.infoworks.script.SQLScriptExecutor;
-import com.infoworks.sql.executor.QueryExecutor;
+import com.it.soul.lab.connect.io.ScriptRunner;
+import com.it.soul.lab.sql.QueryExecutor;
 import com.itsoul.lab.generalledger.entities.Client;
 import com.itsoul.lab.generalledger.repositories.AccountRepository;
 import com.itsoul.lab.generalledger.repositories.ClientRepository;
@@ -79,7 +79,7 @@ public class ContextResolverImpl implements ContextResolver {
     public void configureDataSource(SourceConnector connector) throws SQLException{
         if (connector.generateSchema()) {
             try(Connection connection = connector.getConnection()) {
-                SQLScriptExecutor runner = new SQLScriptExecutor();
+                ScriptRunner runner = new ScriptRunner();
                 File file = new File("db/"+connector.schema());
                 String[] cmds = runner.commands(runner.createStream(file));
                 runner.execute(cmds, connection);

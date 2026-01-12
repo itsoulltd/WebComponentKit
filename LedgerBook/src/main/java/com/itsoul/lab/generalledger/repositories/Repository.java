@@ -1,7 +1,7 @@
 package com.itsoul.lab.generalledger.repositories;
 
-import com.infoworks.sql.executor.QueryExecutor;
-import com.infoworks.sql.executor.QueryTransaction;
+import com.it.soul.lab.sql.QueryExecutor;
+import com.it.soul.lab.sql.QueryTransaction;
 
 import java.sql.SQLException;
 

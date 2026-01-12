@@ -1,7 +1,7 @@
 package com.itsoul.lab.ledgerbook.connector;
 
-import com.infoworks.sql.executor.QueryExecutor;
-import com.infoworks.sql.executor.SQLExecutor;
+import com.it.soul.lab.sql.QueryExecutor;
+import com.it.soul.lab.sql.SQLExecutor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

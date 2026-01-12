@@ -1,6 +1,6 @@
 package com.itsoul.lab.generalledger.entities;
 
-import com.infoworks.objects.Ignore;
+import com.it.soul.lab.sql.entity.Ignore;
 
 import java.util.ArrayList;
 import java.util.Collections;

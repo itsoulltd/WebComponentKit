@@ -1,6 +1,6 @@
 package com.itsoul.lab.ledgerbook.connector;
 
-import com.infoworks.sql.executor.QueryExecutor;
+import com.it.soul.lab.sql.QueryExecutor;
 
 import java.sql.Connection;
 import java.sql.SQLException;

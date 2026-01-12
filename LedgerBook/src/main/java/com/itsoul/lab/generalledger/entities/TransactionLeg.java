@@ -1,6 +1,6 @@
 package com.itsoul.lab.generalledger.entities;
 
-import com.infoworks.objects.Ignore;
+import com.it.soul.lab.sql.entity.Ignore;
 import com.itsoul.lab.generalledger.services.Cryptor;
 import com.itsoul.lab.generalledger.validation.TransferValidationException;
 

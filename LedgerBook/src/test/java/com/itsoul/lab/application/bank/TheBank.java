@@ -1,8 +1,8 @@
 package com.itsoul.lab.application.bank;
 
-import com.infoworks.connect.JDBCDriverClass;
-import com.infoworks.connect.JDBConnection;
-import com.infoworks.script.SQLScriptExecutor;
+import com.it.soul.lab.connect.DriverClass;
+import com.it.soul.lab.connect.JDBConnection;
+import com.it.soul.lab.connect.io.ScriptRunner;
 import com.itsoul.lab.ledgerbook.connector.SQLConnector;
 import com.itsoul.lab.ledgerbook.connector.SourceConnector;
 
@@ -19,18 +19,18 @@ public interface TheBank extends AutoCloseable{
     @Override
     default void close() throws Exception {}
 
-    static Connection createConnection(JDBCDriverClass driver) throws SQLException {
+    static Connection createConnection(DriverClass driver) throws SQLException {
         Connection connection;
         switch (driver) {
             case MYSQL:
-                connection = new JDBConnection.Builder(JDBCDriverClass.MYSQL)
+                connection = new JDBConnection.Builder(DriverClass.MYSQL)
                         .host("localhost", "3306")
                         .database("testDB")
                         .credential("root", "root@123")
                         .build();
                 break;
             case OracleOCI9i:
-                connection = new JDBConnection.Builder(JDBCDriverClass.OracleOCI9i)
+                connection = new JDBConnection.Builder(DriverClass.OracleOCI9i)
                         .host("localhost", "1521")
                         .database("xe")
                         .credential("system", "oracle")
@@ -46,7 +46,7 @@ public interface TheBank extends AutoCloseable{
         return connection;
     }
 
-    static SourceConnector createSourceConnector(JDBCDriverClass driver) {
+    static SourceConnector createSourceConnector(DriverClass driver) {
         SourceConnector connection;
         switch (driver) {
             case MYSQL:
@@ -79,9 +79,9 @@ public interface TheBank extends AutoCloseable{
         return connection;
     }
 
-    static void executeScript(String initSqlFileName, JDBCDriverClass driver) throws SQLException {
+    static void executeScript(String initSqlFileName, DriverClass driver) throws SQLException {
         Connection connection = TheBank.createConnection(driver);
-        SQLScriptExecutor runner = new SQLScriptExecutor();
+        ScriptRunner runner = new ScriptRunner();
         File file = new File(initSqlFileName);
         String[] cmds = runner.commands(runner.createStream(file));
         runner.execute(cmds, connection);

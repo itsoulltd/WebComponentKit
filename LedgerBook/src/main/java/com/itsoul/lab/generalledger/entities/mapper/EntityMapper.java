@@ -1,6 +1,6 @@
 package com.itsoul.lab.generalledger.entities.mapper;
 
-import com.infoworks.entity.Entity;
+import com.it.soul.lab.sql.entity.Entity;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

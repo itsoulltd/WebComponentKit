@@ -18,9 +18,14 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- MicroStream v07.x.x is Java8+ -->
         <microstream.version>07.00.00-MS-GA</microstream.version>
-        <!--<microstream.version>08.01.01-MS-GA</microstream.version>-->
-        <eclipsestore.version>2.1.3</eclipsestore.version>
+        <!-- MicroStream become EclipseStore under eclipse-foundation -->
+        <!-- EclipseStore v1.0.x is Java8 compatible -->
+        <eclipsestore.version>1.0.0</eclipsestore.version>
+        <!--<eclipsestore.version>1.4.0</eclipsestore.version>-->
+        <!-- EclipseStore v2.x required Java11+ -->
+        <!--<eclipsestore.version>2.1.3</eclipsestore.version>-->
         <!-- EclipseStore v3.x required Java17+ -->
         <!--<eclipsestore.version>3.0.0</eclipsestore.version>-->
     </properties>
